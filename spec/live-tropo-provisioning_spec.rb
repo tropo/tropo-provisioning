@@ -9,6 +9,10 @@ describe "TropoProvisioning" do
     @tp = TropoProvisioning.new('jsgoecke', 'test123')
   end
   
+  after(:all) do
+    
+  end
+  
   it "should create an application" do
     result = @tp.create_application(@app_details.merge!({ :name => 'Live API Test' }))
     result.href.should =~ /^http:\/\/api.tropo.com\/provisioning\/applications\/\d{1,7}$/
@@ -40,23 +44,22 @@ describe "TropoProvisioning" do
     result.href.should =~ /^http:\/\/api.tropo.com\/provisioning\/applications\/\d{1,7}$/
   end
   
-  # it "should move a address to a new application and then back" do
-  #   new_app = @tp.create_application(@app_details.merge!({ :name => 'Live API Test New' }))
-  #   new_app.href.should =~ /^http:\/\/api.tropo.com\/provisioning\/applications\/\d{1,7}$/
-  #   
-  #   addresses = @tp.addresses(APPLICATION_ID)
-  #   addresses[0].address.should =~ /\d{10}@sip.tropo.com/
-  #   p addresses
-  #   result = @tp.move_address({ :from    => APPLICATION_ID,
-  #                               :to      => new_app,
-  #                               :address => addresses[0].number })
-  #   result.should == nil
-  #   
-  #   result = @tp.move_address({ :from    => new_app,
-  #                               :to      => APPLICATION_ID,
-  #                               :address => addresses[0]['number'] })
-  #   result.should == nil    
-  # end
+  it "should move a address to a new application and then back" do
+    new_app = @tp.create_application(@app_details.merge!({ :name => 'Live API Test New' }))
+    new_app.href.should =~ /^http:\/\/api.tropo.com\/provisioning\/applications\/\d{1,7}$/
+    new_address = @tp.add_address(new_app.application_id, { :type => 'number', :prefix => @tp.exchanges[0]['prefix'] })
+    p new_address
+    
+    # result = @tp.move_address({ :from    => APPLICATION_ID,
+    #                             :to      => new_app,
+    #                             :address => addresses[0].number })
+    # result.should == nil
+    # 
+    # result = @tp.move_address({ :from    => new_app,
+    #                             :to      => APPLICATION_ID,
+    #                             :address => addresses[0]['number'] })
+    # result.should == nil    
+  end
   
   # it "should delete the addresses of an application" do
   #   addresses = @tp.addresses(APPLICATION_ID)

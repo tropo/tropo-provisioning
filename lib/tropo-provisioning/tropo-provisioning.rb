@@ -75,7 +75,7 @@ class TropoProvisioning
     results = request(:get, { :resource => 'applications' })
     result_with_ids = []
     results.each do |app|
-      result_with_ids << app.merge!({ :application_id => get_application_id(app.href) })
+      result_with_ids << app.merge!({ :application_id => get_element(app.href) })
     end
     result_with_ids
   end
@@ -94,7 +94,7 @@ class TropoProvisioning
     merged_params = DEFAULT_OPTIONS.merge(camelize_params(params))
     validate_params merged_params
     result = request(:post, { :resource => 'applications', :body => params })
-    result[:application_id] = get_application_id(result.href)
+    result[:application_id] = get_element(result.href)
     result
   end
   
@@ -222,11 +222,11 @@ class TropoProvisioning
   end
   
   ##
-  # Parses the URL and returns the application ID
+  # Parses the URL and returns the last element
   #
   # @param [required, String] the URL to parse for the application ID
   # @return [String] the application id parsed from the URL
-  def get_application_id(url)
+  def get_element(url)
     url.split('/').last
   end
   
