@@ -34,7 +34,6 @@ Gem::Specification.new do |s|
      "lib/tropo-provisioning.rb",
      "lib/tropo-provisioning/tropo-provisioning.rb",
      "spec/live-tropo-provisioning_spec.rb",
-     "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/tropo-provisioning_spec.rb",
      "tropo-provisioning.gemspec"
