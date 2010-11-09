@@ -48,17 +48,16 @@ describe "TropoProvisioning" do
     new_app = @tp.create_application(@app_details.merge!({ :name => 'Live API Test New' }))
     new_app.href.should =~ /^http:\/\/api.tropo.com\/provisioning\/applications\/\d{1,7}$/
     new_address = @tp.add_address(new_app.application_id, { :type => 'number', :prefix => @tp.exchanges[0]['prefix'] })
-    p new_address
     
-    # result = @tp.move_address({ :from    => APPLICATION_ID,
-    #                             :to      => new_app,
-    #                             :address => addresses[0].number })
-    # result.should == nil
-    # 
-    # result = @tp.move_address({ :from    => new_app,
-    #                             :to      => APPLICATION_ID,
-    #                             :address => addresses[0]['number'] })
-    # result.should == nil    
+    result = @tp.move_address({ :from    => APPLICATION_ID,
+                                :to      => new_app,
+                                :address => new_address.address })
+    result.should == nil
+    
+    result = @tp.move_address({ :from    => new_app,
+                                :to      => APPLICATION_ID,
+                                :address => new_address.address })
+    result.should == nil    
   end
   
   # it "should delete the addresses of an application" do

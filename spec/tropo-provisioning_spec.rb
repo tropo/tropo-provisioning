@@ -389,14 +389,17 @@ describe "TropoProvisioning" do
     # Add a address based on a prefix
     result = @tropo_provisioning.add_address('108000', { :type => 'number', :prefix => '1303' })
     result[:href].should == "http://api.tropo.com/provisioning/applications/108000/addresses/number/7202551912"
+    result[:address].should == '7202551912'
     
     # Add a jabber account
     result = @tropo_provisioning.add_address('108001', { :type => 'jabber', :username => 'xyz123@bot.im' })
-    result[:href].should == "http://api.tropo.com/provisioning/applications/108001/addresses/jabber/xyz123@bot.im"    
+    result[:href].should == "http://api.tropo.com/provisioning/applications/108001/addresses/jabber/xyz123@bot.im"
+    result[:address].should == 'xyz123@bot.im' 
     
     # Add a token
     result = @tropo_provisioning.add_address('108002', { :type => 'token', :channel => 'voice' })
     result[:href].should == "http://api.tropo.com/provisioning/applications/108002/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b"
+    result[:address].should == '12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b'
   end
   
   it "should obtain a list of available exchanges" do
