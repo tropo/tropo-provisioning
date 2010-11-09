@@ -32,7 +32,9 @@ class TropoProvisioning
   # @option params [String] :prefix this defines the country code and area code for phone numbers
   # @option params [String] :username the messaging/IM account's username
   # @option params [String] :password the messaging/IM account's password
-  # @return [Hash] the href that identifies the address that was added, refer to address method for details
+  # @return [Hash] params the key/values that make up the application
+  # @option params [String] :href identifies the address that was added, refer to address method for details
+  # @option params [String] :address the address that was created
   def add_address(application_id, params={})
     raise ArgumentError, ':type required' unless params[:type]
     
@@ -49,7 +51,9 @@ class TropoProvisioning
       raise ArgumentError, ':channel must be voice or messaging' unless params[:channel] == 'voice' || params[:channel] == 'messaging'
     end
     
-    response = request(:post, { :resource => 'applications/' + application_id.to_s + '/addresses', :body => params })
+    result = request(:post, { :resource => 'applications/' + application_id.to_s + '/addresses', :body => params })
+    result[:address] = get_element(result.href)
+    result
   end
   
   ##
