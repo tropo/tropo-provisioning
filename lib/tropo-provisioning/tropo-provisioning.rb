@@ -37,7 +37,7 @@ class TropoProvisioning
     params[:company_branding_id] = 9 unless params[:company_branding_id] || params[:companyBrandingId]
     
     # "https://evolution.voxeo.com/api/account/create.jsp?"
-    request(:post, { :resource => 'account/', :body => params })
+    request(:post, { :resource => 'accounts/', :body => params })
   end
   
   ##
@@ -266,7 +266,7 @@ class TropoProvisioning
       uri = URI.parse(@base_uri)
     end
     http = Net::HTTP.new(uri.host, uri.port)
-    
+
     request = set_request_type(method, uri)
     request.initialize_http_header(@headers)
     request.basic_auth @username, @password
