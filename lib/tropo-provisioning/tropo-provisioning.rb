@@ -11,20 +11,37 @@ class TropoProvisioning
   # @option params [optional, String] :base_uri to use for accessing the provisioning API if you would like a custom one
   # @return [Object] a TropoProvisioning object
   def initialize(username, password, params={})   
-    @username = username
-    @password = password
-    
-    if params[:base_uri]
-      @base_uri = params[:base_uri]
-    else
-      @base_uri = "http://api.tropo.com/provisioning"
-    end
-    
-    @headers  = { 'Content-Type' => 'application/json' }
+    @username            = username
+    @password            = password
+    @base_uri            = params[:base_uri] || "http://api.tropo.com/provisioning"
+    @headers             = { 'Content-Type' => 'application/json' }
   end
-
+  
   ##
-  # Adds an address to an existing application
+  # Creates a new account
+  #
+  # @param [required, Hash] params to create the account
+  #   @option params [required, String] :username the name of the user to create the account for
+  #   @option params [required, String] :password the password to use for the account
+  #   @option params [required, String] :email the email address to use
+  #   @option params [optional, String] :companyBrandingId or :company_branding_id the branding ID to use for the account
+  #   @option params [optional, String] :website the URL of the user's website
+  #   @option params [optional, String] :ip the IP address of the client creating the account
+  # @return [Hash] returns the href of the account created
+  def create_account(params={})
+    # Ensure required fields are present
+    raise ArgumentError, ':username required' unless params[:username]
+    raise ArgumentError, ':password required' unless params[:password]
+    raise ArgumentError, ':email required'    unless params[:email]
+    # Set the Company Branding ID, or use default
+    params[:company_branding_id] = 9 unless params[:company_branding_id] || params[:companyBrandingId]
+    
+    # "https://evolution.voxeo.com/api/account/create.jsp?"
+    request(:post, { :resource => 'account/', :body => params })
+  end
+  
+  ##
+  # Creates an address to an existing application
   #
   # @param [required, String] application_id to add the address to
   # @param [required, Hash] params the parameters used to request the address
@@ -35,7 +52,7 @@ class TropoProvisioning
   # @return [Hash] params the key/values that make up the application
   # @option params [String] :href identifies the address that was added, refer to address method for details
   # @option params [String] :address the address that was created
-  def add_address(application_id, params={})
+  def create_address(application_id, params={})
     raise ArgumentError, ':type required' unless params[:type]
     
     case params[:type].downcase

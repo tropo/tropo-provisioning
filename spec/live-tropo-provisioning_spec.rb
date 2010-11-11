@@ -26,13 +26,13 @@ describe "TropoProvisioning" do
   end
   
   it "should add a phone, IM and token address to the application" do  
-    result = @tp.add_address(APPLICATION_ID, { :type => 'number', :prefix => @tp.exchanges[0].prefix })
+    result = @tp.create_address(APPLICATION_ID, { :type => 'number', :prefix => @tp.exchanges[0].prefix })
     result.href.should =~ /http:\/\/api.tropo.com\/provisioning\/applications\/\d{1,7}\/addresses\/number\/\d{1,20}/
     
-    result = @tp.add_address(APPLICATION_ID, { :type => 'jabber', :username => "liveapitest#{rand(100000).to_s}@bot.im" } )
+    result = @tp.create_address(APPLICATION_ID, { :type => 'jabber', :username => "liveapitest#{rand(100000).to_s}@bot.im" } )
     result.href.should =~ /http:\/\/api.tropo.com\/provisioning\/applications\/\d{1,7}\/addresses\/jabber\/\w{10,16}@bot.im/
     
-    result = @tp.add_address(APPLICATION_ID, { :type => 'token', :channel => 'voice' } )
+    result = @tp.create_address(APPLICATION_ID, { :type => 'token', :channel => 'voice' } )
     result.href.should =~ /http:\/\/api.tropo.com\/provisioning\/applications\/\d{1,7}\/addresses\/token\/\w{88}/
   end
   
@@ -47,7 +47,7 @@ describe "TropoProvisioning" do
   it "should move a address to a new application and then back" do
     new_app = @tp.create_application(@app_details.merge!({ :name => 'Live API Test New' }))
     new_app.href.should =~ /^http:\/\/api.tropo.com\/provisioning\/applications\/\d{1,7}$/
-    new_address = @tp.add_address(new_app.application_id, { :type => 'number', :prefix => @tp.exchanges[0]['prefix'] })
+    new_address = @tp.create_address(new_app.application_id, { :type => 'number', :prefix => @tp.exchanges[0]['prefix'] })
     
     result = @tp.move_address({ :from    => APPLICATION_ID,
                                 :to      => new_app,

@@ -344,42 +344,42 @@ describe "TropoProvisioning" do
   it "should generate an error of the addition of the address does not have a required field" do
     # Add a address without a type
     begin
-      @tropo_provisioning.add_address('108000')
+      @tropo_provisioning.create_address('108000')
     rescue => e
       e.to_s.should == ":type required"
     end
     
     # Add a number without a prefix
     begin
-      @tropo_provisioning.add_address('108000', { :type => 'number' })
+      @tropo_provisioning.create_address('108000', { :type => 'number' })
     rescue => e
       e.to_s.should == ":prefix required to add a number address"
     end
     
     # Add a jabber without a username
     begin
-      @tropo_provisioning.add_address('108000', { :type => 'jabber' })
+      @tropo_provisioning.create_address('108000', { :type => 'jabber' })
     rescue => e
       e.to_s.should == ":username required"
     end
     
     # Add an aim without a password
     begin
-      @tropo_provisioning.add_address('108000', { :type => 'aim', :username => 'joeblow@aim.com' })
+      @tropo_provisioning.create_address('108000', { :type => 'aim', :username => 'joeblow@aim.com' })
     rescue => e
       e.to_s.should == ":password and required"
     end
     
     # Add a token without a channel
     begin
-      @tropo_provisioning.add_address('108000', { :type => 'token' })
+      @tropo_provisioning.create_address('108000', { :type => 'token' })
     rescue => e
       e.to_s.should == ":channel required"
     end
     
     # Add a token with an invalid channel type
     begin
-      @tropo_provisioning.add_address('108000', { :type => 'token', :channel => 'BBC' })
+      @tropo_provisioning.create_address('108000', { :type => 'token', :channel => 'BBC' })
     rescue => e
       e.to_s.should == ":channel must be voice or messaging"
     end
@@ -387,17 +387,17 @@ describe "TropoProvisioning" do
   
   it "should add appropriate addresses" do  
     # Add a address based on a prefix
-    result = @tropo_provisioning.add_address('108000', { :type => 'number', :prefix => '1303' })
+    result = @tropo_provisioning.create_address('108000', { :type => 'number', :prefix => '1303' })
     result[:href].should == "http://api.tropo.com/provisioning/applications/108000/addresses/number/7202551912"
     result[:address].should == '7202551912'
     
     # Add a jabber account
-    result = @tropo_provisioning.add_address('108001', { :type => 'jabber', :username => 'xyz123@bot.im' })
+    result = @tropo_provisioning.create_address('108001', { :type => 'jabber', :username => 'xyz123@bot.im' })
     result[:href].should == "http://api.tropo.com/provisioning/applications/108001/addresses/jabber/xyz123@bot.im"
     result[:address].should == 'xyz123@bot.im' 
     
     # Add a token
-    result = @tropo_provisioning.add_address('108002', { :type => 'token', :channel => 'voice' })
+    result = @tropo_provisioning.create_address('108002', { :type => 'token', :channel => 'voice' })
     result[:href].should == "http://api.tropo.com/provisioning/applications/108002/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b"
     result[:address].should == '12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b'
   end
@@ -435,5 +435,10 @@ describe "TropoProvisioning" do
   it "should move a address" do
     results = @tropo_provisioning.move_address({ :from => '108000', :to => '108002', :address => '883510001812716'})
     results.should == { 'message' => 'delete successful' }
+  end
+  
+  it "should create a new account" do
+    pending()
+    #results = @tropo_provisioning.create_account({ :username => '108000', :to => '108002', :address => '883510001812716'})
   end
 end
