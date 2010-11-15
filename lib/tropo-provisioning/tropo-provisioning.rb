@@ -33,11 +33,16 @@ class TropoProvisioning
     raise ArgumentError, ':username required' unless params[:username]
     raise ArgumentError, ':password required' unless params[:password]
     raise ArgumentError, ':email required'    unless params[:email]
+
     # Set the Company Branding ID, or use default
-    params[:company_branding_id] = 9 unless params[:company_branding_id] || params[:companyBrandingId]
-    
-    # "https://evolution.voxeo.com/api/account/create.jsp?"
-    request(:post, { :resource => 'accounts/', :body => params })
+    params[:company_branding_iD] = 9 unless params[:company_branding_id] || params[:companyBrandingId]
+    params[:website] = 'http://smsified.com'
+
+    params = camelize_params(params)
+    # Needs to be refactored once we have the real API
+    fields = "username=#{params[:username]}&password=#{[:password]}"
+    fields = fields + "&email=#{params[:email]}&ip=#{params[:ip]}&companyBrandingID=9&website=#{params[:website]}"
+    temp_request(:get, fields)
   end
   
   ##
@@ -133,8 +138,10 @@ class TropoProvisioning
   #
   # @param [String] application_id that the address is associated to
   # @param [String] address_id for the address
+  # @return
   def delete_address(application_id, address_id)
     address_to_delete = address(application_id, address_id)
+    
     request(:delete, { :resource => 'applications/' + application_id.to_s + '/addresses/' + address_to_delete['type'] + '/' + address_id.to_s })
   end
   
@@ -271,7 +278,31 @@ class TropoProvisioning
     request.initialize_http_header(@headers)
     request.basic_auth @username, @password
     request.body = ActiveSupport::JSON.encode params[:body] if params[:body]
-    
+
+    response = http.request(request)
+    raise RuntimeError, "#{response.code} - #{response.message}" unless response.code == '200'
+
+    result = ActiveSupport::JSON.decode response.body
+    if result.instance_of? Array
+      hashie_array(result)
+    else
+      Hashie::Mash.new(result)
+    end
+  end
+  
+  ##
+  # Creates the appropriate request for the temporary Evolution account API
+  #
+  # @return [Hash] the result of the request
+  def temp_request(method, fields)
+    base_uri = 'http://evolution.voxeo.com/api/account/create.jsp?'
+    uri = URI.parse(base_uri + fields)
+    http = Net::HTTP.new(uri.host, uri.port)
+
+    request = set_request_type(method, uri)
+    request.initialize_http_header(@headers)
+    request.basic_auth @username, @password
+
     response = http.request(request)
     raise RuntimeError, "#{response.code} - #{response.message}" unless response.code == '200'
 

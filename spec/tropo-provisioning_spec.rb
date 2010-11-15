@@ -94,7 +94,14 @@ describe "TropoProvisioning" do
                         "country":    "United States"
                      }
                   ]'
-                        
+    
+    @new_account = { "account-create-response" => { "statusMessage" => "Success.", 
+                                                    "account"       => { "username"   => "foobar7474", 
+                                                                         "id"         => 53213, 
+                                                                         "email"      => "jsgoecke@voxeo.com"}, 
+                                                                         "statusCode" => 200}}
+
+                    
     # Register our resources
     
     # Applications with a bad uname/passwd
@@ -207,6 +214,13 @@ describe "TropoProvisioning" do
                          :body => ActiveSupport::JSON.encode({ 'message' => 'delete successful' }), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
+    
+   # Create a new account
+   FakeWeb.register_uri(:get, 
+                        %r|evolution.voxeo.com/api/account/create.jsp?|, 
+                        :body => ActiveSupport::JSON.encode(@new_account), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -438,7 +452,6 @@ describe "TropoProvisioning" do
   end
   
   it "should create a new account" do
-    pending()
-    #results = @tropo_provisioning.create_account({ :username => '108000', :to => '108002', :address => '883510001812716'})
+    results = @tropo_provisioning.create_account({ :username => "foobar7474", :password => 'fooey', :email => 'jsgoecke@voxeo.com' })
   end
 end
