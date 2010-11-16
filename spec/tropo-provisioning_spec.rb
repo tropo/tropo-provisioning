@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 # These tests are all local unit tests
-FakeWeb.allow_net_connect = false
+#FakeWeb.allow_net_connect = false
 
 describe "TropoProvisioning" do
   before(:all) do
@@ -100,7 +100,16 @@ describe "TropoProvisioning" do
                                                                          "id"         => 53213, 
                                                                          "email"      => "jsgoecke@voxeo.com"}, 
                                                                          "statusCode" => 200}}
+    
+    @list_account = { "account-accesstoken-get-response" => 
+                      { "accessToken"   => "CF60945D-232D-4112-B6CD-BB1C1E65D7D7", 
+                        "statusMessage" => "Success.", 
+                        "statusCode"    => 200}}
 
+    @bad_account_creds =  { "account-accesstoken-get-response" =>
+                            { "accessToken"   => "", 
+                              "statusMessage" => "Invalid login.", 
+                              "statusCode"    => 403}}
                     
     # Register our resources
     
@@ -217,10 +226,24 @@ describe "TropoProvisioning" do
     
    # Create a new account
    FakeWeb.register_uri(:get, 
-                        %r|evolution.voxeo.com/api/account/create.jsp?|, 
+                        %r|http://evolution.voxeo.com/api/account/create.jsp?|, 
                         :body => ActiveSupport::JSON.encode(@new_account), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
+
+  # List an account
+  FakeWeb.register_uri(:get, 
+                       "http://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooey", 
+                       :body => ActiveSupport::JSON.encode(@list_account), 
+                       :content_type => "application/json",
+                       :status => ["200", "OK"])
+
+   # List an account, with bad creds
+   FakeWeb.register_uri(:get, 
+                        "http://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooeyfooey", 
+                        :body => ActiveSupport::JSON.encode(@bad_account_creds), 
+                        :content_type => "application/json",
+                        :status => ["403", "Invalid Login."])
   end
   
   before(:each) do      
@@ -452,6 +475,20 @@ describe "TropoProvisioning" do
   end
   
   it "should create a new account" do
-    results = @tropo_provisioning.create_account({ :username => "foobar7474", :password => 'fooey', :email => 'jsgoecke@voxeo.com' })
+    result = @tropo_provisioning.create_account({ :username => "foobar7474", :password => 'fooey', :email => 'jsgoecke@voxeo.com' })
+    result.should == @new_account
+  end
+  
+  it "should provide a token for an existing account" do
+    result = @tropo_provisioning.account("foobar7474", 'fooey')
+    result.should == @list_account
+  end
+  
+  it "should not provide a token for an existing account if wrong credentials" do
+    begin
+      result = @tropo_provisioning.account("foobar7474", 'fooeyfooey')
+    rescue => e
+      e.to_s.should == "403 - Invalid Login."
+    end
   end
 end

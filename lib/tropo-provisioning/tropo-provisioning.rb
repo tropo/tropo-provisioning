@@ -40,9 +40,13 @@ class TropoProvisioning
 
     params = camelize_params(params)
     # Needs to be refactored once we have the real API
-    fields = "username=#{params[:username]}&password=#{[:password]}"
+    fields = "/create.jsp?username=#{params[:username]}&password=#{[:password]}"
     fields = fields + "&email=#{params[:email]}&ip=#{params[:ip]}&companyBrandingID=9&website=#{params[:website]}"
     temp_request(:get, fields)
+  end
+  
+  def account(username, password)
+    temp_request(:get, "/accesstoken/get.jsp?username=#{username}&password=#{password}")
   end
   
   ##
@@ -295,13 +299,12 @@ class TropoProvisioning
   #
   # @return [Hash] the result of the request
   def temp_request(method, fields)
-    base_uri = 'http://evolution.voxeo.com/api/account/create.jsp?'
+    base_uri = 'http://evolution.voxeo.com/api/account'
     uri = URI.parse(base_uri + fields)
     http = Net::HTTP.new(uri.host, uri.port)
 
     request = set_request_type(method, uri)
     request.initialize_http_header(@headers)
-    request.basic_auth @username, @password
 
     response = http.request(request)
     raise RuntimeError, "#{response.code} - #{response.message}" unless response.code == '200'
