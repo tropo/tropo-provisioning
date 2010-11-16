@@ -16,6 +16,17 @@ class TropoProvisioning
     @base_uri            = params[:base_uri] || "http://api.tropo.com/provisioning"
     @headers             = { 'Content-Type' => 'application/json' }
   end
+    
+  def account(username, password)
+    case current_method_name
+    when 'account'
+      action = 'get'
+    when 'authenticate_account'
+      action = 'authenticate'
+    end
+    temp_request(:get, "/accesstoken/#{action}.jsp?username=#{username}&password=#{password}")
+  end
+  alias :authenticate_account :account
   
   ##
   # Creates a new account
@@ -43,10 +54,6 @@ class TropoProvisioning
     fields = "/create.jsp?username=#{params[:username]}&password=#{[:password]}"
     fields = fields + "&email=#{params[:email]}&ip=#{params[:ip]}&companyBrandingID=9&website=#{params[:website]}"
     temp_request(:get, fields)
-  end
-  
-  def account(username, password)
-    temp_request(:get, "/accesstoken/get.jsp?username=#{username}&password=#{password}")
   end
   
   ##
@@ -238,6 +245,14 @@ class TropoProvisioning
     camelized = {}
     params.each { |k,v| camelized.merge!(k.to_s.camelize(:lower).to_sym => v) }
     camelized
+  end
+  
+  ##
+  # Returns the current method name
+  #
+  # @return [String] current method name
+  def current_method_name
+    caller[0] =~ /`([^']*)'/ and $1
   end
   
   ##
