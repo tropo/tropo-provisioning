@@ -24,7 +24,7 @@ class TropoProvisioning
     when 'authenticate_account'
       action = 'authenticate'
     end
-    temp_request(:get, "/accesstoken/#{action}.jsp?username=#{username}&password=#{password}")
+    temp_request(:get, "/#{action}.jsp?username=#{username}&password=#{password}")
   end
   alias :authenticate_account :account
   
