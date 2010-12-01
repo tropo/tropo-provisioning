@@ -11,5 +11,7 @@ provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo'
 p provisioning.create_account({ :username => 'foobar' + rand(10000).to_s, 
                                 :password => 'test124',
                                 :email    => 'jsgoecke@voxeo.com',
-                                :ip       => '98.207.5.162' })
+                                :ip       => '98.207.5.162',
+                                :website  => 'smsified',
+                                :company_branding_id => '13' })
 

@@ -46,13 +46,12 @@ class TropoProvisioning
     raise ArgumentError, ':email required'    unless params[:email]
 
     # Set the Company Branding ID, or use default
-    params[:company_branding_iD] = 9 unless params[:company_branding_id] || params[:companyBrandingId]
-    params[:website] = 'www.smsified.com' unless params[:website]
-
+    params[:company_branding_id] = 9 unless params[:company_branding_id] || params[:companyBrandingID]
+    params[:website] = 'tropo' unless params[:website]
     params = camelize_params(params)
     # Needs to be refactored once we have the real API
     fields = "/create.jsp?username=#{params[:username]}&password=#{params[:password]}"
-    fields = fields + "&email=#{params[:email]}&ip=#{params[:ip]}&companyBrandingID=#{params[:company_branding_id]}&website=#{params[:website]}"
+    fields = fields + "&email=#{params[:email]}&ip=#{params[:ip]}&companyBrandingID=#{params[:companyBrandingId]}&website=#{params[:website]}"
     temp_request(:get, fields)
   end
   
