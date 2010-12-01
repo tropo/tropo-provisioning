@@ -101,7 +101,8 @@ class TropoProvisioning
   # @option params [String] :platform defines whether the application will use the Scripting API or the Web API
   # @option params [String] :partition defines whether the application is in staging/development or production
   def application(application_id)
-    result = request(:get, { :resource => 'applications/' + application_id.to_s })
+    app = request(:get, { :resource => 'applications/' + application_id.to_s })
+    app.merge!({ :application_id => get_element(app.href) })
   end
     
   ##
@@ -116,6 +117,24 @@ class TropoProvisioning
     end
     result_with_ids
   end
+  
+  ##
+  # Fetches the application(s) with the associated addresses in the hash
+  #
+  # @param [optional, String] application_id will return a single application with addresses if present
+  # @return [Hash] contains the results of the inquiry with a list of applications for the authenticated account, refer to the application method for details
+  def applications_with_addresses(application_id=nil)
+    if application_id
+      associate_addresses_to_application(application(application_id))
+    else
+      apps = []
+      applications.each do |app|
+        apps << associate_addresses_to_application(app)
+      end
+      apps
+    end
+  end
+  alias :application_with_address :applications_with_addresses
   
   ##
   # Create a new application
@@ -275,6 +294,16 @@ class TropoProvisioning
   # @return [String] the application id parsed from the URL
   def get_element(url)
     url.split('/').last
+  end
+  
+  ##
+  # Associates the addresses to an application
+  #
+  # @param [Object] application object to associate the address to
+  # @return [Object] returns the application object with the associated addresses embedded
+  def associate_addresses_to_application(app)
+    add = addresses(app.application_id)
+    app.merge!({ :addresses => add })
   end
   
   ##

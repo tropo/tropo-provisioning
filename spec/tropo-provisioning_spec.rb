@@ -491,4 +491,13 @@ describe "TropoProvisioning" do
       e.to_s.should == "403 - Invalid Login."
     end
   end
+  
+  it "should return accounts with associated addresses" do
+    pending()
+    result = @tropo_provisioning.account_with_addresses('108000')
+    result.should == nil
+    
+    result = @tropo_provisioning.accounts_with_addresses
+    result.should == nil
+  end
 end
