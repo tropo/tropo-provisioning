@@ -47,7 +47,7 @@ class TropoProvisioning
 
     # Set the Company Branding ID, or use default
     params[:company_branding_iD] = 9 unless params[:company_branding_id] || params[:companyBrandingId]
-    params[:website] = 'http://smsified.com'
+    params[:website] = 'www.smsified.com' unless params[:website]
 
     params = camelize_params(params)
     # Needs to be refactored once we have the real API
