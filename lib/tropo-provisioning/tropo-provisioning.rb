@@ -51,6 +51,7 @@ class TropoProvisioning
     params = camelize_params(params)
     # Needs to be refactored once we have the real API
     fields = "/create.jsp?username=#{params[:username]}&password=#{params[:password]}"
+    fields = fields + "&firstName=#{params[:firstName]}&lastName=#{params[:lastName]}"
     fields = fields + "&email=#{params[:email]}&ip=#{params[:ip]}&companyBrandingID=#{params[:companyBrandingId]}&website=#{params[:website]}"
     temp_request(:get, fields)
   end
