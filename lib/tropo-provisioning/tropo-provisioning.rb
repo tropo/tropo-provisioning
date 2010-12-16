@@ -13,7 +13,7 @@ class TropoProvisioning
   def initialize(username, password, params={})   
     @username            = username
     @password            = password
-    @base_uri            = params[:base_uri] || "http://api.tropo.com/provisioning"
+    @base_uri            = params[:base_uri] || "http://api.tropo.com/v1"
     @headers             = { 'Content-Type' => 'application/json' }
   end
     
@@ -35,9 +35,10 @@ class TropoProvisioning
   #   @option params [required, String] :username the name of the user to create the account for
   #   @option params [required, String] :password the password to use for the account
   #   @option params [required, String] :email the email address to use
-  #   @option params [optional, String] :companyBrandingId or :company_branding_id the branding ID to use for the account
+  #   @option params [optional, String] :brand the branding ID to use for the account
   #   @option params [optional, String] :website the URL of the user's website
   #   @option params [optional, String] :ip the IP address of the client creating the account
+  #   @option params [required, String] :type the account type to create (corporate, developer, temp_developer and temp_corporate)
   # @return [Hash] returns the href of the account created
   def create_account(params={})
     # Ensure required fields are present
@@ -46,14 +47,15 @@ class TropoProvisioning
     raise ArgumentError, ':email required'    unless params[:email]
 
     # Set the Company Branding ID, or use default
-    params[:company_branding_id] = 9 unless params[:company_branding_id] || params[:companyBrandingID]
-    params[:website] = 'tropo' unless params[:website]
+    params[:brand] = 9 unless params[:brand]
+    params[:website] = 'tropo' unless params[:website]    
+    # Default is to set the account active
+    params[:status] = 'active' unless params[:status]
     params = camelize_params(params)
-    # Needs to be refactored once we have the real API
-    fields = "/create.jsp?username=#{params[:username]}&password=#{params[:password]}"
-    fields = fields + "&firstName=#{params[:firstName]}&lastName=#{params[:lastName]}"
-    fields = fields + "&email=#{params[:email]}&ip=#{params[:ip]}&companyBrandingID=#{params[:companyBrandingId]}&website=#{params[:website]}"
-    temp_request(:get, fields)
+    
+    result = request(:post, { :resource => 'users', :body => params })
+    result[:account_id] = get_element(result.href)
+    result
   end
   
   ##
@@ -142,7 +144,7 @@ class TropoProvisioning
   # @param [required, Hash] params to create the application
   # @option params [required, String] :name the name to assign to the application
   # @option params [required, String] :partition this defines whether the application is in staging/development or production
-  # @option params [required, String] :platform (scripting) whehter to use scripting or the webapi
+  # @option params [required, String] :platform (scripting) whether to use scripting or the webapi
   # @option params [required, String] :messagingUrl or :messaging_url The URL that powers the SMS/messages sessions for your application
   # @option params [required, String] :voiceUrl or :voice_url the URL that powers voices calls for your application
   # @return [Hash] returns the href of the application created and the application_id of the application created
@@ -326,9 +328,9 @@ class TropoProvisioning
     request.initialize_http_header(@headers)
     request.basic_auth @username, @password
     request.body = ActiveSupport::JSON.encode params[:body] if params[:body]
-
     response = http.request(request)
-    raise RuntimeError, "#{response.code} - #{response.message}" unless response.code == '200'
+    
+    raise RuntimeError, "#{response.code}: #{response.message} - #{response.body}" unless response.code == '200'
 
     result = ActiveSupport::JSON.decode response.body
     if result.instance_of? Array

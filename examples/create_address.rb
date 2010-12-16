@@ -6,7 +6,7 @@ config = YAML.load(File.open('examples/config.yml'))
 app_details = YAML.load(File.open("examples/#{config['filename']}"))
 
 # Create a new provisioning object with your Tropo credentials
-provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo']['password'])
+provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo']['password'], :base_uri => 'https://api.voxeo.com/v1')
 
 # Add a address by prefix
 p provisioning.create_address(app_details.application_id, { :type => 'number', :prefix => provisioning.exchanges[0]['prefix'] })
