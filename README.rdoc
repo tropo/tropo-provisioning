@@ -44,7 +44,7 @@ The Tropo Provisioning gem provides a library for convenient access to the Tropo
 
 ==== Add a Address to an Application
 
-  address_data = tp.add_address(app_id, { :type => 'did', :prefix => '1415' })
+  address_data = tp.create_address(app_id, { :type => 'did', :prefix => '1415' })
 
 ==== Delete a Address to an Application
 
