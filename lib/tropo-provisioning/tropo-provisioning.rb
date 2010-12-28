@@ -5,8 +5,8 @@ class TropoProvisioning
   ##
   # Creates a new TropoProvisioning object
   #
-  # @param [required, String] username for your Tropo account
-  # @param [required, String] password for your Tropo account
+  # @param [required, String] username for your Tropo user
+  # @param [required, String] password for your Tropo user
   # @param [optional, Hash] params 
   # @option params [optional, String] :base_uri to use for accessing the provisioning API if you would like a custom one
   # @return [Object] a TropoProvisioning object
@@ -40,7 +40,7 @@ class TropoProvisioning
   
   ##
   # Confirms a user after they have been created. For example, you may want to email your user to make
-  # sure they are real before activating the account.
+  # sure they are real before activating the user.
   #
   # @param [required, String] user_id returned when you created the user you now want to confirm
   # @param [required, String] confirmation_key returned when you created the user you now want to confirm
@@ -53,13 +53,13 @@ class TropoProvisioning
   end
   
   ##
-  # Creates a new user in a pending state. Once you receive the href/account_id/confirmation_key
+  # Creates a new user in a pending state. Once you receive the href/user_id/confirmation_key
   # you may then invoke the confirm_user method once you have taken appropriate steps to confirm the
   # user
   #
-  # @param [required, Hash] params to create the account
-  # @option params [required, String] :username the name of the user to create the account for
-  # @option params [required, String] :password the password to use for the account
+  # @param [required, Hash] params to create the user
+  # @option params [required, String] :username the name of the user to create the user for
+  # @option params [required, String] :password the password to use for the user
   # @option params [required, String] :email the email address to use
   # @option params [optional, String] :first_name of the user
   # @option params [optional, String] :last_name of the user
@@ -73,8 +73,8 @@ class TropoProvisioning
   # @option params [optional, String] :postal_code of the user
   # @option params [optional, String] :country of the user
   # @option params [optional, String] :joined_from_host IP address of the host they signed up from
-  # @return [Hash] details of the account created
-  #   includes the href, account_id and confirmation_key
+  # @return [Hash] details of the user created
+  #   includes the href, user_id and confirmation_key
   # @raise [ArgumentError]
   #   if missing the :username, :password or :email parameters
   def create_user(params={})
@@ -85,8 +85,6 @@ class TropoProvisioning
 
     # Set the Company Branding ID, or use default
     params[:website] = 'tropo' unless params[:website]    
-    # Default is to set the account active
-    params[:status] = 'active' unless params[:status]
     params = camelize_params(params)
     
     result = request(:post, { :resource => 'users', :body => params })
@@ -146,9 +144,9 @@ class TropoProvisioning
   end
     
   ##
-  # Fetches all of the applications configured for an account
+  # Fetches all of the applications configured for a user
   #
-  # @return [Hash] contains the results of the inquiry with a list of applications for the authenticated account, refer to the application method for details
+  # @return [Hash] contains the results of the inquiry with a list of applications for the authenticated user, refer to the application method for details
   def applications
     results = request(:get, { :resource => 'applications' })
     result_with_ids = []
@@ -162,7 +160,7 @@ class TropoProvisioning
   # Fetches the application(s) with the associated addresses in the hash
   #
   # @param [optional, String] application_id will return a single application with addresses if present
-  # @return [Hash] contains the results of the inquiry with a list of applications for the authenticated account, refer to the application method for details
+  # @return [Hash] contains the results of the inquiry with a list of applications for the authenticated user, refer to the application method for details
   def applications_with_addresses(application_id=nil)
     if application_id
       associate_addresses_to_application(application(application_id))
