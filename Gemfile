@@ -7,4 +7,5 @@ gem 'i18n'
 group :development do
   gem 'rspec'
   gem 'fakeweb'
+  gem 'yard'
 end

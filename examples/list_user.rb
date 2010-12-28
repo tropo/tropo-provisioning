@@ -5,8 +5,8 @@ require 'lib/tropo-provisioning'
 config = YAML.load(File.open('examples/config.yml'))
 
 # Create a new provisioning object with your Tropo credentials
-provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo']['password'], :base_uri => 'http://172.16.10.125:8080/provisioning')
+provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo']['password'], :base_uri => 'http://api-smsified-eng.voxeo.net/v1')
 
 # Create an account
-p provisioning.account('jsgoecke', 'test123')
+p provisioning.user('54228')
 

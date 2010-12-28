@@ -95,9 +95,27 @@ describe "TropoProvisioning" do
                      }
                   ]'
     
-    @new_account = { 'account_id' => "54219", 'href' => "http://api-eng.voxeo.net:8080/v1/users/54219" }
+    @new_user      = { 'user_id' => "12345", 'href' => "http://api.tropo.com/v1/users/12345", 'confirmation_key' => '1234' }
+    @new_user_json = ActiveSupport::JSON.encode({ 'user_id' => "12345", 'href' => "http://api.tropo.com/v1/users/12345", 'confirmationKey' => '1234' })
+    @existing_user = { "city"         => "Orlando", 
+                       "address"      => "1234 Anywhere St", 
+                       "href"         => "https://api-smsified-eng.voxeo.net/v1/users/12345", 
+                       "lastName"     => "User", 
+                       "address2"     => "Unit 1337", 
+                       "joinDate"     => "2010-05-17T18:26:07.217+0000", 
+                       "country"      => "USA", 
+                       "username"     => "username", 
+                       "phoneNumber"  => "4075551212", 
+                       "id"           => "12345", 
+                       "postalCode"   => "32801", 
+                       "jobTitle"     => "Technical Writer", 
+                       "firstName"    => "Tropo", 
+                       "organization" => "Voxeo", 
+                       "status"       => "active", 
+                       "email"        => "support@tropo.com"}
+
     
-    @list_account = { 'account_id' => "54219", 'href' => "http://api-eng.voxeo.net:8080/v1/users/54219" }
+    @list_account = { 'account_id' => "12345", 'href' => "http://api-eng.voxeo.net:8080/v1/users/12345" }
 
     @bad_account_creds =  { "account-accesstoken-get-response" =>
                             { "accessToken"   => "", 
@@ -223,19 +241,32 @@ describe "TropoProvisioning" do
                          :content_type => "application/json",
                          :status => ["200", "OK"])
     
-   # Create a new account
-   FakeWeb.register_uri(:get, 
-                        %r|http://evolution.voxeo.com/api/account/create.jsp?|, 
-                        :body => ActiveSupport::JSON.encode(@new_account), 
+   # Create a new user
+   FakeWeb.register_uri(:post, 
+                        "http://foo:bar@api.tropo.com/v1/users", 
+                        :body => @new_user_json, 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
 
+   # Get a specific user
+   FakeWeb.register_uri(:get, 
+                        "http://foo:bar@api.tropo.com/v1/users/12345", 
+                        :body => ActiveSupport::JSON.encode(@existing_user), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
+                                              
+   # Confirm an account account
+   FakeWeb.register_uri(:post, 
+                        "http://foo:bar@api.tropo.com/v1/users/12345/confirmations", 
+                        :body => ActiveSupport::JSON.encode({"message" => "successfully confirmed user 12345" }), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
   # List an account
-  FakeWeb.register_uri(:post, 
-                       "http://foo:bar@api.tropo.com/v1/users", 
-                       :body => ActiveSupport::JSON.encode(@list_account), 
-                       :content_type => "application/json",
-                       :status => ["200", "OK"])
+  # FakeWeb.register_uri(:post, 
+  #                      "http://foo:bar@api.tropo.com/v1/users", 
+  #                      :body => ActiveSupport::JSON.encode(@list_account), 
+  #                      :content_type => "application/json",
+  #                      :status => ["200", "OK"])
 
    # List an account, with bad creds
    FakeWeb.register_uri(:get, 
@@ -473,11 +504,6 @@ describe "TropoProvisioning" do
     results.should == { 'message' => 'delete successful' }
   end
   
-  it "should create a new account" do
-    result = @tropo_provisioning.create_account({ :username => "foobar7474", :password => 'fooey', :email => 'jsgoecke@voxeo.com' })
-    result.should == @new_account
-  end
-  
   it "should provide a token for an existing account" do
     pending('Need to work on tests for the new account')
     result = @tropo_provisioning.account("foobar7474", 'fooey')
@@ -500,5 +526,48 @@ describe "TropoProvisioning" do
     
     result = @tropo_provisioning.accounts_with_addresses
     result.should == nil
+  end
+  
+  it "should raise argument errors on create_user if required params not passed" do
+    begin
+      @tropo_provisioning.create_user
+    rescue => e
+      e.to_s.should == ':username required'
+    end
+    
+    begin
+      @tropo_provisioning.create_user({ :username => "foobar7474" })
+    rescue => e
+      e.to_s.should == ':password required'
+    end
+    
+    begin
+      @tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey' })
+    rescue => e
+      e.to_s.should == ':email required'
+    end
+  end
+    
+  it "should create a new user" do
+    result = @tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey', :email => 'jsgoecke@voxeo.com' })
+    result.should == @new_user
+    
+    result = @tropo_provisioning.create_user({ :username   => 'foobar' + rand(10000).to_s, 
+                                               :first_name => 'Count',
+                                               :last_name  => 'Dracula',
+                                               :password   => 'test124',
+                                               :email      => 'jsgoecke@voxeo.com',
+                                               :status     => 'active' })
+    result.should == nil
+  end
+  
+  it "should confirm a user" do
+    result = @tropo_provisioning.confirm_user('12345', '1234', '127.0.0.1')
+    result.message.should == "successfully confirmed user 12345"
+  end
+  
+  it "should obtain details about a user" do
+    result = @tropo_provisioning.user('12345')
+    result.should == @existing_user
   end
 end

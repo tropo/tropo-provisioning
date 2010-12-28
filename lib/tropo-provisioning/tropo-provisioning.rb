@@ -29,32 +29,70 @@ class TropoProvisioning
   alias :authenticate_account :account
   
   ##
-  # Creates a new account
+  # Obtain information about a user
+  #
+  # @param [required, String] username to obtain details on
+  # @return [Hash]
+  #   contains the information on the user
+  def user(user_id)
+    request(:get, { :resource => 'users/' + user_id })
+  end
+  
+  ##
+  # Confirms a user after they have been created. For example, you may want to email your user to make
+  # sure they are real before activating the account.
+  #
+  # @param [required, String] user_id returned when you created the user you now want to confirm
+  # @param [required, String] confirmation_key returned when you created the user you now want to confirm
+  # @param [required, String] the ip_address of the user client that did the confirmation
+  # @return [Hash]
+  #   contains a message key confirming the confirmation was successful
+  def confirm_user(user_id, confirmation_key, ip_address)
+    params = { :key => confirmation_key, :endUserHost => ip_address }
+    request(:post, { :resource => 'users/' + user_id + '/confirmations', :body => params })
+  end
+  
+  ##
+  # Creates a new user in a pending state. Once you receive the href/account_id/confirmation_key
+  # you may then invoke the confirm_user method once you have taken appropriate steps to confirm the
+  # user
   #
   # @param [required, Hash] params to create the account
-  #   @option params [required, String] :username the name of the user to create the account for
-  #   @option params [required, String] :password the password to use for the account
-  #   @option params [required, String] :email the email address to use
-  #   @option params [optional, String] :brand the branding ID to use for the account
-  #   @option params [optional, String] :website the URL of the user's website
-  #   @option params [optional, String] :ip the IP address of the client creating the account
-  #   @option params [required, String] :type the account type to create (corporate, developer, temp_developer and temp_corporate)
-  # @return [Hash] returns the href of the account created
-  def create_account(params={})
+  # @option params [required, String] :username the name of the user to create the account for
+  # @option params [required, String] :password the password to use for the account
+  # @option params [required, String] :email the email address to use
+  # @option params [optional, String] :first_name of the user
+  # @option params [optional, String] :last_name of the user
+  # @option params [optional, String] :website the URL of the user's website
+  # @option params [optional, String] :organization of the user, such as a company name
+  # @option params [optional, String] :job_title of the user
+  # @option params [optional, String] :address of the user
+  # @option params [optional, String] :address2 second live of the address of the user
+  # @option params [optional, String] :city of the user
+  # @option params [optional, String] :state of the user
+  # @option params [optional, String] :postal_code of the user
+  # @option params [optional, String] :country of the user
+  # @option params [optional, String] :joined_from_host IP address of the host they signed up from
+  # @return [Hash] details of the account created
+  #   includes the href, account_id and confirmation_key
+  # @raise [ArgumentError]
+  #   if missing the :username, :password or :email parameters
+  def create_user(params={})
     # Ensure required fields are present
     raise ArgumentError, ':username required' unless params[:username]
     raise ArgumentError, ':password required' unless params[:password]
     raise ArgumentError, ':email required'    unless params[:email]
 
     # Set the Company Branding ID, or use default
-    params[:brand] = 9 unless params[:brand]
     params[:website] = 'tropo' unless params[:website]    
     # Default is to set the account active
     params[:status] = 'active' unless params[:status]
     params = camelize_params(params)
     
     result = request(:post, { :resource => 'users', :body => params })
-    result[:account_id] = get_element(result.href)
+    result[:user_id] = get_element(result.href)
+    result[:confirmation_key] = result['confirmationKey']
+    result.delete('confirmationKey')
     result
   end
   
@@ -316,6 +354,8 @@ class TropoProvisioning
   # @option params [String] :resource the resource to call on the base URL
   # @option params [Hash] :body the details to use when posting, putting or deleting an object, converts into the appropriate JSON
   # @return [Hash] the result of the request
+  # @raise [RuntimeError]
+  #   if it can not connect to the API server or if the response.code is not 200 
   def request(method, params={})
     if params[:resource]
       uri = URI.parse(@base_uri + '/' + params[:resource])
@@ -328,8 +368,13 @@ class TropoProvisioning
     request.initialize_http_header(@headers)
     request.basic_auth @username, @password
     request.body = ActiveSupport::JSON.encode params[:body] if params[:body]
-    response = http.request(request)
     
+    begin
+      response = http.request(request)
+    rescue => e
+      raise RuntimeError, "Unable to connect to the Provisioning API server - #{e.to_s}"
+    end
+
     raise RuntimeError, "#{response.code}: #{response.message} - #{response.body}" unless response.code == '200'
 
     result = ActiveSupport::JSON.decode response.body
