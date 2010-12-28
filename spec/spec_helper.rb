@@ -4,7 +4,6 @@ require 'tropo-provisioning'
 require 'rspec'
 require 'rspec/autorun'
 require 'fakeweb'
-require 'active_support/json'
 
 RSpec.configure do |config|
   

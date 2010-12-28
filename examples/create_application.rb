@@ -10,7 +10,7 @@ provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo'
 
 # Then create the application you would like to
 result = provisioning.create_application({ :name         => 'Provisioning Test',
-                                           #:voiceUrl     => 'http://mydomain.com/voice_script.rb',
+                                           :voiceUrl     => 'http://mydomain.com/voice_script.rb',
                                            :partition    => 'staging',
                                            :messagingUrl => 'http://mydomain.com/message_script.rb',
                                            :platform     => 'scripting' })
