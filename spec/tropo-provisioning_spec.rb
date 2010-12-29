@@ -154,6 +154,8 @@ describe "TropoProvisioning" do
     
     @feature_delete_message = { "message" => "disabled feature https://api-smsified-eng.voxeo.net/v1/features/8 for user https://api-smsified-eng.voxeo.net/v1/users/12345" }
     
+    @payment_info_message = { "href" => "http://api-smsified-eng.voxeo.net/v1/users/12345/payment/method" }
+    
     @bad_account_creds =  { "account-accesstoken-get-response" =>
                             { "accessToken"   => "", 
                               "statusMessage" => "Invalid login.", 
@@ -334,6 +336,14 @@ describe "TropoProvisioning" do
                        :body => ActiveSupport::JSON.encode(@feature_delete_message), 
                        :content_type => "application/json",
                        :status => ["200", "OK"])
+                       
+  # Add payment info to a user
+  FakeWeb.register_uri(:post, 
+                       "http://foo:bar@api.tropo.com/v1/users/12345/payment/method", 
+                       :body => ActiveSupport::JSON.encode(@payment_info_message),
+                       :content_type => "application/json",
+                       :status => ["200", "OK"])
+
                        
    # List an account, with bad credentials
    FakeWeb.register_uri(:get, 
@@ -658,5 +668,23 @@ describe "TropoProvisioning" do
   it "should disable a feature for a user" do
     result = @tropo_provisioning.user_disable_feature('12345', '8')
     result.should == @feature_delete_message
+  end
+  
+  it "should add a payment method to a user" do
+    result = @tropo_provisioning.add_payment_info({ :user_id            => '12345',
+                                                    :account_number     => '1234567890',
+                                                    :payment_type       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
+                                                    :address            => '123 Smith Avenue',
+                                                    :city               => 'San Carlos',
+                                                    :state              => 'CA',
+                                                    :postal_code        => '94070',
+                                                    :country            => 'USA',
+                                                    :name_on_account    => 'Tropo User',
+                                                    :expiration_date    => '2011-12-10',
+                                                    :security_code      => '123',
+                                                    :recharge_amount    => 10.50,
+                                                    :recharge_threshold => 5.00 })
+
+    result.should == @payment_info_message
   end
 end

@@ -154,6 +154,48 @@ class TropoProvisioning
   end
   
   ##
+  # Add/modify payment info for a user
+  #
+  # @param [require, Hash] params the params to add the payment info
+  # @option params [required, String] :account_number
+  # @option params [required, String] :payment_type
+  # @option params [required, String] :address
+  # @option params [optional, String] :address2
+  # @option params [required, String] :city
+  # @option params [required, String] :state
+  # @option params [required, String] :postal_code
+  # @option params [required, String] :country
+  # @option params [optional, String] :email
+  # @option params [required, String] :name_on_account
+  # @option params [required, String] :expiration_date
+  # @option params [required, String] :security_code
+  # @option params [optional, String] :phone_number
+  # @option params [required, Float] :recharge_amount
+  # @option params [required, Float] :recharge_threshold
+  # @return [Hash]
+  #   the href of the payment method added
+  # @raise [ArgumentError]
+  #   if a required param is not present
+  def add_payment_info(params={})
+    raise ArgumentError, ':user_id requried' unless params[:user_id]
+    raise ArgumentError, ':account_number required' unless params[:account_number]
+    raise ArgumentError, ':payment_type required' unless params[:payment_type]
+    raise ArgumentError, ':address required' unless params[:address]
+    raise ArgumentError, ':city required' unless params[:city]
+    raise ArgumentError, ':state required' unless params[:state]
+    raise ArgumentError, ':postal_code required' unless params[:postal_code]
+    raise ArgumentError, ':country required' unless params[:country]
+    raise ArgumentError, ':name_on_account required' unless params[:name_on_account]
+    raise ArgumentError, ':expiration_date required' unless params[:expiration_date]
+    raise ArgumentError, ':security_code required' unless params[:security_code]
+    raise ArgumentError, ':recharge_amount required' unless params[:recharge_amount]
+    
+    result = request(:post, { :resource => 'users/' + params[:user_id] + '/payment/method', :body => params })
+    result
+  end
+  alias :modify_payment_info :add_payment_info
+  
+  ##
   # Creates an address to an existing application
   #
   # @param [required, String] application_id to add the address to
