@@ -121,6 +121,15 @@ class TropoProvisioning
   def features
     request(:get, { :resource => 'features' })
   end
+
+  ##
+  # Lists the features configured for a user
+  #
+  # @return [Hash]
+  #   an array of available features that each include an href, feature and featureName
+  def user_features(user_id)
+    request(:get, { :resource => 'users/' + user_id + '/features' })
+  end
   
   ##
   # Creates an address to an existing application

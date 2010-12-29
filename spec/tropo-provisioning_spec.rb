@@ -146,6 +146,10 @@ describe "TropoProvisioning" do
                     "id"          => "8", 
                     "description" => "Domestic Outbound SMS" } ]
     
+    @user_features = [ { "feature"     => "https://api-smsified-eng.voxeo.net/v1/features/7", 
+                         "href"        => "https://api-smsified-eng.voxeo.net/v1/users/12345/features/7", 
+                         "featureName" => "Test Outbound SMS" } ]
+    
     @bad_account_creds =  { "account-accesstoken-get-response" =>
                             { "accessToken"   => "", 
                               "statusMessage" => "Invalid login.", 
@@ -305,7 +309,14 @@ describe "TropoProvisioning" do
                         :body => ActiveSupport::JSON.encode(@features), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])                                          
-                        
+
+   # Confirm an account account
+   FakeWeb.register_uri(:get, 
+                        "http://foo:bar@api.tropo.com/v1/users/12345/features", 
+                        :body => ActiveSupport::JSON.encode(@user_features), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
+                                             
    # List an account, with bad credentials
    FakeWeb.register_uri(:get, 
                         "http://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooeyfooey", 
@@ -614,5 +625,10 @@ describe "TropoProvisioning" do
   it "should return a list of available features" do
     result = @tropo_provisioning.features
     result.should == @features
+  end
+  
+  it "should return a list of features configured for a user" do
+    result = @tropo_provisioning.user_features('12345')
+    result.should == @user_features
   end
 end
