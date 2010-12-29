@@ -95,6 +95,16 @@ class TropoProvisioning
   end
   
   ##
+  # Fetches the payment information for a user
+  #
+  # @param [required, String] user_id to fetch the payment details for
+  # @return [Hash]
+  #   a hash containing the accountNumber, paymentType, paymentTypeName, rechargeAmount and rechargeThreshold
+  def user_payment_method(user_id)
+    request(:get, { :resource => 'users/' + user_id + '/payment/method'})
+  end
+  
+  ##
   # Creates an address to an existing application
   #
   # @param [required, String] application_id to add the address to
