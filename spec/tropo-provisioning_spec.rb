@@ -152,6 +152,8 @@ describe "TropoProvisioning" do
     
     @feature = { 'href' => 'http://api-smsified-eng.voxeo.net/v1/users/12345/features/8' }
     
+    @feature_delete_message = { "message" => "disabled feature https://api-smsified-eng.voxeo.net/v1/features/8 for user https://api-smsified-eng.voxeo.net/v1/users/12345" }
+    
     @bad_account_creds =  { "account-accesstoken-get-response" =>
                             { "accessToken"   => "", 
                               "statusMessage" => "Invalid login.", 
@@ -305,27 +307,34 @@ describe "TropoProvisioning" do
                         :content_type => "application/json",
                         :status => ["200", "OK"])
    
-   # Confirm an account account
+   # Return features
    FakeWeb.register_uri(:get, 
                         "http://foo:bar@api.tropo.com/v1/features", 
                         :body => ActiveSupport::JSON.encode(@features), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])                                          
 
-   # Confirm an account account
+   # Return features for a user
    FakeWeb.register_uri(:get, 
                         "http://foo:bar@api.tropo.com/v1/users/12345/features", 
                         :body => ActiveSupport::JSON.encode(@user_features), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
 
-  # Confirm an account account
+  # Add a feature to a user
   FakeWeb.register_uri(:post, 
                        "http://foo:bar@api.tropo.com/v1/users/12345/features", 
                        :body => ActiveSupport::JSON.encode(@feature), 
                        :content_type => "application/json",
                        :status => ["200", "OK"])
-                                                                  
+                                                    
+  # Add a feature to a user
+  FakeWeb.register_uri(:delete, 
+                       "http://foo:bar@api.tropo.com/v1/users/12345/features/8", 
+                       :body => ActiveSupport::JSON.encode(@feature_delete_message), 
+                       :content_type => "application/json",
+                       :status => ["200", "OK"])
+                       
    # List an account, with bad credentials
    FakeWeb.register_uri(:get, 
                         "http://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooeyfooey", 
@@ -641,8 +650,13 @@ describe "TropoProvisioning" do
     result.should == @user_features
   end
   
-  it "should return a list of features configured for a user" do
+  it "should add a feature to a user" do
     result = @tropo_provisioning.user_enable_feature('12345', 'http://api-smsified-eng.voxeo.net/v1/features/8')
     result.should == @feature
+  end
+  
+  it "should disable a feature for a user" do
+    result = @tropo_provisioning.user_disable_feature('12345', '8')
+    result.should == @feature_delete_message
   end
 end

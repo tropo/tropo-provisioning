@@ -143,6 +143,17 @@ class TropoProvisioning
   end
   
   ##
+  # Disable a particular feature for a user
+  #
+  # @param [required, String] user_id of the user to disable the feature to
+  # @param [required, String] feature number of the feature you want to disable
+  # @return [Hash]
+  #   the href of the feature disable
+  def user_disable_feature(user_id, feature_number)
+    request(:delete, { :resource => 'users/' + user_id + '/features/' + feature_number  })
+  end
+  
+  ##
   # Creates an address to an existing application
   #
   # @param [required, String] application_id to add the address to
