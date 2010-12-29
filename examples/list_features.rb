@@ -12,3 +12,5 @@ p provisioning.features
 
 # List features configured for a user
 p provisioning.user_features('54228')
+
+p provisioning.user_enable_feature('54228', 'http://api-smsified-eng.voxeo.net/v1/users/12345/features/8')

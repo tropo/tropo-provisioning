@@ -132,6 +132,17 @@ class TropoProvisioning
   end
   
   ##
+  # Enable a particular feature for a user
+  #
+  # @param [required, String] user_id of the user to add the feature to
+  # @param [required, String] feature identifier of the feature you want to add
+  # @return [Hash]
+  #   the href of the feature added
+  def user_enable_feature(user_id, feature)
+    request(:post, { :resource => 'users/' + user_id + '/features', :body => { :feature => feature } })
+  end
+  
+  ##
   # Creates an address to an existing application
   #
   # @param [required, String] application_id to add the address to
