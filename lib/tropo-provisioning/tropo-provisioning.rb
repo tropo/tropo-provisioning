@@ -105,6 +105,15 @@ class TropoProvisioning
   end
   
   ##
+  # Lists the available payment types
+  #
+  # @return [Hash]
+  #   an array of available payment types that each include an id, href and name
+  def available_payment_types
+    request(:get, { :resource => 'types/payment' })
+  end
+  
+  ##
   # Creates an address to an existing application
   #
   # @param [required, String] application_id to add the address to

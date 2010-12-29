@@ -123,6 +123,17 @@ describe "TropoProvisioning" do
                         "paymentTypeName"   => "visa", 
                         "rechargeThreshold" => "0.00"}
                         
+    @payment_methods = [ { "name" => "visa", 
+                           "href" => "https://api-smsified-eng.voxeo.net/v1/types/payment/1", 
+                           "id"   => "1"}, 
+                         { "name" => "mastercard", 
+                           "href" => "https://api-smsified-eng.voxeo.net/v1/types/payment/2", 
+                           "id"   => "2"}, 
+                         { "name" => "amex", 
+                           "href" => "https://api-smsified-eng.voxeo.net/v1/types/payment/3", 
+                           "id"   => "3"}]
+
+
     @bad_account_creds =  { "account-accesstoken-get-response" =>
                             { "accessToken"   => "", 
                               "statusMessage" => "Invalid login.", 
@@ -146,12 +157,6 @@ describe "TropoProvisioning" do
                          %r|http://foo:bar@api.tropo.com/v1/applications|, 
                          :body => ActiveSupport::JSON.encode(@applications), 
                          :content_type => "application/json")
-    
-    # # Applications
-    # FakeWeb.register_uri(:get, 
-    #                      %r|http://foo:bar@api.tropo.com/v1/users|, 
-    #                      :body => ActiveSupport::JSON.encode(@applications), 
-    #                      :content_type => "application/json")
                          
     # Create an application       
     FakeWeb.register_uri(:post, 
@@ -274,13 +279,14 @@ describe "TropoProvisioning" do
                         :body => ActiveSupport::JSON.encode(@payment_method), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])                      
-  # List an account
-  # FakeWeb.register_uri(:post, 
-  #                      "http://foo:bar@api.tropo.com/v1/users", 
-  #                      :body => ActiveSupport::JSON.encode(@list_account), 
-  #                      :content_type => "application/json",
-  #                      :status => ["200", "OK"])
 
+   # Confirm an account account
+   FakeWeb.register_uri(:get, 
+                        "http://foo:bar@api.tropo.com/v1/types/payment", 
+                        :body => ActiveSupport::JSON.encode(@payment_methods), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
+                                             
    # List an account, with bad creds
    FakeWeb.register_uri(:get, 
                         "http://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooeyfooey", 
@@ -579,5 +585,10 @@ describe "TropoProvisioning" do
   it "should get the payment method for a user" do
     result = @tropo_provisioning.user_payment_method('12345')
     result.should == @payment_method
+  end
+  
+  it "should return a list of available payment types" do
+    result = @tropo_provisioning.available_payment_types
+    result.should == @payment_methods
   end
 end
