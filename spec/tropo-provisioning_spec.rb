@@ -133,7 +133,19 @@ describe "TropoProvisioning" do
                            "href" => "https://api-smsified-eng.voxeo.net/v1/types/payment/3", 
                            "id"   => "3"}]
 
-
+    @features = [ { "name"        => "International Outbound SMS", 
+                    "href"        => "https://api-smsified-eng.voxeo.net/v1/features/9", 
+                    "id"          => "9", 
+                    "description" => "International Outbound SMS" }, 
+                  { "name"        => "Test Outbound SMS", 
+                    "href"        => "https://api-smsified-eng.voxeo.net/v1/features/7", 
+                    "id"          => "7", 
+                    "description" => "Test Outbound SMS" }, 
+                  { "name"        => "Domestic Outbound SMS", 
+                    "href"        => "https://api-smsified-eng.voxeo.net/v1/features/8", 
+                    "id"          => "8", 
+                    "description" => "Domestic Outbound SMS" } ]
+    
     @bad_account_creds =  { "account-accesstoken-get-response" =>
                             { "accessToken"   => "", 
                               "statusMessage" => "Invalid login.", 
@@ -273,21 +285,28 @@ describe "TropoProvisioning" do
                         :content_type => "application/json",
                         :status => ["200", "OK"])
                         
-   # Confirm an account account
+   # Return the payment method configured for a user
    FakeWeb.register_uri(:get, 
                         "http://foo:bar@api.tropo.com/v1/users/12345/payment/method", 
                         :body => ActiveSupport::JSON.encode(@payment_method), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])                      
 
-   # Confirm an account account
+   # Return payment types
    FakeWeb.register_uri(:get, 
                         "http://foo:bar@api.tropo.com/v1/types/payment", 
                         :body => ActiveSupport::JSON.encode(@payment_methods), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
-                                             
-   # List an account, with bad creds
+   
+   # Confirm an account account
+   FakeWeb.register_uri(:get, 
+                        "http://foo:bar@api.tropo.com/v1/features", 
+                        :body => ActiveSupport::JSON.encode(@features), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])                                          
+                        
+   # List an account, with bad credentials
    FakeWeb.register_uri(:get, 
                         "http://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooeyfooey", 
                         :body => ActiveSupport::JSON.encode(@bad_account_creds), 
@@ -590,5 +609,10 @@ describe "TropoProvisioning" do
   it "should return a list of available payment types" do
     result = @tropo_provisioning.available_payment_types
     result.should == @payment_methods
+  end
+  
+  it "should return a list of available features" do
+    result = @tropo_provisioning.features
+    result.should == @features
   end
 end

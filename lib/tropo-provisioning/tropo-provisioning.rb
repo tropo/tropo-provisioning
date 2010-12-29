@@ -114,6 +114,15 @@ class TropoProvisioning
   end
   
   ##
+  # Lists the available features
+  #
+  # @return [Hash]
+  #   an array of available features that each include an id, href, name and description
+  def features
+    request(:get, { :resource => 'features' })
+  end
+  
+  ##
   # Creates an address to an existing application
   #
   # @param [required, String] application_id to add the address to
