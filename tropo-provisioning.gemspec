@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
      "spec/tropo-provisioning_spec.rb",
      "spec/live-tropo-provisioning_spec.rb",
      "examples/create_address.rb",
-     "examples/create_account.rb",
+     "examples/create_user.rb",
      "examples/create_application.rb",
      "examples/delete_application.rb",
      "examples/list_addresses.rb",
