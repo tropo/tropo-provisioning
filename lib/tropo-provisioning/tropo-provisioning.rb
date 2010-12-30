@@ -72,6 +72,8 @@ class TropoProvisioning
   # @option params [optional, String] :state of the user
   # @option params [optional, String] :postal_code of the user
   # @option params [optional, String] :country of the user
+  # @option params [optional, String] :marketing_opt_in
+  # @option params [optional, String] :twitter_id
   # @option params [optional, String] :joined_from_host IP address of the host they signed up from
   # @return [Hash] details of the user created
   #   includes the href, user_id and confirmation_key
