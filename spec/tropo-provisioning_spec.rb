@@ -181,7 +181,10 @@ describe "TropoProvisioning" do
                            "firstName"      => "Empty FirstName", 
                            "status"         => "active", 
                            "email"          => "jsgoecke@voxeo.com" } ]
-                    
+    
+    @partitions = [{ "name" => "staging", "href" => "https://api-smsified-eng.voxeo.net/v1/partitions/staging" }, 
+                   { "name" => "production", "href" => "https://api-smsified-eng.voxeo.net/v1/partitions/production" }]   
+
     # Register our resources
     
     # Applications with a bad uname/passwd
@@ -391,6 +394,13 @@ describe "TropoProvisioning" do
    FakeWeb.register_uri(:put, 
                         "http://foo:bar@api.tropo.com/v1/users/12345", 
                         :body => ActiveSupport::JSON.encode({ :href => "http://api-smsified-eng.voxeo.net/v1/users/12345" }), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
+  
+   # List available partitions
+   FakeWeb.register_uri(:get, 
+                        "http://foo:bar@api.tropo.com/v1/partitions", 
+                        :body => ActiveSupport::JSON.encode(@partitions), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
   end
@@ -746,6 +756,7 @@ describe "TropoProvisioning" do
   end
   
   it 'should list the available partitions' do
-    pending()
+    result = @tropo_provisioning.partitions
+    result[0]['name'].should == 'staging'
   end
 end

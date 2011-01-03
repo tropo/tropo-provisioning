@@ -429,6 +429,15 @@ class TropoProvisioning
     request(:put, { :resource => 'applications/' + application_id.to_s, :body => params })
   end
   
+  ##
+  # Get the available partitions available
+  #
+  # @return [Array]
+  #   an array of hashes containing the partitions available
+  def partitions
+    request(:get, { :resource => 'partitions' })
+  end
+  
   private
   
   ##
