@@ -379,6 +379,13 @@ describe "TropoProvisioning" do
                         :body => ActiveSupport::JSON.encode(@search_accounts), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
+                        
+   # Payment resource
+   FakeWeb.register_uri(:post, 
+                        "http://foo:bar@api.tropo.com/v1/users/1234/payments", 
+                        :body => ActiveSupport::JSON.encode({ :message => "successfully posted payment for the amount 1.000000" }), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])    
   end
   
   before(:each) do      
@@ -719,5 +726,10 @@ describe "TropoProvisioning" do
   it 'should return a list of search terms that we search for' do
     result = @tropo_provisioning.search_users('username=foobar')
     result.should == @search_accounts
+  end
+  
+  it 'should make a payment' do
+    result = @tropo_provisioning.make_payment('1234', 1.0)
+    result.message.should == "successfully posted payment for the amount 1.000000"
   end
 end

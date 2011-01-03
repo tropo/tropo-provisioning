@@ -209,6 +209,17 @@ class TropoProvisioning
   alias :modify_payment_info :add_payment_info
   
   ##
+  # Makes a payment on behalf of a user
+  #
+  # @param [required, String] the user_id to make the payment for
+  # @param [required, Float] the amount, in US Dollars to make the payment for
+  # @return [Hash]
+  #   a message with the success or failure of the payment
+  def make_payment(user_id, amount)
+    request(:post, { :resource => 'users/' + user_id + '/payments', :body => { :amount => amount } })
+  end
+  
+  ##
   # Creates an address to an existing application
   #
   # @param [required, String] application_id to add the address to
