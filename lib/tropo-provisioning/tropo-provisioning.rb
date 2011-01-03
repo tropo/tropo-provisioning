@@ -438,6 +438,15 @@ class TropoProvisioning
     request(:get, { :resource => 'partitions' })
   end
   
+  ##
+  # Get the available platforms available under a certain partition
+  #
+  # @return [Array]
+  #   an array of hashes containing the platforms available
+  def platforms(partition)
+    request(:get, { :resource => 'partitions/' + partition + '/platforms' })
+  end
+  
   private
   
   ##

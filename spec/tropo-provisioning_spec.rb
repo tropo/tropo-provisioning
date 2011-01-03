@@ -183,7 +183,9 @@ describe "TropoProvisioning" do
                            "email"          => "jsgoecke@voxeo.com" } ]
     
     @partitions = [{ "name" => "staging", "href" => "https://api-smsified-eng.voxeo.net/v1/partitions/staging" }, 
-                   { "name" => "production", "href" => "https://api-smsified-eng.voxeo.net/v1/partitions/production" }]   
+                   { "name" => "production", "href" => "https://api-smsified-eng.voxeo.net/v1/partitions/production" }]  
+
+    @platforms = [{ "name" => "sms", "href" => "https://api-smsified-eng.voxeo.net/v1/platforms/sms", "description" => "SMSified Interface" }]
 
     # Register our resources
     
@@ -403,6 +405,13 @@ describe "TropoProvisioning" do
                         :body => ActiveSupport::JSON.encode(@partitions), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
+                        
+    # List available platforms
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/partitions/staging/platforms", 
+                         :body => ActiveSupport::JSON.encode(@platforms), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -758,5 +767,10 @@ describe "TropoProvisioning" do
   it 'should list the available partitions' do
     result = @tropo_provisioning.partitions
     result[0]['name'].should == 'staging'
+  end
+  
+  it 'should return a list of available platforms under a partition' do
+    result = @tropo_provisioning.platforms('staging')
+    result[0].name.should == 'sms'
   end
 end
