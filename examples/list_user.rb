@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'yaml'
 require 'lib/tropo-provisioning'
+require 'json'
 
 config = YAML.load(File.open('examples/config.yml'))
 
@@ -9,5 +10,5 @@ provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo'
 
 # Create an account
 p provisioning.user('54228')
-p provisioning.search_users('username=jsgoecke')
+p provisioning.search_users('username=foobar')
 

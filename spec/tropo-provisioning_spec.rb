@@ -159,7 +159,28 @@ describe "TropoProvisioning" do
     @bad_account_creds =  { "account-accesstoken-get-response" =>
                             { "accessToken"   => "", 
                               "statusMessage" => "Invalid login.", 
-                              "statusCode"    => 403}}
+                              "statusCode"    => 403 } }
+                              
+    @search_accounts = [ { "href"           => "http://api-smsified-eng.voxeo.net/v1/users/53209", 
+                           "marketingOptIn" => true, 
+                           "lastName"       => "Empty LastName", 
+                           "joinDate"       => "2010-11-15T21:13:23.837+0000", 
+                           "username"       => "foobar5331", 
+                           "id"             => "53209", 
+                           "phoneNumber"    => "Empty Phone", 
+                           "firstName"      => "Empty FirstName", 
+                           "status"         => "active", 
+                           "email"          => "jsgoecke@voxeo.com"}, 
+                         { "href"           => "http://api-smsified-eng.voxeo.net/v1/users/53211", 
+                           "marketingOptIn" => true, 
+                           "lastName"       => "Empty LastName", 
+                           "joinDate"       => "2010-11-15T21:17:24.473+0000", 
+                           "username"       => "foobar1197", 
+                           "id"             => "53211", 
+                           "phoneNumber"    => "Empty Phone", 
+                           "firstName"      => "Empty FirstName", 
+                           "status"         => "active", 
+                           "email"          => "jsgoecke@voxeo.com" } ]
                     
     # Register our resources
     
@@ -351,6 +372,13 @@ describe "TropoProvisioning" do
                         :body => ActiveSupport::JSON.encode(@bad_account_creds), 
                         :content_type => "application/json",
                         :status => ["403", "Invalid Login."])
+ 
+   # Get our search terms
+   FakeWeb.register_uri(:get, 
+                        "http://foo:bar@api.tropo.com/v1/users/?username=foobar", 
+                        :body => ActiveSupport::JSON.encode(@search_accounts), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -686,5 +714,10 @@ describe "TropoProvisioning" do
                                                     :recharge_threshold => 5.00 })
 
     result.should == @payment_info_message
+  end
+  
+  it 'should return a list of search terms that we search for' do
+    result = @tropo_provisioning.search_users('username=foobar')
+    result.should == @search_accounts
   end
 end
