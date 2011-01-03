@@ -31,11 +31,15 @@ class TropoProvisioning
   ##
   # Obtain information about a user
   #
-  # @param [required, String] username to obtain details on
+  # @param [required, String] the user ID or username to obtain the account details of
   # @return [Hash]
   #   contains the information on the user
-  def user(user_id)
-    request(:get, { :resource => 'users/' + user_id })
+  def user(user_identifier)
+    if user_identifier.to_i != 0
+      request(:get, { :resource => 'users/' + user_identifier })
+    else
+      request(:get, { :resource => 'users/?username=' + user_identifier })
+    end
   end
   
   ##
@@ -84,6 +88,8 @@ class TropoProvisioning
     raise ArgumentError, ':username required' unless params[:username]
     raise ArgumentError, ':password required' unless params[:password]
     raise ArgumentError, ':email required'    unless params[:email]
+    
+    user = 
 
     # Set the Company Branding ID, or use default
     params[:website] = 'tropo' unless params[:website]    
@@ -95,6 +101,7 @@ class TropoProvisioning
     result.delete('confirmationKey')
     result
   end
+  alias :modify_user :create_user
   
   ##
   # Fetches the payment information for a user
