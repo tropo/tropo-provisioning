@@ -35,11 +35,7 @@ class TropoProvisioning
   # @return [Hash]
   #   contains the information on the user
   def user(user_identifier)
-    if user_identifier.to_i != 0
-      request(:get, { :resource => 'users/' + user_identifier })
-    else
-      request(:get, { :resource => 'users/?username=' + user_identifier })
-    end
+    request(:get, { :resource => 'users/' + user_identifier })
   end
   
   ##
@@ -88,8 +84,6 @@ class TropoProvisioning
     raise ArgumentError, ':username required' unless params[:username]
     raise ArgumentError, ':password required' unless params[:password]
     raise ArgumentError, ':email required'    unless params[:email]
-    
-    user = 
 
     # Set the Company Branding ID, or use default
     params[:website] = 'tropo' unless params[:website]    
@@ -102,6 +96,16 @@ class TropoProvisioning
     result
   end
   alias :modify_user :create_user
+  
+  ##
+  # Allows you to search users to find a list of users
+  #
+  # @param [required, String] a key/value of the search term you would like to use, such as 'username=foobar', or 'city=Orlando'
+  # @return [Array]
+  #   a hash containing an array of hashes with the qualifying account details
+  def search_users(search_term)
+    request(:get, { :resource => 'users/?' + search_term })
+  end
   
   ##
   # Fetches the payment information for a user
