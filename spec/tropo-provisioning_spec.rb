@@ -386,6 +386,13 @@ describe "TropoProvisioning" do
                         :body => ActiveSupport::JSON.encode({ :message => "successfully posted payment for the amount 1.000000" }), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])    
+                        
+   # Modify a user
+   FakeWeb.register_uri(:put, 
+                        "http://foo:bar@api.tropo.com/v1/users/12345", 
+                        :body => ActiveSupport::JSON.encode({ :href => "http://api-smsified-eng.voxeo.net/v1/users/12345" }), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -731,5 +738,14 @@ describe "TropoProvisioning" do
   it 'should make a payment' do
     result = @tropo_provisioning.make_payment('1234', 1.0)
     result.message.should == "successfully posted payment for the amount 1.000000"
+  end
+  
+  it 'should modify a user' do
+    result = @tropo_provisioning.modify_user('12345', { :password => 'foobar' })
+    result.href.should == 'http://api-smsified-eng.voxeo.net/v1/users/12345'
+  end
+  
+  it 'should list the available partitions' do
+    pending()
   end
 end

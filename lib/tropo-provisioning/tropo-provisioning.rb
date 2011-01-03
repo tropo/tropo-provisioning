@@ -95,7 +95,17 @@ class TropoProvisioning
     result.delete('confirmationKey')
     result
   end
-  alias :modify_user :create_user
+
+  ##
+  # Modify/update an existing user
+  #
+  # @param [required, String] user_id of the user you would like to update
+  # @param [required, Hash] the parameters of the user you would like to update
+  # @return [Hash]
+  #   the href of the resource that was modified/updated
+  def modify_user(user_id, params={})
+    request(:put, { :resource => 'users/' + user_id, :body => params })
+  end
   
   ##
   # Allows you to search users to find a list of users
