@@ -187,6 +187,8 @@ describe "TropoProvisioning" do
 
     @platforms = [{ "name" => "sms", "href" => "https://api-smsified-eng.voxeo.net/v1/platforms/sms", "description" => "SMSified Interface" }]
 
+    @balance = { "pendingUsageAmount" => "0.00", "pendingRechargeAmount" => "0.00", "balance" => "3.00" }
+    
     # Register our resources
     
     # Applications with a bad uname/passwd
@@ -410,6 +412,13 @@ describe "TropoProvisioning" do
     FakeWeb.register_uri(:get, 
                          "http://foo:bar@api.tropo.com/v1/partitions/staging/platforms", 
                          :body => ActiveSupport::JSON.encode(@platforms), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                         
+    # List balance
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/users/12345/usage", 
+                         :body => ActiveSupport::JSON.encode(@balance), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
   end
@@ -772,5 +781,10 @@ describe "TropoProvisioning" do
   it 'should return a list of available platforms under a partition' do
     result = @tropo_provisioning.platforms('staging')
     result[0].name.should == 'sms'
+  end
+  
+  it 'should return the balance' do
+    result = @tropo_provisioning.balance('12345')
+    result['balance'].should == "3.00"
   end
 end

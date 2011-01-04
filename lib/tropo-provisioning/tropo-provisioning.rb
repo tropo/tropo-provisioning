@@ -137,6 +137,16 @@ class TropoProvisioning
   end
   
   ##
+  # Obtain the current balance of a user
+  #
+  # @param [required, String] user_id of the user to obtain the balance for
+  # @return [Hash]
+  #   the balance, pendingRechargeAmount and pendingUsageAmount for the user account
+  def balance(user_id)
+    request(:get, { :resource => 'users/' + user_id + '/usage'})
+  end
+  
+  ##
   # Lists the available features
   #
   # @return [Hash]
