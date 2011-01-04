@@ -797,5 +797,12 @@ describe "TropoProvisioning" do
     it 'should get the whitelist for a user account' do
       pending()
     end
+    
+    it 'should add to a whitelist' do
+      pending()
+    end
+    
+    it 'should remove from a whitelist' do
+    end
   end
 end
