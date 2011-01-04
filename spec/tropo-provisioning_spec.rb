@@ -710,62 +710,31 @@ describe "TropoProvisioning" do
     result.should == @existing_user
   end
   
-  it "should get the payment method for a user" do
-    result = @tropo_provisioning.user_payment_method('12345')
-    result.should == @payment_method
-  end
+  describe 'features' do
+    it "should return a list of available features" do
+      result = @tropo_provisioning.features
+      result.should == @features
+    end
   
-  it "should return a list of available payment types" do
-    result = @tropo_provisioning.available_payment_types
-    result.should == @payment_methods
-  end
+    it "should return a list of features configured for a user" do
+      result = @tropo_provisioning.user_features('12345')
+      result.should == @user_features
+    end
   
-  it "should return a list of available features" do
-    result = @tropo_provisioning.features
-    result.should == @features
-  end
+    it "should add a feature to a user" do
+      result = @tropo_provisioning.user_enable_feature('12345', 'http://api-smsified-eng.voxeo.net/v1/features/8')
+      result.should == @feature
+    end
   
-  it "should return a list of features configured for a user" do
-    result = @tropo_provisioning.user_features('12345')
-    result.should == @user_features
+    it "should disable a feature for a user" do
+      result = @tropo_provisioning.user_disable_feature('12345', '8')
+      result.should == @feature_delete_message
+    end
   end
-  
-  it "should add a feature to a user" do
-    result = @tropo_provisioning.user_enable_feature('12345', 'http://api-smsified-eng.voxeo.net/v1/features/8')
-    result.should == @feature
-  end
-  
-  it "should disable a feature for a user" do
-    result = @tropo_provisioning.user_disable_feature('12345', '8')
-    result.should == @feature_delete_message
-  end
-  
-  it "should add a payment method to a user" do
-    result = @tropo_provisioning.add_payment_info({ :user_id            => '12345',
-                                                    :account_number     => '1234567890',
-                                                    :payment_type       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
-                                                    :address            => '123 Smith Avenue',
-                                                    :city               => 'San Carlos',
-                                                    :state              => 'CA',
-                                                    :postal_code        => '94070',
-                                                    :country            => 'USA',
-                                                    :name_on_account    => 'Tropo User',
-                                                    :expiration_date    => '2011-12-10',
-                                                    :security_code      => '123',
-                                                    :recharge_amount    => 10.50,
-                                                    :recharge_threshold => 5.00 })
-
-    result.should == @payment_info_message
-  end
-  
+    
   it 'should return a list of search terms that we search for' do
     result = @tropo_provisioning.search_users('username=foobar')
     result.should == @search_accounts
-  end
-  
-  it 'should make a payment' do
-    result = @tropo_provisioning.make_payment('1234', 1.0)
-    result.message.should == "successfully posted payment for the amount 1.000000"
   end
   
   it 'should modify a user' do
@@ -783,8 +752,50 @@ describe "TropoProvisioning" do
     result[0].name.should == 'sms'
   end
   
-  it 'should return the balance' do
-    result = @tropo_provisioning.balance('12345')
-    result['balance'].should == "3.00"
+  describe 'payments' do
+    it "should add a payment method to a user" do
+      result = @tropo_provisioning.add_payment_info({ :user_id            => '12345',
+                                                      :account_number     => '1234567890',
+                                                      :payment_type       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
+                                                      :address            => '123 Smith Avenue',
+                                                      :city               => 'San Carlos',
+                                                      :state              => 'CA',
+                                                      :postal_code        => '94070',
+                                                      :country            => 'USA',
+                                                      :name_on_account    => 'Tropo User',
+                                                      :expiration_date    => '2011-12-10',
+                                                      :security_code      => '123',
+                                                      :recharge_amount    => 10.50,
+                                                      :recharge_threshold => 5.00 })
+
+      result.should == @payment_info_message
+    end
+    
+    
+    it 'should return the balance' do
+      result = @tropo_provisioning.balance('12345')
+      result['balance'].should == "3.00"
+    end
+    
+    it 'should make a payment' do
+      result = @tropo_provisioning.make_payment('1234', 1.0)
+      result.message.should == "successfully posted payment for the amount 1.000000"
+    end
+    
+    it "should get the payment method for a user" do
+      result = @tropo_provisioning.user_payment_method('12345')
+      result.should == @payment_method
+    end
+
+    it "should return a list of available payment types" do
+      result = @tropo_provisioning.available_payment_types
+      result.should == @payment_methods
+    end
+  end
+  
+  describe 'whitelists' do
+    it 'should get the whitelist for a user account' do
+      pending()
+    end
   end
 end
