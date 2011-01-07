@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'yaml'
 require 'lib/tropo-provisioning'
-require 'json'
 
 config = YAML.load(File.open('examples/config.yml'))
 
@@ -9,7 +8,4 @@ config = YAML.load(File.open('examples/config.yml'))
 provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo']['password'], :base_uri => 'http://api-smsified-eng.voxeo.net/v1')
 
 # Create an account
-p provisioning.modify_user('54228', { :marketing_opt_in => false })
-
-
-
+p provisioning.balance('54228')

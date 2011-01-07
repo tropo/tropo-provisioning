@@ -5,13 +5,15 @@ config = YAML.load(File.open('examples/config.yml'))
 app_details = YAML.load(File.open("examples/#{config['filename']}"))
 
 # Create a new provisioning object with your Tropo credentials
-provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo']['password'])
+provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo']['password'], :base_uri => 'http://api-smsified-eng.voxeo.net/v1')
+
+p provisioning.applications
 
 # Then you may iterate through all of your configured applications
-provisioning.applications.each do |app|
-  p app
-  puts '*'*10
-end
+# provisioning.applications.each do |app|
+#   p app
+#   puts '*'*10
+# end
 
 # Now list a single application
-p provisioning.application(app_details.application_id)
+# p provisioning.application(app_details.application_id)

@@ -87,7 +87,6 @@ class TropoProvisioning
 
     # Set the Company Branding ID, or use default
     params[:website] = 'tropo' unless params[:website]    
-    params = camelize_params(params)
     
     result = request(:post, { :resource => 'users', :body => params })
     result[:user_id] = get_element(result.href)
@@ -518,6 +517,8 @@ class TropoProvisioning
   # @raise [RuntimeError]
   #   if it can not connect to the API server or if the response.code is not 200 
   def request(method, params={})
+    params[:body] = camelize_params(params[:body]) if params[:body]
+    
     if params[:resource]
       uri = URI.parse(@base_uri + '/' + params[:resource])
     else
