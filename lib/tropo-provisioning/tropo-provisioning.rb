@@ -40,7 +40,10 @@ class TropoProvisioning
   #   contains the information on the user
   def user(user_identifier)
     result = request(:get, { :resource => 'users/' + user_identifier })
-    @user_data = result if result['username']
+    if result['username']
+      # Only add/update this if we are fetching the user we are logged in as
+      @user_data = result if result['username'] == @username
+    end
     result
   end
   
@@ -110,7 +113,10 @@ class TropoProvisioning
   #   the href of the resource that was modified/updated
   def modify_user(user_id, params={})
     result = request(:put, { :resource => 'users/' + user_id, :body => params })
-    @user_data.merge!(params) if result['href']
+    if result['href']
+      # Only add/update this if we are fetching the user we are logged in as
+      @user_data.merge!(params) if user_id == @user_data['id']
+    end
     result
   end
   
