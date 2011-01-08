@@ -432,11 +432,17 @@ describe "TropoProvisioning" do
                         :status => ["200", "OK"])
                         
     # Whitelist create
-     FakeWeb.register_uri(:post, 
-                          "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist", 
-                          :body => ActiveSupport::JSON.encode(@whitelist), 
-                          :content_type => "application/json",
-                          :status => ["200", "OK"])
+    FakeWeb.register_uri(:post, 
+                         "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist", 
+                         :body => ActiveSupport::JSON.encode(@whitelist), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+    # Whitelist delete
+    FakeWeb.register_uri(:delete, 
+                         "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist/14155551212", 
+                         :body => ActiveSupport::JSON.encode(@whitelist), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -821,7 +827,8 @@ describe "TropoProvisioning" do
     end
     
     it 'should remove from a whitelist' do
-      pending()
+      result = @tropo_provisioning.delete_whitelist('12345', '14155551212')
+      result.should == @whitelist
     end
   end
 end

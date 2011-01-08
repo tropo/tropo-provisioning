@@ -467,7 +467,7 @@ class TropoProvisioning
   end
   
   ##
-  # Get the whitelist of the numbers on a particular users list
+  # Add to a whitelist for a particular user
   #
   # @param [required, String] user_id of the user you would like to update
   # @param [required, String] value the number or address you would like to add to the whitelist
@@ -475,6 +475,17 @@ class TropoProvisioning
   #   the href 
   def add_whitelist(user_id, value)
     request(:post, { :resource => 'users/' + user_id + '/partitions/production/platforms/sms/whitelist', :body => { :value => value } })
+  end
+
+  ##
+  # Delete from a whitelist for a particular user
+  #
+  # @param [required, String] user_id of the user 
+  # @param [required, String] value the number or address you would like to delete from the whitelist
+  # @return [Hash]
+  #   the href 
+  def delete_whitelist(user_id, value)
+    request(:delete, { :resource => 'users/' + user_id + '/partitions/production/platforms/sms/whitelist/' + value })
   end
   
   private
