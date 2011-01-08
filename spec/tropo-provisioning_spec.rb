@@ -430,6 +430,13 @@ describe "TropoProvisioning" do
                         :body => ActiveSupport::JSON.encode(@whitelist), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
+                        
+    # Whitelist create
+     FakeWeb.register_uri(:post, 
+                          "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist", 
+                          :body => ActiveSupport::JSON.encode(@whitelist), 
+                          :content_type => "application/json",
+                          :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -809,7 +816,8 @@ describe "TropoProvisioning" do
     end
     
     it 'should add to a whitelist' do
-      pending()
+      result = @tropo_provisioning.add_whitelist('12345', '14155551212')
+      result.should == @whitelist
     end
     
     it 'should remove from a whitelist' do

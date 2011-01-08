@@ -466,6 +466,17 @@ class TropoProvisioning
     request(:get, { :resource => 'users/' + user_id + '/partitions/production/platforms/sms/whitelist' })
   end
   
+  ##
+  # Get the whitelist of the numbers on a particular users list
+  #
+  # @param [required, String] user_id of the user you would like to update
+  # @param [required, String] value the number or address you would like to add to the whitelist
+  # @return [Hash]
+  #   the href 
+  def add_whitelist(user_id, value)
+    request(:post, { :resource => 'users/' + user_id + '/partitions/production/platforms/sms/whitelist', :body => { :value => value } })
+  end
+  
   private
   
   ##
