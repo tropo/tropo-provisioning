@@ -104,7 +104,7 @@ describe "TropoProvisioning" do
                        "address2"     => "Unit 1337", 
                        "joinDate"     => "2010-05-17T18:26:07.217+0000", 
                        "country"      => "USA", 
-                       "username"     => "username", 
+                       "username"     => "foo", 
                        "phoneNumber"  => "4075551212", 
                        "id"           => "12345", 
                        "postalCode"   => "32801", 
@@ -311,13 +311,26 @@ describe "TropoProvisioning" do
                         :content_type => "application/json",
                         :status => ["200", "OK"])
 
-   # Get a specific user
+   # Get a specific user by user_id 
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/users/12345", 
+                        "http://foo:bar@api.tropo.com/v1/users/12345",
                         :body => ActiveSupport::JSON.encode(@existing_user), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
-                                              
+                        
+   # Get a specific user by username
+   FakeWeb.register_uri(:get, 
+                        "http://foo:bar@api.tropo.com/v1/users/foo",
+                        :body => ActiveSupport::JSON.encode(@existing_user), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
+                        
+   # Invalid credentials
+   FakeWeb.register_uri(:get, 
+                        "http://bad:password@api.tropo.com/v1/users/bad",
+                        :content_type => "application/json",
+                        :status => ["401", "Unauthorized"])
+                        
    # Confirm an account account
    FakeWeb.register_uri(:post, 
                         "http://foo:bar@api.tropo.com/v1/users/12345/confirmations", 
@@ -461,12 +474,16 @@ describe "TropoProvisioning" do
   
   describe 'authentication' do
     it "should get an unathorized back if there is an invalid username or password" do
-      bad_credentials = TropoProvisioning.new('bad', 'password')
       begin
-        response = bad_credentials.applications
+        bad_credentials = TropoProvisioning.new('bad', 'password')
       rescue => e
         e.to_s.should == '401: Unauthorized - '
       end
+    end
+    
+    it 'should have the user data on the object if a successful login' do
+      provisioning = TropoProvisioning.new('foo', 'bar')
+      provisioning.user_data['username'].should == 'foo'
     end
     
     it "should not provide a token for an existing account if wrong credentials" do

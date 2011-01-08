@@ -2,6 +2,9 @@ class TropoProvisioning
   
   # Defaults for the creation of applications
   DEFAULT_OPTIONS = { :partition => 'staging', :platform  => 'scripting' }
+  
+  attr_reader :user_data
+  
   ##
   # Creates a new TropoProvisioning object
   #
@@ -15,6 +18,7 @@ class TropoProvisioning
     @password            = password
     @base_uri            = params[:base_uri] || "http://api.tropo.com/v1"
     @headers             = { 'Content-Type' => 'application/json' }
+    user(username)
   end
     
   def account(username, password)
@@ -35,7 +39,9 @@ class TropoProvisioning
   # @return [Hash]
   #   contains the information on the user
   def user(user_identifier)
-    request(:get, { :resource => 'users/' + user_identifier })
+    result = request(:get, { :resource => 'users/' + user_identifier })
+    @user_data = result if result['username']
+    result
   end
   
   ##
