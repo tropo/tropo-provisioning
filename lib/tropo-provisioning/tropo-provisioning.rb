@@ -109,7 +109,9 @@ class TropoProvisioning
   # @return [Hash]
   #   the href of the resource that was modified/updated
   def modify_user(user_id, params={})
-    request(:put, { :resource => 'users/' + user_id, :body => params })
+    result = request(:put, { :resource => 'users/' + user_id, :body => params })
+    @user_data.merge!(params) if result['href']
+    result
   end
   
   ##

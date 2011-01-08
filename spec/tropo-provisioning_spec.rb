@@ -772,6 +772,7 @@ describe "TropoProvisioning" do
     it 'should modify a user' do
       result = @tropo_provisioning.modify_user('12345', { :password => 'foobar' })
       result.href.should == 'http://api-smsified-eng.voxeo.net/v1/users/12345'
+      @tropo_provisioning.user_data['password'].should == 'foobar'
     end
   end
   
