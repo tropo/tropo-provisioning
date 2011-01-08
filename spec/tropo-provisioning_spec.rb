@@ -189,6 +189,8 @@ describe "TropoProvisioning" do
 
     @balance = { "pendingUsageAmount" => "0.00", "pendingRechargeAmount" => "0.00", "balance" => "3.00" }
     
+    @whitelist = [{ "href" => "https://api-smsified-eng.voxeo.net/v1/partitions/staging/platforms/sms/whitelist/14075551212", "value"=>"14075551212" }]
+    
     # Register our resources
     
     # Applications with a bad uname/passwd
@@ -421,6 +423,13 @@ describe "TropoProvisioning" do
                          :body => ActiveSupport::JSON.encode(@balance), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
+                         
+   # Whitelist
+   FakeWeb.register_uri(:get, 
+                        "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist", 
+                        :body => ActiveSupport::JSON.encode(@whitelist), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -795,7 +804,8 @@ describe "TropoProvisioning" do
   
   describe 'whitelists' do
     it 'should get the whitelist for a user account' do
-      pending()
+      result = @tropo_provisioning.whitelist('12345')
+      result.should == @whitelist
     end
     
     it 'should add to a whitelist' do
@@ -803,6 +813,7 @@ describe "TropoProvisioning" do
     end
     
     it 'should remove from a whitelist' do
+      pending()
     end
   end
 end
