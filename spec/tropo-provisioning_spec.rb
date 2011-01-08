@@ -459,283 +459,303 @@ describe "TropoProvisioning" do
     @tropo_provisioning.instance_of?(TropoProvisioning).should == true
   end
   
-  it "should get an unathorized back if there is an invalid username or password" do
-    bad_credentials = TropoProvisioning.new('bad', 'password')
-    begin
-      response = bad_credentials.applications
-    rescue => e
-      e.to_s.should == '401: Unauthorized - '
+  describe 'authentication' do
+    it "should get an unathorized back if there is an invalid username or password" do
+      bad_credentials = TropoProvisioning.new('bad', 'password')
+      begin
+        response = bad_credentials.applications
+      rescue => e
+        e.to_s.should == '401: Unauthorized - '
+      end
+    end
+    
+    it "should not provide a token for an existing account if wrong credentials" do
+      pending('Need to work on tests for the new account')
+      begin
+        result = @tropo_provisioning.account("foobar7474", 'fooeyfooey')
+      rescue => e
+        e.to_s.should == "403 - Invalid Login."
+      end
+    end
+    
+    it "should provide a token for an existing account" do
+      pending('Need to work on tests for the new account')
+      result = @tropo_provisioning.account("foobar7474", 'fooey')
+      result.should == @list_account
     end
   end
   
-  it "should get a list of applications" do
-    applications = []
-    @applications.each { |app| applications << app.merge({ 'application_id' => app['href'].split('/').last }) }
-    
-    @tropo_provisioning.applications.should == applications
-  end
-  
-  it "should get a specific application" do
-    response = @tropo_provisioning.application '108000'
-    response['href'].should == @applications[0]['href']
-  end
-  
-  it "should raise ArgumentErrors if appropriate arguments are not specified" do
-    begin
-      @tropo_provisioning.create_application({ :foo => 'bar' })
-    rescue => e
-      e.to_s.should == ':name required'
+  describe 'applications' do
+    it "should get a list of applications" do
+      applications = []
+      @applications.each { |app| applications << app.merge({ 'application_id' => app['href'].split('/').last }) }
+
+      @tropo_provisioning.applications.should == applications
     end
     
-    begin
-      @tropo_provisioning.create_application({ :name      => 'foobar',
-                                               :partition => 'foobar',
-                                               :platform  => 'foobar' })
-    rescue => e
-      e.to_s.should == ':messagingUrl or :voiceUrl required'
+    it "should get a specific application" do
+      response = @tropo_provisioning.application '108000'
+      response['href'].should == @applications[0]['href']
     end
-  end
   
-  it "should raise ArgumentErrors if appropriate values are not passed" do
-    begin
-      @tropo_provisioning.create_application({ :name         => 'foobar',
-                                               :partition    => 'foobar',
-                                               :platform     => 'foobar',
-                                               :messagingUrl => 'http://foobar' })
-    rescue => e
-      e.to_s.should == ":platform must be 'scripting' or 'webapi'"
+    it "should raise ArgumentErrors if appropriate arguments are not specified" do
+      begin
+        @tropo_provisioning.create_application({ :foo => 'bar' })
+      rescue => e
+        e.to_s.should == ':name required'
+      end
+    
+      begin
+        @tropo_provisioning.create_application({ :name      => 'foobar',
+                                                 :partition => 'foobar',
+                                                 :platform  => 'foobar' })
+      rescue => e
+        e.to_s.should == ':messagingUrl or :voiceUrl required'
+      end
     end
+  
+    it "should raise ArgumentErrors if appropriate values are not passed" do
+      begin
+        @tropo_provisioning.create_application({ :name         => 'foobar',
+                                                 :partition    => 'foobar',
+                                                 :platform     => 'foobar',
+                                                 :messagingUrl => 'http://foobar' })
+      rescue => e
+        e.to_s.should == ":platform must be 'scripting' or 'webapi'"
+      end
     
-    begin
-      @tropo_provisioning.create_application({ :name         => 'foobar',
-                                               :partition    => 'foobar',
-                                               :platform     => 'scripting',
-                                               :messagingUrl => 'http://foobar' })
-    rescue => e
-      e.to_s.should == ":partiion must be 'staging' or 'production'"
+      begin
+        @tropo_provisioning.create_application({ :name         => 'foobar',
+                                                 :partition    => 'foobar',
+                                                 :platform     => 'scripting',
+                                                 :messagingUrl => 'http://foobar' })
+      rescue => e
+        e.to_s.should == ":partiion must be 'staging' or 'production'"
+      end
     end
-  end
   
-  it "should receive an href back when we create a new application receiving an href back" do
-    # With camelCase
-    result = @tropo_provisioning.create_application({ :name         => 'foobar',
-                                                      :partition    => 'production',
-                                                      :platform     => 'scripting',
-                                                      :messagingUrl => 'http://foobar' })
-    result.href.should == "http://api.tropo.com/v1/applications/108016"
-    result.application_id.should == '108016'
+    it "should receive an href back when we create a new application receiving an href back" do
+      # With camelCase
+      result = @tropo_provisioning.create_application({ :name         => 'foobar',
+                                                        :partition    => 'production',
+                                                        :platform     => 'scripting',
+                                                        :messagingUrl => 'http://foobar' })
+      result.href.should == "http://api.tropo.com/v1/applications/108016"
+      result.application_id.should == '108016'
     
-    # With underscores
-    result = @tropo_provisioning.create_application({ :name          => 'foobar',
-                                                      :partition     => 'production',
-                                                      :platform      => 'scripting',
-                                                      :messaging_url => 'http://foobar' })
-    result.href.should == "http://api.tropo.com/v1/applications/108016"
-    result.application_id.should == '108016'
-  end
-  
-  it "should receive an href back when we update an application receiving an href back" do
-    # With camelCase
-    result = @tropo_provisioning.update_application('108000', { :name         => 'foobar',
-                                                                :partition    => 'production',
-                                                                :platform     => 'scripting',
-                                                                :messagingUrl => 'http://foobar' })
-    result.href.should == "http://api.tropo.com/v1/applications/108016"
-    
-    # With underscore
-    result = @tropo_provisioning.update_application('108000', { :name          => 'foobar',
-                                                                :partition     => 'production',
-                                                                :platform      => 'scripting',
-                                                                :messaging_url => 'http://foobar' })
-    result.href.should == "http://api.tropo.com/v1/applications/108016"
-  end
-  
-  it "should delete an application" do
-    result = @tropo_provisioning.delete_application('108000')
-    result.message.should == 'delete successful'
-  end
-  
-  it "should list all of the addresses available for an application" do
-    result = @tropo_provisioning.addresses('108000')
-    result.should == @addresses
-  end
-  
-  it "should list a single address when requested with a number for numbers" do
-    result = @tropo_provisioning.address('108000', '883510001812716')
-    result.should == @addresses[0]
-  end
-  
-  it "should list a single address of the appropriate type when requested" do
-    # First a number
-    result = @tropo_provisioning.address('108000', '883510001812716')
-    result.should == @addresses[0]
-    
-    # Then an IM username
-    result = @tropo_provisioning.address('108000', 'xyz123')
-    result.should == @addresses[2]
-    
-    # Then a pin
-    result = @tropo_provisioning.address('108000', '9991436300')
-    result.should == @addresses[3]
-    
-    # Then a token
-    result = @tropo_provisioning.address('108000', 'a1b2c3d4')
-    result.should == @addresses[4]
-  end
-  
-  it "should generate an error of the addition of the address does not have a required field" do
-    # Add a address without a type
-    begin
-      @tropo_provisioning.create_address('108000')
-    rescue => e
-      e.to_s.should == ":type required"
+      # With underscores
+      result = @tropo_provisioning.create_application({ :name          => 'foobar',
+                                                        :partition     => 'production',
+                                                        :platform      => 'scripting',
+                                                        :messaging_url => 'http://foobar' })
+      result.href.should == "http://api.tropo.com/v1/applications/108016"
+      result.application_id.should == '108016'
     end
+  
+    it "should receive an href back when we update an application receiving an href back" do
+      # With camelCase
+      result = @tropo_provisioning.update_application('108000', { :name         => 'foobar',
+                                                                  :partition    => 'production',
+                                                                  :platform     => 'scripting',
+                                                                  :messagingUrl => 'http://foobar' })
+      result.href.should == "http://api.tropo.com/v1/applications/108016"
     
-    # Add a number without a prefix
-    begin
-      @tropo_provisioning.create_address('108000', { :type => 'number' })
-    rescue => e
-      e.to_s.should == ":prefix required to add a number address"
+      # With underscore
+      result = @tropo_provisioning.update_application('108000', { :name          => 'foobar',
+                                                                  :partition     => 'production',
+                                                                  :platform      => 'scripting',
+                                                                  :messaging_url => 'http://foobar' })
+      result.href.should == "http://api.tropo.com/v1/applications/108016"
     end
-    
-    # Add a jabber without a username
-    begin
-      @tropo_provisioning.create_address('108000', { :type => 'jabber' })
-    rescue => e
-      e.to_s.should == ":username required"
-    end
-    
-    # Add an aim without a password
-    begin
-      @tropo_provisioning.create_address('108000', { :type => 'aim', :username => 'joeblow@aim.com' })
-    rescue => e
-      e.to_s.should == ":password and required"
-    end
-    
-    # Add a token without a channel
-    begin
-      @tropo_provisioning.create_address('108000', { :type => 'token' })
-    rescue => e
-      e.to_s.should == ":channel required"
-    end
-    
-    # Add a token with an invalid channel type
-    begin
-      @tropo_provisioning.create_address('108000', { :type => 'token', :channel => 'BBC' })
-    rescue => e
-      e.to_s.should == ":channel must be voice or messaging"
+  
+    it "should delete an application" do
+      result = @tropo_provisioning.delete_application('108000')
+      result.message.should == 'delete successful'
     end
   end
   
-  it "should add appropriate addresses" do  
-    # Add a address based on a prefix
-    result = @tropo_provisioning.create_address('108000', { :type => 'number', :prefix => '1303' })
-    result[:href].should == "http://api.tropo.com/v1/applications/108000/addresses/number/7202551912"
-    result[:address].should == '7202551912'
+  describe 'addresses' do
+    it "should list all of the addresses available for an application" do
+      result = @tropo_provisioning.addresses('108000')
+      result.should == @addresses
+    end
+  
+    it "should list a single address when requested with a number for numbers" do
+      result = @tropo_provisioning.address('108000', '883510001812716')
+      result.should == @addresses[0]
+    end
+  
+    it "should list a single address of the appropriate type when requested" do
+      # First a number
+      result = @tropo_provisioning.address('108000', '883510001812716')
+      result.should == @addresses[0]
     
-    # Add a jabber account
-    result = @tropo_provisioning.create_address('108001', { :type => 'jabber', :username => 'xyz123@bot.im' })
-    result[:href].should == "http://api.tropo.com/v1/applications/108001/addresses/jabber/xyz123@bot.im"
-    result[:address].should == 'xyz123@bot.im' 
+      # Then an IM username
+      result = @tropo_provisioning.address('108000', 'xyz123')
+      result.should == @addresses[2]
     
-    # Add a token
-    result = @tropo_provisioning.create_address('108002', { :type => 'token', :channel => 'voice' })
-    result[:href].should == "http://api.tropo.com/v1/applications/108002/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b"
-    result[:address].should == '12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b'
-  end
+      # Then a pin
+      result = @tropo_provisioning.address('108000', '9991436300')
+      result.should == @addresses[3]
+    
+      # Then a token
+      result = @tropo_provisioning.address('108000', 'a1b2c3d4')
+      result.should == @addresses[4]
+    end
   
-  it "should obtain a list of available exchanges" do
-    results = @tropo_provisioning.exchanges
-    results.should == ActiveSupport::JSON.decode(@exchanges)
-  end
+    it "should generate an error of the addition of the address does not have a required field" do
+      # Add a address without a type
+      begin
+        @tropo_provisioning.create_address('108000')
+      rescue => e
+        e.to_s.should == ":type required"
+      end
+    
+      # Add a number without a prefix
+      begin
+        @tropo_provisioning.create_address('108000', { :type => 'number' })
+      rescue => e
+        e.to_s.should == ":prefix required to add a number address"
+      end
+    
+      # Add a jabber without a username
+      begin
+        @tropo_provisioning.create_address('108000', { :type => 'jabber' })
+      rescue => e
+        e.to_s.should == ":username required"
+      end
+    
+      # Add an aim without a password
+      begin
+        @tropo_provisioning.create_address('108000', { :type => 'aim', :username => 'joeblow@aim.com' })
+      rescue => e
+        e.to_s.should == ":password and required"
+      end
+    
+      # Add a token without a channel
+      begin
+        @tropo_provisioning.create_address('108000', { :type => 'token' })
+      rescue => e
+        e.to_s.should == ":channel required"
+      end
+    
+      # Add a token with an invalid channel type
+      begin
+        @tropo_provisioning.create_address('108000', { :type => 'token', :channel => 'BBC' })
+      rescue => e
+        e.to_s.should == ":channel must be voice or messaging"
+      end
+    end
   
-  it "should delete a address" do
-    result = @tropo_provisioning.delete_address('108000', '883510001812716')
-    result[:message].should == "delete successful"
-  end
-  
-  it "should raise an ArgumentError if the right params are not passed to move_address" do
-    begin
-      @tropo_provisioning.move_address({ :to => '108002', :address => '883510001812716'})
-    rescue => e
-      e.to_s.should == ':from is required'
+    it "should add appropriate addresses" do  
+      # Add a address based on a prefix
+      result = @tropo_provisioning.create_address('108000', { :type => 'number', :prefix => '1303' })
+      result[:href].should == "http://api.tropo.com/v1/applications/108000/addresses/number/7202551912"
+      result[:address].should == '7202551912'
+    
+      # Add a jabber account
+      result = @tropo_provisioning.create_address('108001', { :type => 'jabber', :username => 'xyz123@bot.im' })
+      result[:href].should == "http://api.tropo.com/v1/applications/108001/addresses/jabber/xyz123@bot.im"
+      result[:address].should == 'xyz123@bot.im' 
+    
+      # Add a token
+      result = @tropo_provisioning.create_address('108002', { :type => 'token', :channel => 'voice' })
+      result[:href].should == "http://api.tropo.com/v1/applications/108002/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b"
+      result[:address].should == '12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b'
     end
     
-    begin
-      @tropo_provisioning.move_address({ :from => '108002', :address => '883510001812716'})
-    rescue => e
-      e.to_s.should == ':to is required'
+    it "should delete a address" do
+      result = @tropo_provisioning.delete_address('108000', '883510001812716')
+      result[:message].should == "delete successful"
+    end
+
+    it "should raise an ArgumentError if the right params are not passed to move_address" do
+      begin
+        @tropo_provisioning.move_address({ :to => '108002', :address => '883510001812716'})
+      rescue => e
+        e.to_s.should == ':from is required'
+      end
+
+      begin
+        @tropo_provisioning.move_address({ :from => '108002', :address => '883510001812716'})
+      rescue => e
+        e.to_s.should == ':to is required'
+      end
+
+      begin
+        @tropo_provisioning.move_address({ :from => '108002', :to => '883510001812716'})
+      rescue => e
+        e.to_s.should == ':address is required'
+      end
+    end
+
+    it "should move a address" do
+      results = @tropo_provisioning.move_address({ :from => '108000', :to => '108002', :address => '883510001812716'})
+      results.should == { 'message' => 'delete successful' }
     end
     
-    begin
-      @tropo_provisioning.move_address({ :from => '108002', :to => '883510001812716'})
-    rescue => e
-      e.to_s.should == ':address is required'
+    it "should return accounts with associated addresses" do
+      pending()
+      result = @tropo_provisioning.account_with_addresses('108000')
+      result.should == nil
+
+      result = @tropo_provisioning.accounts_with_addresses
+      result.should == nil
     end
   end
   
-  it "should move a address" do
-    results = @tropo_provisioning.move_address({ :from => '108000', :to => '108002', :address => '883510001812716'})
-    results.should == { 'message' => 'delete successful' }
-  end
-  
-  it "should provide a token for an existing account" do
-    pending('Need to work on tests for the new account')
-    result = @tropo_provisioning.account("foobar7474", 'fooey')
-    result.should == @list_account
-  end
-  
-  it "should not provide a token for an existing account if wrong credentials" do
-    pending('Need to work on tests for the new account')
-    begin
-      result = @tropo_provisioning.account("foobar7474", 'fooeyfooey')
-    rescue => e
-      e.to_s.should == "403 - Invalid Login."
+  describe 'exchanges' do
+    it "should obtain a list of available exchanges" do
+      results = @tropo_provisioning.exchanges
+      results.should == ActiveSupport::JSON.decode(@exchanges)
     end
   end
   
-  it "should return accounts with associated addresses" do
-    pending()
-    result = @tropo_provisioning.account_with_addresses('108000')
-    result.should == nil
+  describe 'user' do
+    it "should raise argument errors on create_user if required params not passed" do
+      begin
+        @tropo_provisioning.create_user
+      rescue => e
+        e.to_s.should == ':username required'
+      end
     
-    result = @tropo_provisioning.accounts_with_addresses
-    result.should == nil
-  end
-  
-  it "should raise argument errors on create_user if required params not passed" do
-    begin
-      @tropo_provisioning.create_user
-    rescue => e
-      e.to_s.should == ':username required'
+      begin
+        @tropo_provisioning.create_user({ :username => "foobar7474" })
+      rescue => e
+        e.to_s.should == ':password required'
+      end
+    
+      begin
+        @tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey' })
+      rescue => e
+        e.to_s.should == ':email required'
+      end
     end
     
-    begin
-      @tropo_provisioning.create_user({ :username => "foobar7474" })
-    rescue => e
-      e.to_s.should == ':password required'
+    it "should create a new user" do
+      result = @tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey', :email => 'jsgoecke@voxeo.com' })
+      result.should == @new_user
+    end
+  
+    it "should confirm a user" do
+      result = @tropo_provisioning.confirm_user('12345', '1234', '127.0.0.1')
+      result.message.should == "successfully confirmed user 12345"
+    end
+  
+    it "should obtain details about a user" do
+      result = @tropo_provisioning.user('12345')
+      result.should == @existing_user
     end
     
-    begin
-      @tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey' })
-    rescue => e
-      e.to_s.should == ':email required'
+    it 'should return a list of search terms that we search for' do
+      result = @tropo_provisioning.search_users('username=foobar')
+      result.should == @search_accounts
     end
-  end
-    
-  it "should create a new user" do
-    result = @tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey', :email => 'jsgoecke@voxeo.com' })
-    result.should == @new_user
-  end
-  
-  it "should confirm a user" do
-    result = @tropo_provisioning.confirm_user('12345', '1234', '127.0.0.1')
-    result.message.should == "successfully confirmed user 12345"
-  end
-  
-  it "should obtain details about a user" do
-    result = @tropo_provisioning.user('12345')
-    result.should == @existing_user
+
+    it 'should modify a user' do
+      result = @tropo_provisioning.modify_user('12345', { :password => 'foobar' })
+      result.href.should == 'http://api-smsified-eng.voxeo.net/v1/users/12345'
+    end
   end
   
   describe 'features' do
@@ -759,25 +779,17 @@ describe "TropoProvisioning" do
       result.should == @feature_delete_message
     end
   end
-    
-  it 'should return a list of search terms that we search for' do
-    result = @tropo_provisioning.search_users('username=foobar')
-    result.should == @search_accounts
-  end
   
-  it 'should modify a user' do
-    result = @tropo_provisioning.modify_user('12345', { :password => 'foobar' })
-    result.href.should == 'http://api-smsified-eng.voxeo.net/v1/users/12345'
-  end
+  describe 'platforms and partitions' do
+    it 'should list the available partitions' do
+      result = @tropo_provisioning.partitions
+      result[0]['name'].should == 'staging'
+    end
   
-  it 'should list the available partitions' do
-    result = @tropo_provisioning.partitions
-    result[0]['name'].should == 'staging'
-  end
-  
-  it 'should return a list of available platforms under a partition' do
-    result = @tropo_provisioning.platforms('staging')
-    result[0].name.should == 'sms'
+    it 'should return a list of available platforms under a partition' do
+      result = @tropo_provisioning.platforms('staging')
+      result[0].name.should == 'sms'
+    end
   end
   
   describe 'payments' do
