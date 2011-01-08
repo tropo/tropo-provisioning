@@ -430,7 +430,13 @@ describe "TropoProvisioning" do
                         :body => ActiveSupport::JSON.encode(@whitelist), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
-                        
+    # Whitelist
+     FakeWeb.register_uri(:get, 
+                          "http://foo:bar@api.tropo.com/v1/users/partitions/production/platforms/sms/whitelist", 
+                          :body => ActiveSupport::JSON.encode(@whitelist), 
+                          :content_type => "application/json",
+                          :status => ["200", "OK"])
+                          
     # Whitelist create
     FakeWeb.register_uri(:post, 
                          "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist", 
@@ -819,15 +825,18 @@ describe "TropoProvisioning" do
     it 'should get the whitelist for a user account' do
       result = @tropo_provisioning.whitelist('12345')
       result.should == @whitelist
+      
+      result = @tropo_provisioning.whitelist
+      result.should == @whitelist
     end
     
     it 'should add to a whitelist' do
-      result = @tropo_provisioning.add_whitelist('12345', '14155551212')
+      result = @tropo_provisioning.add_whitelist({ :user_id => '12345', :value => '14155551212' })
       result.should == @whitelist
     end
     
     it 'should remove from a whitelist' do
-      result = @tropo_provisioning.delete_whitelist('12345', '14155551212')
+      result = @tropo_provisioning.delete_whitelist({ :user_id => '12345', :value => '14155551212' })
       result.should == @whitelist
     end
   end

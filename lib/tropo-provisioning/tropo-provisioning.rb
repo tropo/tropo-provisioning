@@ -462,30 +462,50 @@ class TropoProvisioning
   # @param [required, String] user_id of the user you would like to update
   # @return [Hash]
   #   the href and value containing the number on the whitelist
-  def whitelist(user_id)
-    request(:get, { :resource => 'users/' + user_id + '/partitions/production/platforms/sms/whitelist' })
+  def whitelist(user_id=nil)
+    if user_id
+      resource = 'users/' + user_id + '/partitions/production/platforms/sms/whitelist'
+    else
+      resource = 'users/partitions/production/platforms/sms/whitelist'
+    end
+    
+    request(:get, { :resource => resource })
   end
   
   ##
   # Add to a whitelist for a particular user
   #
-  # @param [required, String] user_id of the user you would like to update
-  # @param [required, String] value the number or address you would like to add to the whitelist
+  # @param [Hash] params contains a hash of the user_id and value to add
+  # @option params [optional, String] :user_id if present the user_id to add to, if not it will add to the user logged in as
+  # @option params [required, String] :value the value to add to the whitelist
   # @return [Hash]
   #   the href 
-  def add_whitelist(user_id, value)
-    request(:post, { :resource => 'users/' + user_id + '/partitions/production/platforms/sms/whitelist', :body => { :value => value } })
+  def add_whitelist(params={})
+    if params[:user_id]
+      resource = 'users/' + params[:user_id] + '/partitions/production/platforms/sms/whitelist'
+    else
+      resource = 'users/partitions/production/platforms/sms/whitelist'
+    end
+    
+    request(:post, { :resource => resource, :body => { :value => params[:value] } })
   end
 
   ##
   # Delete from a whitelist for a particular user
   #
-  # @param [required, String] user_id of the user 
-  # @param [required, String] value the number or address you would like to delete from the whitelist
+  # @param [Hash] params contains a hash of the user_id and value to delete
+  # @option params [optional, String] :user_id if present the user_id to delete from, if not it will add to the user logged in as
+  # @option params [required, String] :value the value to delete from the whitelist
   # @return [Hash]
   #   the href 
-  def delete_whitelist(user_id, value)
-    request(:delete, { :resource => 'users/' + user_id + '/partitions/production/platforms/sms/whitelist/' + value })
+  def delete_whitelist(params={})
+    if params[:user_id]
+      resource = 'users/' + params[:user_id] + '/partitions/production/platforms/sms/whitelist/'
+    else
+      resource = 'users/partitions/production/platforms/sms/whitelist/'
+    end
+    
+    request(:delete, { :resource => resource + params[:value] })
   end
   
   private
