@@ -89,11 +89,8 @@ class TropoProvisioning
   # @raise [ArgumentError]
   #   if missing the :username, :password or :email parameters
   def create_user(params={})
-    # Ensure required fields are present
-    raise ArgumentError, ':username required' unless params[:username]
-    raise ArgumentError, ':password required' unless params[:password]
-    raise ArgumentError, ':email required'    unless params[:email]
-
+    validate_params(params, %w(username password email))
+    
     # Set the Company Branding ID, or use default
     params[:website] = 'tropo' unless params[:website]    
     
@@ -226,19 +223,7 @@ class TropoProvisioning
   # @raise [ArgumentError]
   #   if a required param is not present
   def add_payment_info(user_id, params={})
-    raise ArgumentError, ':account_number required' unless params[:account_number]
-    raise ArgumentError, ':payment_type required' unless params[:payment_type]
-    raise ArgumentError, ':address required' unless params[:address]
-    raise ArgumentError, ':city required' unless params[:city]
-    raise ArgumentError, ':state required' unless params[:state]
-    raise ArgumentError, ':postal_code required' unless params[:postal_code]
-    raise ArgumentError, ':country required' unless params[:country]
-    raise ArgumentError, ':name_on_account required' unless params[:name_on_account]
-    raise ArgumentError, ':expiration_date required' unless params[:expiration_date]
-    raise ArgumentError, ':security_code required' unless params[:security_code]
-    raise ArgumentError, ':recharge_amount required' unless params[:recharge_amount]
-    raise ArgumentError, ':email required' unless params[:email]
-    raise ArgumentError, ':phone_number required' unless params[:phone_number]
+    validate_params(params, %w(account_number payment_type address city state postal_code country name_on_account expiration_date security_code recharge_amount email phone_number))
     
     result = request(:put, { :resource => 'users/' + user_id + '/payment/method', :body => params })
     result
@@ -269,20 +254,7 @@ class TropoProvisioning
   # @option params [String] :href identifies the address that was added, refer to address method for details
   # @option params [String] :address the address that was created
   def create_address(application_id, params={})
-    raise ArgumentError, ':type required' unless params[:type]
-    
-    case params[:type].downcase
-    when 'number'
-      raise ArgumentError, ':prefix required to add a number address' unless params[:prefix] || params[:number]
-    when 'aim', 'msn', 'yahoo', 'gtalk'
-      raise ArgumentError, ':username and required' unless params[:username]
-      raise ArgumentError, ':password and required' unless params[:password]
-    when 'jabber'
-      raise ArgumentError, ':username required' unless params[:username]
-    when 'token'
-      raise ArgumentError, ':channel required' unless params[:channel]
-      raise ArgumentError, ':channel must be voice or messaging' unless params[:channel] == 'voice' || params[:channel] == 'messaging'
-    end
+    validate_address_parameters(params)
     
     result = request(:post, { :resource => 'applications/' + application_id.to_s + '/addresses', :body => params })
     result[:address] = get_element(result.href)
@@ -348,7 +320,7 @@ class TropoProvisioning
   # @return [Hash] returns the href of the application created and the application_id of the application created
   def create_application(params={})
     merged_params = DEFAULT_OPTIONS.merge(camelize_params(params))
-    validate_params merged_params
+    validate_application_params(merged_params)
     result = request(:post, { :resource => 'applications', :body => params })
     result[:application_id] = get_element(result.href)
     result
@@ -391,9 +363,7 @@ class TropoProvisioning
   # @option params [required, String] :to
   # @option params [required, String] :address
   def move_address(params={})
-    raise ArgumentError, ':from is required' unless params[:from]
-    raise ArgumentError, ':to is required' unless params[:to]
-    raise ArgumentError, ':address is required' unless params[:address]
+    validate_params(params, %w(from to address))
     
     begin
       address_to_move = address(params[:from], params[:address])
@@ -661,6 +631,22 @@ class TropoProvisioning
   end
   
   ##
+  # Used to validate required params in either underscore or camelCase formats
+  #
+  # @param [required, Hash] params to be checked
+  # @param [required, Array] requirements of which fields much be present
+  # @raise ArgumentError
+  #   if a param is not present that is required
+  def validate_params(params, requirements)
+    requirements.each do |requirement|
+      if params[requirement.to_sym].nil? && params[requirement.to_s.camelize(:lower).to_sym].nil?
+        raise ArgumentError, ":#{requirement} is a required parameter"
+        break
+      end
+    end
+  end
+  
+  ##
   # Validates that we have all of the appropriate params when creating an application
   #
   # @param [Hash] params to create the application
@@ -670,13 +656,35 @@ class TropoProvisioning
   # @option params [String] :messagingUrl the Url to use for handiling messaging requests
   # @option params [String] :voiceUrl the Url to use for handling voice requests
   # @return nil
-  def validate_params(params={})
+  def validate_application_params(params={})
     # Make sure all of the arguments are present
-    raise ArgumentError, ':name required' unless params[:name]
-    raise ArgumentError, ':messagingUrl or :voiceUrl required' unless params[:messagingUrl] || params[:voiceUrl]
+    raise ArgumentError, ':name is a required parameter' unless params[:name]
+    
+    if params[:messaging_url].nil? && params[:voice_url].nil?
+      if params[:messagingUrl].nil? && params[:voiceUrl].nil?
+        raise ArgumentError, ':messaging_url or :voice_url is a required parameter'
+      end
+    end
     
     # Make sure the arguments have valid values
     raise ArgumentError, ":platform must be 'scripting' or 'webapi'" unless params[:platform] == 'scripting' || params[:platform] == 'webapi'
     raise ArgumentError, ":partiion must be 'staging' or 'production'" unless params[:partition] == 'staging' || params[:partition] == 'production'
+  end
+  
+  def validate_address_parameters(params={})
+    raise ArgumentError, ":type is a required parameter" unless params[:type]
+    
+    case params[:type].downcase
+    when 'number'
+      raise ArgumentError, ':prefix required to add a number address' unless params[:prefix] || params[:number]
+    when 'aim', 'msn', 'yahoo', 'gtalk'
+      raise ArgumentError, ':username is a required parameter' unless params[:username]
+      raise ArgumentError, ':password is a required parameter' unless params[:password]
+    when 'jabber'
+      raise ArgumentError, ':username is a required parameter' unless params[:username]
+    when 'token'
+      raise ArgumentError, ':channel is a required parameter' unless params[:channel]
+      raise ArgumentError, ':channel must be voice or messaging' unless params[:channel] == 'voice' || params[:channel] == 'messaging'
+    end
   end
 end

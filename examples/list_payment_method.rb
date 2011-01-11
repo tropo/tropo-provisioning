@@ -8,4 +8,4 @@ config = YAML.load(File.open('examples/config.yml'))
 provisioning = TropoProvisioning.new(config['tropo']['username'], config['tropo']['password'], :base_uri => 'http://api-smsified-eng.voxeo.net/v1')
 
 # Create an account
-p provisioning.user_payment_method('54228')
+p provisioning.user_payment_method('54240')

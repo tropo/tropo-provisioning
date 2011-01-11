@@ -520,7 +520,7 @@ describe "TropoProvisioning" do
       begin
         @tropo_provisioning.create_application({ :foo => 'bar' })
       rescue => e
-        e.to_s.should == ':name required'
+        e.to_s.should == ':name is a required parameter'
       end
     
       begin
@@ -528,7 +528,7 @@ describe "TropoProvisioning" do
                                                  :partition => 'foobar',
                                                  :platform  => 'foobar' })
       rescue => e
-        e.to_s.should == ':messagingUrl or :voiceUrl required'
+        e.to_s.should == ':messaging_url or :voice_url is a required parameter'
       end
     end
   
@@ -626,7 +626,7 @@ describe "TropoProvisioning" do
       begin
         @tropo_provisioning.create_address('108000')
       rescue => e
-        e.to_s.should == ":type required"
+        e.to_s.should == ":type is a required parameter"
       end
     
       # Add a number without a prefix
@@ -640,21 +640,21 @@ describe "TropoProvisioning" do
       begin
         @tropo_provisioning.create_address('108000', { :type => 'jabber' })
       rescue => e
-        e.to_s.should == ":username required"
+        e.to_s.should == ":username is a required parameter"
       end
     
       # Add an aim without a password
       begin
         @tropo_provisioning.create_address('108000', { :type => 'aim', :username => 'joeblow@aim.com' })
       rescue => e
-        e.to_s.should == ":password and required"
+        e.to_s.should == ":password is a required parameter"
       end
     
       # Add a token without a channel
       begin
         @tropo_provisioning.create_address('108000', { :type => 'token' })
       rescue => e
-        e.to_s.should == ":channel required"
+        e.to_s.should == ":channel is a required parameter"
       end
     
       # Add a token with an invalid channel type
@@ -691,19 +691,19 @@ describe "TropoProvisioning" do
       begin
         @tropo_provisioning.move_address({ :to => '108002', :address => '883510001812716'})
       rescue => e
-        e.to_s.should == ':from is required'
+        e.to_s.should == ':from is a required parameter'
       end
 
       begin
         @tropo_provisioning.move_address({ :from => '108002', :address => '883510001812716'})
       rescue => e
-        e.to_s.should == ':to is required'
+        e.to_s.should == ':to is a required parameter'
       end
 
       begin
         @tropo_provisioning.move_address({ :from => '108002', :to => '883510001812716'})
       rescue => e
-        e.to_s.should == ':address is required'
+        e.to_s.should == ':address is a required parameter'
       end
     end
 
@@ -734,19 +734,19 @@ describe "TropoProvisioning" do
       begin
         @tropo_provisioning.create_user
       rescue => e
-        e.to_s.should == ':username required'
+        e.to_s.should == ':username is a required parameter'
       end
     
       begin
         @tropo_provisioning.create_user({ :username => "foobar7474" })
       rescue => e
-        e.to_s.should == ':password required'
+        e.to_s.should == ':password is a required parameter'
       end
     
       begin
         @tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey' })
       rescue => e
-        e.to_s.should == ':email required'
+        e.to_s.should == ':email is a required parameter'
       end
     end
     
@@ -830,6 +830,24 @@ describe "TropoProvisioning" do
       result.should == @payment_info_message
     end
     
+    it "should add a payment method to a user in camelCase" do
+      result = @tropo_provisioning.add_payment_info('12345', { :accountNumber     => '1234567890',
+                                                               :paymentType       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
+                                                               :address           => '123 Smith Avenue',
+                                                               :city              => 'San Carlos',
+                                                               :state             => 'CA',
+                                                               :postalCode        => '94070',
+                                                               :country           => 'USA',
+                                                               :nameOnAccount     => 'Tropo User',
+                                                               :expirationDate    => '2011-12-10',
+                                                               :securityCode      => '123',
+                                                               :rechargeAmount    => 10.50,
+                                                               :rechargeThreshold => 5.00,
+                                                               :email             => 'j@doe.com',
+                                                               :phone_number      => '4155551212' })
+
+      result.should == @payment_info_message      
+    end
     
     it 'should return the balance' do
       result = @tropo_provisioning.balance('12345')
