@@ -639,7 +639,7 @@ class TropoProvisioning
   #   if a param is not present that is required
   def validate_params(params, requirements)
     requirements.each do |requirement|
-      if params[requirement.to_sym].nil? && params[requirement.to_s.camelize(:lower).to_sym].nil?
+      if params[requirement.to_sym].nil? && params[requirement.to_s.camelize(:lower).to_sym].nil? && params[requirement].nil? && params[requirement.to_s.camelize(:lower)].nil?
         raise ArgumentError, ":#{requirement} is a required parameter"
         break
       end
@@ -658,33 +658,33 @@ class TropoProvisioning
   # @return nil
   def validate_application_params(params={})
     # Make sure all of the arguments are present
-    raise ArgumentError, ':name is a required parameter' unless params[:name]
+    raise ArgumentError, ':name is a required parameter' unless params[:name] || params['name']
     
-    if params[:messaging_url].nil? && params[:voice_url].nil?
-      if params[:messagingUrl].nil? && params[:voiceUrl].nil?
+    if params[:messaging_url].nil? && params[:voice_url].nil? && params['messaging_url'].nil? && params['voice_url'].nil?
+      if params[:messagingUrl].nil? && params[:voiceUrl].nil? && params['messagingUrl'].nil? && params['voiceUrl'].nil?
         raise ArgumentError, ':messaging_url or :voice_url is a required parameter'
       end
     end
     
     # Make sure the arguments have valid values
-    raise ArgumentError, ":platform must be 'scripting' or 'webapi'" unless params[:platform] == 'scripting' || params[:platform] == 'webapi'
-    raise ArgumentError, ":partiion must be 'staging' or 'production'" unless params[:partition] == 'staging' || params[:partition] == 'production'
+    raise ArgumentError, ":platform must be 'scripting' or 'webapi'" unless params[:platform] == 'scripting' || params[:platform] == 'webapi' || params['platform'] == 'scripting' || params['platform'] == 'webapi'
+    raise ArgumentError, ":partiion must be 'staging' or 'production'" unless params[:partition] == 'staging' || params[:partition] == 'production' || params['partition'] == 'staging' || params['partition'] == 'production'
   end
   
   def validate_address_parameters(params={})
-    raise ArgumentError, ":type is a required parameter" unless params[:type]
+    raise ArgumentError, ":type is a required parameter" unless params[:type] || params['type']
     
     case params[:type].downcase
     when 'number'
-      raise ArgumentError, ':prefix required to add a number address' unless params[:prefix] || params[:number]
+      raise ArgumentError, ':prefix required to add a number address' unless params[:prefix] || params[:number] || params['prefix'] || params['number']
     when 'aim', 'msn', 'yahoo', 'gtalk'
-      raise ArgumentError, ':username is a required parameter' unless params[:username]
-      raise ArgumentError, ':password is a required parameter' unless params[:password]
+      raise ArgumentError, ':username is a required parameter' unless params[:username] || params['username']
+      raise ArgumentError, ':password is a required parameter' unless params[:password] || params ['password']
     when 'jabber'
-      raise ArgumentError, ':username is a required parameter' unless params[:username]
+      raise ArgumentError, ':username is a required parameter' unless params[:username] || params['username']
     when 'token'
-      raise ArgumentError, ':channel is a required parameter' unless params[:channel]
-      raise ArgumentError, ':channel must be voice or messaging' unless params[:channel] == 'voice' || params[:channel] == 'messaging'
+      raise ArgumentError, ':channel is a required parameter' unless params[:channel] || params['channel']
+      raise ArgumentError, ':channel must be voice or messaging' unless params[:channel] == 'voice' || params[:channel] == 'messaging' || params['channel'] == 'voice' || params['channel'] == 'messaging'
     end
   end
 end

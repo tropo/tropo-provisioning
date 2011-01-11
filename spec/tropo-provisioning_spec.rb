@@ -849,6 +849,25 @@ describe "TropoProvisioning" do
       result.should == @payment_info_message      
     end
     
+    it 'should add a payment method to a user in camelCase and keys as strings' do
+      result = @tropo_provisioning.add_payment_info('12345', { 'accountNumber'     => '1234567890',
+                                                               'paymentType'       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
+                                                               'address'           => '123 Smith Avenue',
+                                                               'city'              => 'San Carlos',
+                                                               'state'             => 'CA',
+                                                               'postalCode'        => '94070',
+                                                               'country'           => 'USA',
+                                                               'nameOnAccount'     => 'Tropo User',
+                                                               'expirationDate'    => '2011-12-10',
+                                                               'securityCode'      => '123',
+                                                               'rechargeAmount'    => 10.50,
+                                                               'rechargeThreshold' => 5.00,
+                                                               'email'             => 'j@doe.com',
+                                                               'phone_number'      => '4155551212' })
+
+      result.should == @payment_info_message
+    end
+    
     it 'should return the balance' do
       result = @tropo_provisioning.balance('12345')
       result['balance'].should == "3.00"
