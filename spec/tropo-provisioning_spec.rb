@@ -852,18 +852,19 @@ describe "TropoProvisioning" do
     it 'should add a payment method to a user keys as strings' do
       result = @tropo_provisioning.add_payment_info('12345', { 'account_number'     => '1234567890',
                                                                'payment_type'       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
-                                                               'address'           => '123 Smith Avenue',
-                                                               'city'              => 'San Carlos',
-                                                               'state'             => 'CA',
+                                                               'address'            => '123 Smith Avenue',
+                                                               'city'               => 'San Carlos',
+                                                               'state'              => 'CA',
                                                                'postal_code'        => '94070',
-                                                               'country'           => 'USA',
-                                                               'name_on_account'     => 'Tropo User',
+                                                               'country'            => 'USA',
+                                                               'name_on_account'    => 'Tropo User',
                                                                'expiration_date'    => '2011-12-10',
                                                                'security_code'      => '123',
                                                                'recharge_amount'    => 10.50,
                                                                'recharge_threshold' => 5.00,
-                                                               'email'             => 'j@doe.com',
-                                                               'phone_number'      => '4155551212' })
+                                                               'email'              => 'j@doe.com',
+                                                               'phone_number'       => '4155551212' })
+
 
       result.should == @payment_info_message
     end
