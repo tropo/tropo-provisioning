@@ -137,7 +137,9 @@ class TropoProvisioning
   # @return [Hash]
   #   a hash containing the accountNumber, paymentType, paymentTypeName, rechargeAmount and rechargeThreshold
   def user_payment_method(user_id)
-    request(:get, { :resource => 'users/' + user_id + '/payment/method'})
+    result = request(:get, { :resource => 'users/' + user_id + '/payment/method'})
+    result.merge!({ :id => get_element(result.paymentType) })
+    result
   end
   
   ##

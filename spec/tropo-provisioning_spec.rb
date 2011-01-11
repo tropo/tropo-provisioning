@@ -121,17 +121,18 @@ describe "TropoProvisioning" do
                         "paymentType"       => "https://api-smsified-eng.voxeo.net/v1/types/payment/1", 
                         "accountNumber"     => "5555", 
                         "paymentTypeName"   => "visa", 
-                        "rechargeThreshold" => "0.00"}
+                        "rechargeThreshold" => "0.00",
+                        "id"                => "1" }
                         
     @payment_methods = [ { "name" => "visa", 
                            "href" => "https://api-smsified-eng.voxeo.net/v1/types/payment/1", 
-                           "id"   => "1"}, 
+                           "id"   => "1" }, 
                          { "name" => "mastercard", 
                            "href" => "https://api-smsified-eng.voxeo.net/v1/types/payment/2", 
-                           "id"   => "2"}, 
+                           "id"   => "2" }, 
                          { "name" => "amex", 
                            "href" => "https://api-smsified-eng.voxeo.net/v1/types/payment/3", 
-                           "id"   => "3"}]
+                           "id"   => "3" }]
 
     @features = [ { "name"        => "International Outbound SMS", 
                     "href"        => "https://api-smsified-eng.voxeo.net/v1/features/9", 
@@ -823,7 +824,9 @@ describe "TropoProvisioning" do
                                                                :expiration_date    => '2011-12-10',
                                                                :security_code      => '123',
                                                                :recharge_amount    => 10.50,
-                                                               :recharge_threshold => 5.00 })
+                                                               :recharge_threshold => 5.00,
+                                                               :email              => 'j@doe.com',
+                                                               :phone_number       => '4155551212' })
       result.should == @payment_info_message
     end
     
