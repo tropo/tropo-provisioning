@@ -235,8 +235,10 @@ class TropoProvisioning
     raise ArgumentError, ':expiration_date required' unless params[:expiration_date]
     raise ArgumentError, ':security_code required' unless params[:security_code]
     raise ArgumentError, ':recharge_amount required' unless params[:recharge_amount]
+    raise ArgumentError, ':email required' unless params[:email]
+    raise ArgumentError, ':phone_number required' unless params[:phone_number]
     
-    result = request(:post, { :resource => 'users/' + user_id + '/payment/method', :body => params })
+    result = request(:put, { :resource => 'users/' + user_id + '/payment/method', :body => params })
     result
   end
   alias :modify_payment_info :add_payment_info

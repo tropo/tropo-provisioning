@@ -381,7 +381,7 @@ describe "TropoProvisioning" do
                        :status => ["200", "OK"])
                        
   # Add payment info to a user
-  FakeWeb.register_uri(:post, 
+  FakeWeb.register_uri(:put, 
                        "http://foo:bar@api.tropo.com/v1/users/12345/payment/method", 
                        :body => ActiveSupport::JSON.encode(@payment_info_message),
                        :content_type => "application/json",
