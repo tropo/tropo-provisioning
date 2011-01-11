@@ -203,18 +203,19 @@ class TropoProvisioning
   # Add/modify payment info for a user
   #
   # @param [require, Hash] params the params to add the payment info
-  # @option params [required, String] :account_number
-  # @option params [required, String] :payment_type
-  # @option params [required, String] :address
+  # @option params [required, String] :user_id the user to add the payment details for
+  # @option params [required, String] :account_number the credit card number
+  # @option params [required, String] :payment_type the type, such as visa, mastercard, etc
+  # @option params [required, String] :address 
   # @option params [optional, String] :address2
   # @option params [required, String] :city
   # @option params [required, String] :state
   # @option params [required, String] :postal_code
   # @option params [required, String] :country
   # @option params [optional, String] :email
-  # @option params [required, String] :name_on_account
-  # @option params [required, String] :expiration_date
-  # @option params [required, String] :security_code
+  # @option params [required, String] :name_on_account name on the credit card
+  # @option params [required, String] :expiration_date expiration date of the credit card
+  # @option params [required, String] :security_code back panel/front panel (Amex) code on the card
   # @option params [optional, String] :phone_number
   # @option params [required, Float] :recharge_amount
   # @option params [required, Float] :recharge_threshold
