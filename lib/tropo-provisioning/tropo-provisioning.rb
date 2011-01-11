@@ -202,8 +202,8 @@ class TropoProvisioning
   ##
   # Add/modify payment info for a user
   #
+  # @param [required, String] user_id to add the payment details for
   # @param [require, Hash] params the params to add the payment info
-  # @option params [required, String] :user_id the user to add the payment details for
   # @option params [required, String] :account_number the credit card number
   # @option params [required, String] :payment_type the type, such as visa, mastercard, etc
   # @option params [required, String] :address 
@@ -223,8 +223,7 @@ class TropoProvisioning
   #   the href of the payment method added
   # @raise [ArgumentError]
   #   if a required param is not present
-  def add_payment_info(params={})
-    raise ArgumentError, ':user_id requried' unless params[:user_id]
+  def add_payment_info(user_id, params={})
     raise ArgumentError, ':account_number required' unless params[:account_number]
     raise ArgumentError, ':payment_type required' unless params[:payment_type]
     raise ArgumentError, ':address required' unless params[:address]
@@ -237,7 +236,7 @@ class TropoProvisioning
     raise ArgumentError, ':security_code required' unless params[:security_code]
     raise ArgumentError, ':recharge_amount required' unless params[:recharge_amount]
     
-    result = request(:post, { :resource => 'users/' + params[:user_id] + '/payment/method', :body => params })
+    result = request(:post, { :resource => 'users/' + user_id + '/payment/method', :body => params })
     result
   end
   alias :modify_payment_info :add_payment_info
