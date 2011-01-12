@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
      "VERSION",
      "lib/tropo-provisioning.rb",
      "lib/tropo-provisioning/tropo-provisioning.rb",
+     "lib/tropo-provisioning/error.rb",
      "tropo-provisioning.gemspec"
   ]
   s.homepage = %q{http://github.com/voxeo/tropo-provisioning}
