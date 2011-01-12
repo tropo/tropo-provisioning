@@ -223,7 +223,7 @@ class TropoProvisioning
   # @raise [ArgumentError]
   #   if a required param is not present
   def add_payment_info(user_id, params={})
-    validate_params(params, %w(account_number payment_type address city state postal_code country name_on_account expiration_date security_code recharge_amount email phone_number))
+    #validate_params(params, %w(account_number payment_type address city state postal_code country name_on_account expiration_date security_code recharge_amount email phone_number))
     
     result = request(:put, { :resource => 'users/' + user_id + '/payment/method', :body => params })
     result
@@ -577,8 +577,8 @@ class TropoProvisioning
       raise RuntimeError, "Unable to connect to the Provisioning API server - #{e.to_s}"
     end
 
-    raise RuntimeError, "#{response.code}: #{response.message} - #{response.body}" unless response.code == '200'
-
+    raise ProvisioningApiRuntimeError.new(response.code), "#{response.code}: #{response.message} - #{response.body}" unless response.code == '200'
+    
     result = ActiveSupport::JSON.decode response.body
     if result.instance_of? Array
       hashie_array(result)

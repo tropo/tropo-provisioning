@@ -319,6 +319,13 @@ describe "TropoProvisioning" do
                         :content_type => "application/json",
                         :status => ["200", "OK"])
                         
+   # Get a specific user by user_id 
+   FakeWeb.register_uri(:get, 
+                        "http://foo:bar@api.tropo.com/v1/users/98765",
+                        :body => nil, 
+                        :content_type => "application/json",
+                        :status => ["404", "Got an error here!"])
+                                              
    # Get a specific user by username
    FakeWeb.register_uri(:get, 
                         "http://foo:bar@api.tropo.com/v1/users/foo",
@@ -926,6 +933,17 @@ describe "TropoProvisioning" do
     it 'should remove from a whitelist' do
       result = @tropo_provisioning.delete_whitelist({ :user_id => '12345', :value => '14155551212' })
       result.should == @whitelist
+    end
+  end
+  
+  describe 'custome error' do
+    it 'should raise a custom error with an http_status code on the error object' do
+      begin
+        @tropo_provisioning.user('98765')
+      rescue => e
+        e.http_status.should == "404"
+        e.message.should == '404: Got an error here! - '
+      end
     end
   end
 end
