@@ -914,6 +914,14 @@ describe "TropoProvisioning" do
       result = @tropo_provisioning.available_payment_types
       result.should == @payment_methods
     end
+    
+    it 'should raise an error if a float is not passed in amount for make_payment' do
+      begin
+        @tropo_provisioning.make_payment('1234', { :foo => 'bar' })
+      rescue => e
+        e.to_s.should == "amount must be of type Float"
+      end
+    end
   end
   
   describe 'whitelists' do

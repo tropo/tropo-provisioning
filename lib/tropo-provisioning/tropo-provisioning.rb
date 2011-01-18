@@ -238,6 +238,8 @@ class TropoProvisioning
   # @return [Hash]
   #   a message with the success or failure of the payment
   def make_payment(user_id, amount)
+    raise ArgumentError, 'amount must be of type Float' if amount.instance_of?(Float) == false
+    
     request(:post, { :resource => 'users/' + user_id + '/payments', :body => { :amount => amount } })
   end
   
