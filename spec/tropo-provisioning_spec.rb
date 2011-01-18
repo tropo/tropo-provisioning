@@ -192,6 +192,12 @@ describe "TropoProvisioning" do
     
     @whitelist = [{ "href" => "https://api-smsified-eng.voxeo.net/v1/partitions/staging/platforms/sms/whitelist/14075551212", "value"=>"14075551212" }]
     
+    @countries = [{ "name"=>"Zimbabwe", "href"=>"http://api-smsified-eng.voxeo.net/v1/countries/426", "code"=>"ZW", "id" => "426" },
+                  { "name"=>"United States", "href"=>"http://api-smsified-eng.voxeo.net/v1/countries/36", "code"=>"US", "states"=>"http://api-smsified-eng.voxeo.net/v1/countries/36/states", "id" => "36" }]
+    
+    @states = [{ "name"=>"Wisconsin", "href"=>"http://api-smsified-eng.voxeo.net/v1/countries/36/states/49", "code"=>"WI", "id" => "49" },
+               { "name"=>"Wyoming", "href"=>"http://api-smsified-eng.voxeo.net/v1/countries/36/states/50", "code"=>"WY", "id"=>"50" }]
+               
     # Register our resources
     
     # Applications with a bad uname/passwd
@@ -468,6 +474,20 @@ describe "TropoProvisioning" do
     FakeWeb.register_uri(:delete, 
                          "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist/14155551212", 
                          :body => ActiveSupport::JSON.encode(@whitelist), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                         
+    # Countries
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/countries", 
+                         :body => ActiveSupport::JSON.encode(@countries), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+
+    # States
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/countries/36/states", 
+                         :body => ActiveSupport::JSON.encode(@states), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
   end
@@ -952,6 +972,24 @@ describe "TropoProvisioning" do
         e.http_status.should == "404"
         e.message.should == '404: Got an error here! - '
       end
+    end
+  end
+  
+  describe 'geography' do
+    it 'should return a list of countries' do
+      @tropo_provisioning.countries.should == @countries
+    end
+    
+    it 'should have the id added for the country' do
+      result = @tropo_provisioning.countries[1][:id].should == '36'
+    end
+    
+    it 'should return a list of states' do
+      @tropo_provisioning.states('36').should == @states
+    end
+    
+    it 'should have the id added for the state' do
+      @tropo_provisioning.states('36')[1]['id'].should == '50'
     end
   end
 end

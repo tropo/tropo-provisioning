@@ -159,6 +159,26 @@ class TropoProvisioning
   end
   
   ##
+  # Return the list of available countries
+  #
+  # @return [Hash]
+  #   returns an Array of hashes that include the country details available
+  def countries
+    result = request(:get, { :resource => 'countries' })
+    add_ids(result)
+  end
+  
+  ##
+  # Return the list of available states for a country
+  #
+  # @return [Hash]
+  #   returns an Array of hashes that include the state details for a country that are available
+  def states(id)
+    result = request(:get, { :resource => 'countries' + "/#{id}/" + 'states' })
+    add_ids(result)
+  end
+  
+  ##
   # Lists the available features
   #
   # @return [Hash]
@@ -527,6 +547,20 @@ class TropoProvisioning
       hashied_array << Hashie::Mash.new(ele)
     end
     hashied_array
+  end
+  
+  ##
+  # Adds the IDs to an Array of Hashes if no ID is present
+  #
+  # @param [required, Array] array of hashes to add IDs to
+  # 
+  # @return [Array]
+  #   the array of hashes with ID added
+  def add_ids(array)
+    array.each do |element|
+      element[:id] = get_element(element.href) if element[:id].nil?
+    end
+    array
   end
   
   ##
