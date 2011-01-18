@@ -198,6 +198,9 @@ describe "TropoProvisioning" do
     @states = [{ "name"=>"Wisconsin", "href"=>"http://api-smsified-eng.voxeo.net/v1/countries/36/states/49", "code"=>"WI", "id" => "49" },
                { "name"=>"Wyoming", "href"=>"http://api-smsified-eng.voxeo.net/v1/countries/36/states/50", "code"=>"WY", "id"=>"50" }]
                
+    @recurrence = { 'rechargeAmount' => 13.50, 'rechargeThreshold' => 10.00 }
+    @recurrence_updated = { 'href' => 'http://api-smsified-eng.voxeo.net/v1/users/1234/payment/recurrence' }
+    
     # Register our resources
     
     # Applications with a bad uname/passwd
@@ -488,6 +491,20 @@ describe "TropoProvisioning" do
     FakeWeb.register_uri(:get, 
                          "http://foo:bar@api.tropo.com/v1/countries/36/states", 
                          :body => ActiveSupport::JSON.encode(@states), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                         
+    # Recurrency get
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/users/1234/payment/recurrence", 
+                         :body => ActiveSupport::JSON.encode(@recurrence), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                         
+    # Recurrency update
+    FakeWeb.register_uri(:put, 
+                         "http://foo:bar@api.tropo.com/v1/users/1234/payment/recurrence", 
+                         :body => ActiveSupport::JSON.encode(@recurrence_updated), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
   end
@@ -941,6 +958,15 @@ describe "TropoProvisioning" do
       rescue => e
         e.to_s.should == "amount must be of type Float"
       end
+    end
+    
+    it 'should update the recurring payment details' do
+      result = @tropo_provisioning.update_recurrence('1234', { :recharge_amount => 13.50, :recharge_threshold => 10.00 })
+      result.should == @recurrence_updated
+    end
+    
+    it 'should get the existing recurrent payment details' do
+      @tropo_provisioning.get_recurrence('1234').should == @recurrence
     end
   end
   

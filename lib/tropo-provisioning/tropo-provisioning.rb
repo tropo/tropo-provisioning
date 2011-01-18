@@ -236,8 +236,6 @@ class TropoProvisioning
   # @option params [required, String] :expiration_date expiration date of the credit card
   # @option params [required, String] :security_code back panel/front panel (Amex) code on the card
   # @option params [optional, String] :phone_number
-  # @option params [required, Float] :recharge_amount
-  # @option params [required, Float] :recharge_threshold
   # @return [Hash]
   #   the href of the payment method added
   # @raise [ArgumentError]
@@ -249,6 +247,31 @@ class TropoProvisioning
     result
   end
   alias :modify_payment_info :add_payment_info
+  
+  ##
+  # Add/modify recurring fund amount and threshold
+  # 
+  # @param [required, String] user_id to add the payment details for
+  # @param [require, Hash] params the params to add the recurrence
+  # @option params [required, Float] :recharge_amount
+  # @option params [required, Float] :recharge_threshold
+  #
+  # @return [Hash]
+  def update_recurrence(user_id, params={})
+    validate_params(params, %w(recharge_amount recharge_threshold))
+    
+    result = request(:put, { :resource => 'users/' + user_id + '/payment/recurrence', :body => params })
+  end
+  
+  ##
+  # Add/modify recurring fund amount and threshold
+  # 
+  # @param [required, String] user_id to get the recurrence info for
+  #
+  # @return [Hash]
+  def get_recurrence(user_id)
+    result = request(:get, { :resource => 'users/' + user_id + '/payment/recurrence' })
+  end
   
   ##
   # Makes a payment on behalf of a user
