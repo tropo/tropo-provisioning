@@ -961,7 +961,7 @@ describe "TropoProvisioning" do
     end
     
     it 'should update the recurring payment details' do
-      result = @tropo_provisioning.update_recurrence('1234', { :recharge_amount => 13.50, :recharge_threshold => 10.00 })
+      result = @tropo_provisioning.update_recurrence('1234', { :recharge_amount => 13.50, :threshold_percentage => 10 })
       result.should == @recurrence_updated
     end
     

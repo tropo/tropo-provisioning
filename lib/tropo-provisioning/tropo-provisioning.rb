@@ -258,7 +258,7 @@ class TropoProvisioning
   #
   # @return [Hash]
   def update_recurrence(user_id, params={})
-    validate_params(params, %w(recharge_amount recharge_threshold))
+    validate_params(params, %w(recharge_amount threshold_percentage))
     
     result = request(:put, { :resource => 'users/' + user_id + '/payment/recurrence', :body => params })
   end
