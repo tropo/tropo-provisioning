@@ -566,14 +566,6 @@ describe "TropoProvisioning" do
       rescue => e
         e.to_s.should == ':name is a required parameter'
       end
-    
-      begin
-        @tropo_provisioning.create_application({ :name      => 'foobar',
-                                                 :partition => 'foobar',
-                                                 :platform  => 'foobar' })
-      rescue => e
-        e.to_s.should == ':messaging_url or :voice_url is a required parameter'
-      end
     end
   
     it "should raise ArgumentErrors if appropriate values are not passed" do

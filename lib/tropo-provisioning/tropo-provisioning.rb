@@ -361,7 +361,7 @@ class TropoProvisioning
   # @option params [required, String] :partition this defines whether the application is in staging/development or production
   # @option params [required, String] :platform (scripting) whether to use scripting or the webapi
   # @option params [required, String] :messagingUrl or :messaging_url The URL that powers the SMS/messages sessions for your application
-  # @option params [required, String] :voiceUrl or :voice_url the URL that powers voices calls for your application
+  # @option params [optional, String] :voiceUrl or :voice_url the URL that powers voices calls for your application
   # @return [Hash] returns the href of the application created and the application_id of the application created
   def create_application(params={})
     merged_params = DEFAULT_OPTIONS.merge(camelize_params(params))
@@ -718,12 +718,6 @@ class TropoProvisioning
   def validate_application_params(params={})
     # Make sure all of the arguments are present
     raise ArgumentError, ':name is a required parameter' unless params[:name] || params['name']
-    
-    if params[:messaging_url].nil? && params[:voice_url].nil? && params['messaging_url'].nil? && params['voice_url'].nil?
-      if params[:messagingUrl].nil? && params[:voiceUrl].nil? && params['messagingUrl'].nil? && params['voiceUrl'].nil?
-        raise ArgumentError, ':messaging_url or :voice_url is a required parameter'
-      end
-    end
     
     # Make sure the arguments have valid values
     raise ArgumentError, ":platform must be 'scripting' or 'webapi'" unless params[:platform] == 'scripting' || params[:platform] == 'webapi' || params['platform'] == 'scripting' || params['platform'] == 'webapi'
