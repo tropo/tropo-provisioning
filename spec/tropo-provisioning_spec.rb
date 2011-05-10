@@ -507,6 +507,46 @@ describe "TropoProvisioning" do
                          :body => ActiveSupport::JSON.encode(@recurrence_updated), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
+    
+    @invitation_created = { 'href' => "http://api-smsified-eng.voxeo.net/v1/invitations/ABC457" }
+    @deleted_invitation = { 'message' => "deleted invitation at uri http://api-smsified-eng.voxeo.net/v1/invitations/ABC457" }
+    @invitations = [ { 'code' => "ABC456", 'count' => 100, 'credit' => "10.00", 'href' => "http://api-smsified-eng.voxeo.net/v1/invitations/ABC456" },
+                     { 'code' => "ABC457", 'count' => 100, 'credit' => "10.00", 'href' => "http://api-smsified-eng.voxeo.net/v1/invitations/ABC457" }]
+
+    # List invitations
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/invitations", 
+                         :body => ActiveSupport::JSON.encode(@invitations), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+
+    # Get an invitation
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/invitations/ABC457", 
+                         :body => ActiveSupport::JSON.encode(@invitations[1]), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+
+    # Update an invitation
+    FakeWeb.register_uri(:put, 
+                         "http://foo:bar@api.tropo.com/v1/invitations/ABC457", 
+                         :body => ActiveSupport::JSON.encode(@invitation_created), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                         
+    # Delete an invitation
+    FakeWeb.register_uri(:delete, 
+                         "http://foo:bar@api.tropo.com/v1/invitations/ABC457", 
+                         :body => ActiveSupport::JSON.encode(@deleted_invitation), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                         
+    # Create invitation
+    FakeWeb.register_uri(:post, 
+                         "http://foo:bar@api.tropo.com/v1/invitations", 
+                         :body => ActiveSupport::JSON.encode(@invitation_created), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -1008,6 +1048,31 @@ describe "TropoProvisioning" do
     
     it 'should have the id added for the state' do
       @tropo_provisioning.states('36')[1]['id'].should == '50'
+    end
+  end
+  
+  describe 'invitations' do
+    it 'should return a list of inivitations' do
+      @tropo_provisioning.invitations.should == @invitations
+    end
+    
+    it 'should return an invitation' do
+      @tropo_provisioning.invitation('ABC457').should == @invitations[1]
+    end
+    
+    it 'should create an invitation' do
+      @tropo_provisioning.create_invitation({ :code   => 'ABC457',
+                                              :count  => 100,
+                                              :credit => 10 }).should == @invitation_created
+    end
+    
+    it 'should update an invitation' do
+      @tropo_provisioning.update_invitation('ABC457', :count  => 200)      
+    end
+    
+    it 'should delete an invitation' do
+      @tropo_provisioning.delete_invitation('ABC457')
+      
     end
   end
 end

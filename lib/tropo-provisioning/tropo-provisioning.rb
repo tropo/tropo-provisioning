@@ -472,6 +472,60 @@ class TropoProvisioning
   end
   
   ##
+  # Fetch all invitations
+  #
+  # @return [Hash] returns a list of the invitations
+  def invitations
+    request(:get, { :resource => 'invitations' })
+  end
+  
+  ##
+  # Fetch an invitation
+  #
+  # @param [required, String] the invitation id to fetch
+  # @return [Hash] return an invitation
+  def invitation(id)
+    request(:get, { :resource => 'invitations' + "/#{id}" })
+  end
+  
+  ##
+  # Fetch an invitation
+  #
+  # @param [required, String] the invitation id to fetch
+  # @return [Hash] return an invitation
+  def delete_invitation(id)
+    request(:delete, { :resource => 'invitations' + "/#{id}" })
+  end
+  
+  ##
+  # Create an invitation
+  #
+  # @param [required, Hash] params the parameters used to create the application
+  # @option params [optional, String] :code the invitation code (defaults to a random alphanum string of length 6 if not specified on POST) 
+  # @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  # @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  # @option params [optional, String] :partition whether to create in staging or production
+  # @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
+  # @return [Hash] returns the href of the invitation created
+  def create_invitation(options)
+    request(:post, { :resource => 'invitations', :body => options })
+  end
+  
+  ##
+  # Update an invitation
+  #
+  # @param [required, String] id of the invitation to udpate (code)
+  # @param [required, Hash] params the parameters used to update the application
+  # @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  # @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  # @option params [optional, String] :partition whether to create in staging or production
+  # @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
+  # @return [Hash] returns the href of the invitation created
+  def update_invitation(id, options)
+    request(:put, { :resource => 'invitations' + "/#{id}", :body => options })
+  end
+  
+  ##
   # Get the available partitions available
   #
   # @return [Array]
