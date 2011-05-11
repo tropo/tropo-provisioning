@@ -472,21 +472,35 @@ class TropoProvisioning
   end
   
   ##
-  # Fetch all invitations
+  # Fetch all invitations, or invitations by user
   #
+  # @param [optional, String] the user_id to fetch the invitations for, if not present, will fetch all invitations
   # @return [Hash] returns a list of the invitations
-  def invitations
-    request(:get, { :resource => 'invitations' })
+  def invitations(user_id=nil)
+    if user_id
+      request(:get, { :resource => 'users' + "/#{user_id}" + '/invitations'})
+    else
+      request(:get, { :resource => 'invitations' })
+    end
   end
+  alias :user_invitations :invitations
   
   ##
   # Fetch an invitation
   #
+  # @param [optional, String] the user id to fetch the invitation for
   # @param [required, String] the invitation id to fetch
   # @return [Hash] return an invitation
-  def invitation(id)
-    request(:get, { :resource => 'invitations' + "/#{id}" })
+  def invitation(*args)
+    if args.length == 1
+      request(:get, { :resource => 'invitations' + "/#{args[0]}" })
+    elsif args.length == 2
+      request(:get, { :resource => 'users' + "/#{args[0]}" + '/invitations' + "/#{args[1]}" })
+    else
+      raise ArgumentError, 'Only accepts two arguments, invitation_id and user_id'
+    end
   end
+  alias :user_invitation :invitation
   
   ##
   # Fetch an invitation

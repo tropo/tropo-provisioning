@@ -547,6 +547,20 @@ describe "TropoProvisioning" do
                          :body => ActiveSupport::JSON.encode(@invitation_created), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
+
+    # List invitation for a user
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations", 
+                         :body => ActiveSupport::JSON.encode([@invitation_created]), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                         
+    # List invitation for a user
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations/ABC457", 
+                         :body => ActiveSupport::JSON.encode(@invitations[1]), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -1067,12 +1081,19 @@ describe "TropoProvisioning" do
     end
     
     it 'should update an invitation' do
-      @tropo_provisioning.update_invitation('ABC457', :count  => 200)      
+      @tropo_provisioning.update_invitation('ABC457', :count  => 200).should == @invitation_created
     end
     
     it 'should delete an invitation' do
-      @tropo_provisioning.delete_invitation('ABC457')
-      
+      @tropo_provisioning.delete_invitation('ABC457').should == @deleted_invitation
+    end
+    
+    it 'should fetch the invitations for a user' do
+      @tropo_provisioning.user_invitations('15909').should == [@invitation_created]
+    end
+    
+    it 'should list a specific invitation for a user' do
+      @tropo_provisioning.invitation('15909', 'ABC457').should == @invitations[1]
     end
   end
 end

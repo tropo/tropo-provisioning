@@ -12,4 +12,8 @@ provisioning.invitations.each do |invitation|
   p invitation
 end
 
-p provisioning.invitation('ABC457')
+p provisioning.invitation('ABC456')
+
+p provisioning.user_invitations '15909'
+
+p provisioning.user_invitation '15909', 'ABC456'
