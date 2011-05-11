@@ -474,7 +474,9 @@ class TropoProvisioning
   ##
   # Fetch all invitations, or invitations by user
   #
-  # @param [optional, String] the user_id to fetch the invitations for, if not present, will fetch all invitations
+  # @overload def invitations()
+  # @overload def user_inivitations(user_id)
+  #   @param [optional, String] the user_id to fetch the invitations for, if not present, will fetch all invitations
   # @return [Hash] returns a list of the invitations
   def invitations(user_id=nil)
     if user_id
@@ -488,14 +490,17 @@ class TropoProvisioning
   ##
   # Fetch an invitation
   #
-  # @param [optional, String] the user id to fetch the invitation for
-  # @param [required, String] the invitation id to fetch
+  # @overload def invitation(invitation_id)
+  #   @param [required, String] the invitation id to fetch
+  # @overload def user_invitation(user_id, invitation_id)
+  #   @param [required, String] the invitation id to fetch
+  #   @param [optional, String] the user id to fetch the invitation for
   # @return [Hash] return an invitation
   def invitation(*args)
     if args.length == 1
       request(:get, { :resource => 'invitations' + "/#{args[0]}" })
     elsif args.length == 2
-      request(:get, { :resource => 'users' + "/#{args[0]}" + '/invitations' + "/#{args[1]}" })
+      request(:get, { :resource => 'users' + "/#{args[1]}" + '/invitations' + "/#{args[0]}" })
     else
       raise ArgumentError, 'Only accepts two arguments, invitation_id and user_id'
     end
@@ -505,39 +510,76 @@ class TropoProvisioning
   ##
   # Fetch an invitation
   #
-  # @param [required, String] the invitation id to fetch
+  # @overload def delete_invitation(invitation_id)
+  #   @param [required, String] the invitation id to delete
+  # @overload def delete_user_invitation(invitation_id, user_id)
+  #  @param [required, String] the invitation id to delete
+  #  @param [required, String] the user id to delete
   # @return [Hash] return an invitation
-  def delete_invitation(id)
-    request(:delete, { :resource => 'invitations' + "/#{id}" })
+  def delete_invitation(*args)
+    if args.length == 1
+      request(:delete, { :resource => 'invitations' + "/#{args[0]}" })
+    elsif args.length == 2
+      request(:delete, { :resource => 'users' + "/#{args[1]}" + '/invitations' + "/#{args[0]}" })
+    end
   end
+  alias :delete_user_invitation :delete_invitation
   
   ##
   # Create an invitation
   #
-  # @param [required, Hash] params the parameters used to create the application
-  # @option params [optional, String] :code the invitation code (defaults to a random alphanum string of length 6 if not specified on POST) 
-  # @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
-  # @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
-  # @option params [optional, String] :partition whether to create in staging or production
-  # @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
+  # @overload def create_invitation(options)
+  #   @param [required, Hash] params the parameters used to create the application
+  #   @option params [optional, String] :code the invitation code (defaults to a random alphanum string of length 6 if not specified on POST) 
+  #   @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  #   @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  #   @option params [optional, String] :partition whether to create in staging or production
+  #   @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
+  # @overload def create_user_invitation(user_id, options)
+  #   @param [requried, String] user_id to create the invitation for
+  #   @param [required, Hash] params the parameters used to create the application
+  #   @option params [optional, String] :code the invitation code (defaults to a random alphanum string of length 6 if not specified on POST) 
+  #   @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  #   @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  #   @option params [optional, String] :partition whether to create in staging or production
+  #   @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code)
   # @return [Hash] returns the href of the invitation created
-  def create_invitation(options)
-    request(:post, { :resource => 'invitations', :body => options })
+  def create_invitation(*args)
+    if args.length == 1
+      request(:post, { :resource => 'invitations', :body => args[0] })
+    elsif args.length == 2
+      request(:post, { :resource => 'users' + "/#{args[0]}" + '/invitations', :body => args[1] })
+    end
   end
+  alias :create_user_invitation :create_invitation
   
   ##
   # Update an invitation
   #
-  # @param [required, String] id of the invitation to udpate (code)
-  # @param [required, Hash] params the parameters used to update the application
-  # @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
-  # @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
-  # @option params [optional, String] :partition whether to create in staging or production
-  # @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
+  # @overload def update_invitation(invitation_id, options)
+  #   @param [required, String] id of the invitation to udpate (code)
+  #   @param [required, Hash] params the parameters used to update the application
+  #   @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  #   @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  #   @option params [optional, String] :partition whether to create in staging or production
+  #   @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
+  # @overload def updated_user_invitation(invitation_id, user_id, options)
+  #   @param [required, String] id of the invitation to udpate (code)
+  #   @param [required, String] id of the user to update the invitation code for
+  #   @param [required, Hash] params the parameters used to update the application
+  #   @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  #   @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  #   @option params [optional, String] :partition whether to create in staging or production
+  #   @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code)
   # @return [Hash] returns the href of the invitation created
-  def update_invitation(id, options)
-    request(:put, { :resource => 'invitations' + "/#{id}", :body => options })
+  def update_invitation(*args)
+    if args.length == 2
+      request(:put, { :resource => 'invitations' + "/#{args[0]}", :body => args[1] })
+    elsif args.length == 3
+      request(:put, { :resource => 'users' + "/#{args[1]}" + '/invitations' + "/#{args[0]}", :body => args[2] })
+    end
   end
+  alias :update_user_invitation :update_invitation
   
   ##
   # Get the available partitions available

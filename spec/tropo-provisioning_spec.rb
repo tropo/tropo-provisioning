@@ -534,9 +534,23 @@ describe "TropoProvisioning" do
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
+    # Update an invitation
+    FakeWeb.register_uri(:put, 
+                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations/ABC457", 
+                         :body => ActiveSupport::JSON.encode(@invitation_created), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                                              
     # Delete an invitation
     FakeWeb.register_uri(:delete, 
                          "http://foo:bar@api.tropo.com/v1/invitations/ABC457", 
+                         :body => ActiveSupport::JSON.encode(@deleted_invitation), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                         
+    # Delete an invitation
+    FakeWeb.register_uri(:delete, 
+                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations/ABC457", 
                          :body => ActiveSupport::JSON.encode(@deleted_invitation), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
@@ -548,6 +562,13 @@ describe "TropoProvisioning" do
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
+    # Create invitation
+    FakeWeb.register_uri(:post, 
+                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations", 
+                         :body => ActiveSupport::JSON.encode(@invitation_created), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                                              
     # List invitation for a user
     FakeWeb.register_uri(:get, 
                          "http://foo:bar@api.tropo.com/v1/users/15909/invitations", 
@@ -1080,12 +1101,27 @@ describe "TropoProvisioning" do
                                               :credit => 10 }).should == @invitation_created
     end
     
+    it 'should create an invitationfor a specific user' do
+      @tropo_provisioning.create_invitation('15909',
+                                            { :code   => 'ABC457',
+                                              :count  => 100,
+                                              :credit => 10 }).should == @invitation_created
+    end
+    
     it 'should update an invitation' do
       @tropo_provisioning.update_invitation('ABC457', :count  => 200).should == @invitation_created
     end
     
+    it 'should update an invitation for a specific user' do
+      @tropo_provisioning.update_invitation('ABC457', '15909', :count  => 200).should == @invitation_created
+    end
+    
     it 'should delete an invitation' do
       @tropo_provisioning.delete_invitation('ABC457').should == @deleted_invitation
+    end
+    
+    it 'should delete a specific user invitation' do
+      @tropo_provisioning.delete_invitation('ABC457', '15909').should == @deleted_invitation
     end
     
     it 'should fetch the invitations for a user' do
@@ -1093,7 +1129,7 @@ describe "TropoProvisioning" do
     end
     
     it 'should list a specific invitation for a user' do
-      @tropo_provisioning.invitation('15909', 'ABC457').should == @invitations[1]
+      @tropo_provisioning.invitation('ABC457', '15909').should == @invitations[1]
     end
   end
 end
