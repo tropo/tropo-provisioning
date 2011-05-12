@@ -341,6 +341,13 @@ describe "TropoProvisioning" do
                         :body => ActiveSupport::JSON.encode(@existing_user), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
+
+   # Get a specific user by username with HTTPS/SSL
+   FakeWeb.register_uri(:get, 
+                        "https://foo:bar@api.tropo.com/v1/users/foo",
+                        :body => ActiveSupport::JSON.encode(@existing_user), 
+                        :content_type => "application/json",
+                        :status => ["200", "OK"])
                         
    # Invalid credentials
    FakeWeb.register_uri(:get, 
@@ -573,6 +580,13 @@ describe "TropoProvisioning" do
     FakeWeb.register_uri(:get, 
                          "http://foo:bar@api.tropo.com/v1/users/15909/invitations", 
                          :body => ActiveSupport::JSON.encode([@invitation_created]), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+                         
+    # List invitation for a user via SSL
+    FakeWeb.register_uri(:get, 
+                         "https://foo:bar@api.tropo.com/v1/invitations", 
+                         :body => ActiveSupport::JSON.encode(@invitations), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
@@ -1130,6 +1144,13 @@ describe "TropoProvisioning" do
     
     it 'should list a specific invitation for a user' do
       @tropo_provisioning.invitation('ABC457', '15909').should == @invitations[1]
+    end
+  end
+  
+  describe "HTTPS/SSL support" do
+    it 'should fetch invitations via HTTPS/SSL' do
+      tp = TropoProvisioning.new('foo', 'bar', :base_uri => 'https://foo:bar@api.tropo.com/v1')
+      tp.invitations.should == @invitations
     end
   end
 end

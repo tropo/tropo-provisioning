@@ -734,7 +734,8 @@ class TropoProvisioning
       uri = URI.parse(@base_uri)
     end
     http = Net::HTTP.new(uri.host, uri.port)
-
+    http.use_ssl = true if uri.scheme == 'https' 
+    
     request = set_request_type(method, uri)
     request.initialize_http_header(@headers)
     request.basic_auth @username, @password
