@@ -596,6 +596,14 @@ describe "TropoProvisioning" do
                          :body => ActiveSupport::JSON.encode(@invitations[1]), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
+    
+    @username_check = { 'available' => false, 'href' => "http://api.smsified.com/v1/usernames/jsgoecke", 'valid' => true }
+    # List invitation for a user
+    FakeWeb.register_uri(:get, 
+                         "http://foo:bar@api.tropo.com/v1/usernames/12345", 
+                         :body => ActiveSupport::JSON.encode(@username_check), 
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
   end
   
   before(:each) do      
@@ -899,6 +907,10 @@ describe "TropoProvisioning" do
       result = @tropo_provisioning.modify_user('12345', { :password => 'foobar' })
       result.href.should == 'http://api-smsified-eng.voxeo.net/v1/users/12345'
       @tropo_provisioning.user_data['password'].should == 'foobar'
+    end
+    
+    it 'should see if a username is available' do
+      @tropo_provisioning.username_exists?('12345').should == @username_check
     end
   end
   

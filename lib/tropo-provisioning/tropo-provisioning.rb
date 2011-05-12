@@ -126,6 +126,16 @@ class TropoProvisioning
   def search_users(search_term)
     request(:get, { :resource => 'users/?' + search_term })
   end
+
+  ##
+  # Allows you to search if a username exists or not
+  #
+  # @param [required, String] a username to check
+  # @return [Array]
+  #   a hash containing an array of hashes with the qualifying account details  
+  def username_exists?(username)
+    request(:get, { :resource => 'usernames/' + username })
+  end
   
   ##
   # Fetches the payment information for a user
