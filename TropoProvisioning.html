@@ -1106,6 +1106,29 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#username_exists%3F-instance_method" title="#username_exists? (instance method)">- (Array) <strong>username_exists?</strong>(username) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Allows you to search if a username exists or not.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#whitelist-instance_method" title="#whitelist (instance method)">- (Hash) <strong>whitelist</strong>(user_id = nil) </a>
     
 
@@ -1590,15 +1613,15 @@
       <pre class="lines">
 
 
-243
-244
-245
-246
-247
-248</pre>
+253
+254
+255
+256
+257
+258</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 243</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 253</span>
 
 <span class='def def kw'>def</span> <span class='add_payment_info identifier id'>add_payment_info</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='comma token'>,</span> <span class='params identifier id'>params</span><span class='assign token'>=</span><span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='comment val'>#validate_params(params, %w(account_number payment_type address city state postal_code country name_on_account expiration_date security_code recharge_amount email phone_number))</span>
@@ -1707,18 +1730,18 @@ as</p>
       <pre class="lines">
 
 
-626
-627
-628
-629
-630
-631
-632
-633
-634</pre>
+636
+637
+638
+639
+640
+641
+642
+643
+644</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 626</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 636</span>
 
 <span class='def def kw'>def</span> <span class='add_whitelist identifier id'>add_whitelist</span><span class='lparen token'>(</span><span class='params identifier id'>params</span><span class='assign token'>=</span><span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='if if kw'>if</span> <span class='params identifier id'>params</span><span class='lbrack token'>[</span><span class='symbol val'>:user_id</span><span class='rbrack token'>]</span>
@@ -1847,16 +1870,16 @@ as</p>
       <pre class="lines">
 
 
-442
-443
-444
-445
-446
-447
-448</pre>
+452
+453
+454
+455
+456
+457
+458</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 442</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 452</span>
 
 <span class='def def kw'>def</span> <span class='address identifier id'>address</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='comma token'>,</span> <span class='address_id identifier id'>address_id</span><span class='rparen token'>)</span>
   <span class='addresses identifier id'>addresses</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='rparen token'>)</span><span class='dot token'>.</span><span class='each identifier id'>each</span> <span class='lbrace token'>{</span> <span class='bitor op'>|</span><span class='address identifier id'>address</span><span class='bitor op'>|</span> <span class='return return kw'>return</span> <span class='address identifier id'>address</span> <span class='if if_mod kw'>if</span> <span class='address identifier id'>address</span><span class='lbrack token'>[</span><span class='string val'>'number'</span><span class='rbrack token'>]</span>   <span class='eq op'>==</span> <span class='address_id identifier id'>address_id</span> <span class='orop op'>||</span> 
@@ -1932,12 +1955,12 @@ as</p>
       <pre class="lines">
 
 
-455
-456
-457</pre>
+465
+466
+467</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 455</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 465</span>
 
 <span class='def def kw'>def</span> <span class='addresses identifier id'>addresses</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='rparen token'>)</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'applications/'</span> <span class='plus op'>+</span> <span class='application_id identifier id'>application_id</span><span class='dot token'>.</span><span class='to_s identifier id'>to_s</span> <span class='plus op'>+</span> <span class='string val'>'/addresses'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -2029,13 +2052,13 @@ as</p>
       <pre class="lines">
 
 
-320
-321
-322
-323</pre>
+330
+331
+332
+333</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 320</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 330</span>
 
 <span class='def def kw'>def</span> <span class='application identifier id'>application</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='rparen token'>)</span>
   <span class='app identifier id'>app</span> <span class='assign token'>=</span> <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'applications/'</span> <span class='plus op'>+</span> <span class='application_id identifier id'>application_id</span><span class='dot token'>.</span><span class='to_s identifier id'>to_s</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -2089,17 +2112,17 @@ authenticated user, refer to the application method for details</p>
       <pre class="lines">
 
 
-329
-330
-331
-332
-333
-334
-335
-336</pre>
+339
+340
+341
+342
+343
+344
+345
+346</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 329</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 339</span>
 
 <span class='def def kw'>def</span> <span class='applications identifier id'>applications</span>
   <span class='results identifier id'>results</span> <span class='assign token'>=</span> <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'applications'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -2183,20 +2206,20 @@ authenticated user, refer to the application method for details</p>
       <pre class="lines">
 
 
-343
-344
-345
-346
-347
-348
-349
-350
-351
-352
-353</pre>
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 343</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 353</span>
 
 <span class='def def kw'>def</span> <span class='applications_with_addresses identifier id'>applications_with_addresses</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='assign token'>=</span><span class='nil nil kw'>nil</span><span class='rparen token'>)</span>
   <span class='if if kw'>if</span> <span class='application_id identifier id'>application_id</span>
@@ -2256,12 +2279,12 @@ authenticated user, refer to the application method for details</p>
       <pre class="lines">
 
 
-147
-148
-149</pre>
+157
+158
+159</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 147</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 157</span>
 
 <span class='def def kw'>def</span> <span class='available_payment_types identifier id'>available_payment_types</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'types/payment'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -2334,12 +2357,12 @@ account</p>
       <pre class="lines">
 
 
-157
-158
-159</pre>
+167
+168
+169</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 157</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 167</span>
 
 <span class='def def kw'>def</span> <span class='balance identifier id'>balance</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='rparen token'>)</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'users/'</span> <span class='plus op'>+</span> <span class='user_id identifier id'>user_id</span> <span class='plus op'>+</span> <span class='string val'>'/usage'</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -2503,13 +2526,13 @@ email your user to make sure they are real before activating the user.</p>
       <pre class="lines">
 
 
-166
-167
-168
-169</pre>
+176
+177
+178
+179</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 166</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 176</span>
 
 <span class='def def kw'>def</span> <span class='countries identifier id'>countries</span>
   <span class='result identifier id'>result</span> <span class='assign token'>=</span> <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'countries'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -2678,16 +2701,16 @@ numbers), pin (reserved), token, aim, jabber, msn, yahoo, gtalk &amp; skype</p>
       <pre class="lines">
 
 
-301
-302
-303
-304
-305
-306
-307</pre>
+311
+312
+313
+314
+315
+316
+317</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 301</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 311</span>
 
 <span class='def def kw'>def</span> <span class='create_address identifier id'>create_address</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='comma token'>,</span> <span class='params identifier id'>params</span><span class='assign token'>=</span><span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='validate_address_parameters identifier id'>validate_address_parameters</span><span class='lparen token'>(</span><span class='params identifier id'>params</span><span class='rparen token'>)</span>
@@ -2835,16 +2858,16 @@ application created</p>
       <pre class="lines">
 
 
-366
-367
-368
-369
-370
-371
-372</pre>
+376
+377
+378
+379
+380
+381
+382</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 366</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 376</span>
 
 <span class='def def kw'>def</span> <span class='create_application identifier id'>create_application</span><span class='lparen token'>(</span><span class='params identifier id'>params</span><span class='assign token'>=</span><span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='merged_params identifier id'>merged_params</span> <span class='assign token'>=</span> <span class='DEFAULT_OPTIONS constant id'>DEFAULT_OPTIONS</span><span class='dot token'>.</span><span class='merge identifier id'>merge</span><span class='lparen token'>(</span><span class='camelize_params identifier id'>camelize_params</span><span class='lparen token'>(</span><span class='params identifier id'>params</span><span class='rparen token'>)</span><span class='rparen token'>)</span>
@@ -3007,16 +3030,16 @@ application created</p>
       <pre class="lines">
 
 
-547
-548
-549
-550
-551
-552
-553</pre>
+557
+558
+559
+560
+561
+562
+563</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 547</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 557</span>
 
 <span class='def def kw'>def</span> <span class='create_invitation identifier id'>create_invitation</span><span class='lparen token'>(</span><span class='mult op'>*</span><span class='args identifier id'>args</span><span class='rparen token'>)</span>
   <span class='if if kw'>if</span> <span class='args identifier id'>args</span><span class='dot token'>.</span><span class='length identifier id'>length</span> <span class='eq op'>==</span> <span class='integer val'>1</span>
@@ -3412,14 +3435,14 @@ once you have taken appropriate steps to confirm the user</p>
       <pre class="lines">
 
 
-389
-390
-391
-392
-393</pre>
+399
+400
+401
+402
+403</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 389</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 399</span>
 
 <span class='def def kw'>def</span> <span class='delete_address identifier id'>delete_address</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='comma token'>,</span> <span class='address_id identifier id'>address_id</span><span class='rparen token'>)</span>
   <span class='address_to_delete identifier id'>address_to_delete</span> <span class='assign token'>=</span> <span class='address identifier id'>address</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='comma token'>,</span> <span class='address_id identifier id'>address_id</span><span class='rparen token'>)</span>
@@ -3493,12 +3516,12 @@ once you have taken appropriate steps to confirm the user</p>
       <pre class="lines">
 
 
-379
-380
-381</pre>
+389
+390
+391</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 379</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 389</span>
 
 <span class='def def kw'>def</span> <span class='delete_application identifier id'>delete_application</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='rparen token'>)</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:delete</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'applications/'</span> <span class='plus op'>+</span> <span class='application_id identifier id'>application_id</span><span class='dot token'>.</span><span class='to_s identifier id'>to_s</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -3647,16 +3670,16 @@ once you have taken appropriate steps to confirm the user</p>
       <pre class="lines">
 
 
-519
-520
-521
-522
-523
-524
-525</pre>
+529
+530
+531
+532
+533
+534
+535</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 519</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 529</span>
 
 <span class='def def kw'>def</span> <span class='delete_invitation identifier id'>delete_invitation</span><span class='lparen token'>(</span><span class='mult op'>*</span><span class='args identifier id'>args</span><span class='rparen token'>)</span>
   <span class='if if kw'>if</span> <span class='args identifier id'>args</span><span class='dot token'>.</span><span class='length identifier id'>length</span> <span class='eq op'>==</span> <span class='integer val'>1</span>
@@ -3766,18 +3789,18 @@ logged in as</p>
       <pre class="lines">
 
 
-644
-645
-646
-647
-648
-649
-650
-651
-652</pre>
+654
+655
+656
+657
+658
+659
+660
+661
+662</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 644</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 654</span>
 
 <span class='def def kw'>def</span> <span class='delete_whitelist identifier id'>delete_whitelist</span><span class='lparen token'>(</span><span class='params identifier id'>params</span><span class='assign token'>=</span><span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='if if kw'>if</span> <span class='params identifier id'>params</span><span class='lbrack token'>[</span><span class='symbol val'>:user_id</span><span class='rbrack token'>]</span>
@@ -3835,12 +3858,12 @@ logged in as</p>
       <pre class="lines">
 
 
-399
-400
-401</pre>
+409
+410
+411</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 399</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 409</span>
 
 <span class='def def kw'>def</span> <span class='exchanges identifier id'>exchanges</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'exchanges'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -3893,12 +3916,12 @@ description</p>
       <pre class="lines">
 
 
-186
-187
-188</pre>
+196
+197
+198</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 186</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 196</span>
 
 <span class='def def kw'>def</span> <span class='features identifier id'>features</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'features'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -3965,12 +3988,12 @@ description</p>
       <pre class="lines">
 
 
-272
-273
-274</pre>
+282
+283
+284</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 272</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 282</span>
 
 <span class='def def kw'>def</span> <span class='get_recurrence identifier id'>get_recurrence</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='rparen token'>)</span>
   <span class='result identifier id'>result</span> <span class='assign token'>=</span> <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'users/'</span> <span class='plus op'>+</span> <span class='user_id identifier id'>user_id</span> <span class='plus op'>+</span> <span class='string val'>'/payment/recurrence'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -4119,18 +4142,18 @@ description</p>
       <pre class="lines">
 
 
-499
-500
-501
-502
-503
-504
-505
-506
-507</pre>
+509
+510
+511
+512
+513
+514
+515
+516
+517</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 499</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 509</span>
 
 <span class='def def kw'>def</span> <span class='invitation identifier id'>invitation</span><span class='lparen token'>(</span><span class='mult op'>*</span><span class='args identifier id'>args</span><span class='rparen token'>)</span>
   <span class='if if kw'>if</span> <span class='args identifier id'>args</span><span class='dot token'>.</span><span class='length identifier id'>length</span> <span class='eq op'>==</span> <span class='integer val'>1</span>
@@ -4237,16 +4260,16 @@ invitations</p>
       <pre class="lines">
 
 
-481
-482
-483
-484
-485
-486
-487</pre>
+491
+492
+493
+494
+495
+496
+497</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 481</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 491</span>
 
 <span class='def def kw'>def</span> <span class='invitations identifier id'>invitations</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='assign token'>=</span><span class='nil nil kw'>nil</span><span class='rparen token'>)</span>
   <span class='if if kw'>if</span> <span class='user_id identifier id'>user_id</span>
@@ -4351,14 +4374,14 @@ invitations</p>
       <pre class="lines">
 
 
-283
-284
-285
-286
-287</pre>
+293
+294
+295
+296
+297</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 283</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 293</span>
 
 <span class='def def kw'>def</span> <span class='make_payment identifier id'>make_payment</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='comma token'>,</span> <span class='amount identifier id'>amount</span><span class='rparen token'>)</span>
   <span class='raise identifier id'>raise</span> <span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>'amount must be of type Float'</span> <span class='if if_mod kw'>if</span> <span class='amount identifier id'>amount</span><span class='dot token'>.</span><span class='instance_of? fid id'>instance_of?</span><span class='lparen token'>(</span><span class='Float constant id'>Float</span><span class='rparen token'>)</span> <span class='eq op'>==</span> <span class='false false kw'>false</span>
@@ -4555,20 +4578,20 @@ invitations</p>
       <pre class="lines">
 
 
-410
-411
-412
-413
-414
-415
-416
-417
-418
-419
-420</pre>
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 410</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 420</span>
 
 <span class='def def kw'>def</span> <span class='move_address identifier id'>move_address</span><span class='lparen token'>(</span><span class='params identifier id'>params</span><span class='assign token'>=</span><span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='validate_params identifier id'>validate_params</span><span class='lparen token'>(</span><span class='params identifier id'>params</span><span class='comma token'>,</span> <span class='dstring node'>%w(from to address)</span><span class='rparen token'>)</span>
@@ -4628,12 +4651,12 @@ invitations</p>
       <pre class="lines">
 
 
-589
-590
-591</pre>
+599
+600
+601</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 589</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 599</span>
 
 <span class='def def kw'>def</span> <span class='partitions identifier id'>partitions</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'partitions'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -4685,12 +4708,12 @@ invitations</p>
       <pre class="lines">
 
 
-598
-599
-600</pre>
+608
+609
+610</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 598</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 608</span>
 
 <span class='def def kw'>def</span> <span class='platforms identifier id'>platforms</span><span class='lparen token'>(</span><span class='partition identifier id'>partition</span><span class='rparen token'>)</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'partitions/'</span> <span class='plus op'>+</span> <span class='partition identifier id'>partition</span> <span class='plus op'>+</span> <span class='string val'>'/platforms'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -4821,13 +4844,13 @@ that are available</p>
       <pre class="lines">
 
 
-176
-177
-178
-179</pre>
+186
+187
+188
+189</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 176</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 186</span>
 
 <span class='def def kw'>def</span> <span class='states identifier id'>states</span><span class='lparen token'>(</span><span class='id identifier id'>id</span><span class='rparen token'>)</span>
   <span class='result identifier id'>result</span> <span class='assign token'>=</span> <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'countries'</span> <span class='plus op'>+</span> <span class='dstring node'>&quot;/#{id}/&quot;</span> <span class='plus op'>+</span> <span class='string val'>'states'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -4984,12 +5007,12 @@ that are available</p>
       <pre class="lines">
 
 
-470
-471
-472</pre>
+480
+481
+482</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 470</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 480</span>
 
 <span class='def def kw'>def</span> <span class='update_application identifier id'>update_application</span><span class='lparen token'>(</span><span class='application_id identifier id'>application_id</span><span class='comma token'>,</span> <span class='params identifier id'>params</span><span class='assign token'>=</span><span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:put</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'applications/'</span> <span class='plus op'>+</span> <span class='application_id identifier id'>application_id</span><span class='dot token'>.</span><span class='to_s identifier id'>to_s</span><span class='comma token'>,</span> <span class='symbol val'>:body</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='params identifier id'>params</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -5184,16 +5207,16 @@ that are available</p>
       <pre class="lines">
 
 
-575
-576
-577
-578
-579
-580
-581</pre>
+585
+586
+587
+588
+589
+590
+591</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 575</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 585</span>
 
 <span class='def def kw'>def</span> <span class='update_invitation identifier id'>update_invitation</span><span class='lparen token'>(</span><span class='mult op'>*</span><span class='args identifier id'>args</span><span class='rparen token'>)</span>
   <span class='if if kw'>if</span> <span class='args identifier id'>args</span><span class='dot token'>.</span><span class='length identifier id'>length</span> <span class='eq op'>==</span> <span class='integer val'>2</span>
@@ -5311,14 +5334,14 @@ that are available</p>
       <pre class="lines">
 
 
-260
-261
-262
-263
-264</pre>
+270
+271
+272
+273
+274</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 260</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 270</span>
 
 <span class='def def kw'>def</span> <span class='update_recurrence identifier id'>update_recurrence</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='comma token'>,</span> <span class='params identifier id'>params</span><span class='assign token'>=</span><span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='validate_params identifier id'>validate_params</span><span class='lparen token'>(</span><span class='params identifier id'>params</span><span class='comma token'>,</span> <span class='dstring node'>%w(recharge_amount threshold_percentage)</span><span class='rparen token'>)</span>
@@ -5495,12 +5518,12 @@ that are available</p>
       <pre class="lines">
 
 
-217
-218
-219</pre>
+227
+228
+229</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 217</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 227</span>
 
 <span class='def def kw'>def</span> <span class='user_disable_feature identifier id'>user_disable_feature</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='comma token'>,</span> <span class='feature_number identifier id'>feature_number</span><span class='rparen token'>)</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:delete</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'users/'</span> <span class='plus op'>+</span> <span class='user_id identifier id'>user_id</span> <span class='plus op'>+</span> <span class='string val'>'/features/'</span> <span class='plus op'>+</span> <span class='feature_number identifier id'>feature_number</span>  <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -5588,12 +5611,12 @@ that are available</p>
       <pre class="lines">
 
 
-206
-207
-208</pre>
+216
+217
+218</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 206</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 216</span>
 
 <span class='def def kw'>def</span> <span class='user_enable_feature identifier id'>user_enable_feature</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='comma token'>,</span> <span class='feature identifier id'>feature</span><span class='rparen token'>)</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:post</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'users/'</span> <span class='plus op'>+</span> <span class='user_id identifier id'>user_id</span> <span class='plus op'>+</span> <span class='string val'>'/features'</span><span class='comma token'>,</span> <span class='symbol val'>:body</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='lbrace token'>{</span> <span class='symbol val'>:feature</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='feature identifier id'>feature</span> <span class='rbrace token'>}</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -5646,12 +5669,12 @@ featureName</p>
       <pre class="lines">
 
 
-195
-196
-197</pre>
+205
+206
+207</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 195</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 205</span>
 
 <span class='def def kw'>def</span> <span class='user_features identifier id'>user_features</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='rparen token'>)</span>
   <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'users/'</span> <span class='plus op'>+</span> <span class='user_id identifier id'>user_id</span> <span class='plus op'>+</span> <span class='string val'>'/features'</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
@@ -5724,19 +5747,96 @@ rechargeAmount and rechargeThreshold</p>
       <pre class="lines">
 
 
-136
-137
-138
-139
-140</pre>
+146
+147
+148
+149
+150</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 136</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 146</span>
 
 <span class='def def kw'>def</span> <span class='user_payment_method identifier id'>user_payment_method</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='rparen token'>)</span>
   <span class='result identifier id'>result</span> <span class='assign token'>=</span> <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'users/'</span> <span class='plus op'>+</span> <span class='user_id identifier id'>user_id</span> <span class='plus op'>+</span> <span class='string val'>'/payment/method'</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='result identifier id'>result</span><span class='dot token'>.</span><span class='merge! fid id'>merge!</span><span class='lparen token'>(</span><span class='lbrace token'>{</span> <span class='symbol val'>:id</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='get_element identifier id'>get_element</span><span class='lparen token'>(</span><span class='result identifier id'>result</span><span class='dot token'>.</span><span class='paymentType identifier id'>paymentType</span><span class='rparen token'>)</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
   <span class='result identifier id'>result</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="username_exists?-instance_method">
+  
+    - (<tt>Array</tt>) <strong>username_exists?</strong>(username) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    
+<p>Allows you to search if a username exists or not</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>required</tt>, <tt>String</tt>)</span>
+      
+      
+        <span class='name'>a</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>username to check</p>
+</div>
+      
+    </li>
+  
+</ul>
+<h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>Array</tt>)</span>
+      
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>a hash containing an array of hashes with the qualifying account details</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+136
+137
+138</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 136</span>
+
+<span class='def def kw'>def</span> <span class='username_exists? fid id'>username_exists?</span><span class='lparen token'>(</span><span class='username identifier id'>username</span><span class='rparen token'>)</span>
+  <span class='request identifier id'>request</span><span class='lparen token'>(</span><span class='symbol val'>:get</span><span class='comma token'>,</span> <span class='lbrace token'>{</span> <span class='symbol val'>:resource</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>'usernames/'</span> <span class='plus op'>+</span> <span class='username identifier id'>username</span> <span class='rbrace token'>}</span><span class='rparen token'>)</span>
 <span class='end end kw'>end</span>
 </pre>
     </td>
@@ -5807,18 +5907,18 @@ rechargeAmount and rechargeThreshold</p>
       <pre class="lines">
 
 
-608
-609
-610
-611
-612
-613
-614
-615
-616</pre>
+618
+619
+620
+621
+622
+623
+624
+625
+626</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 608</span>
+      <pre class="code"><span class="info file"># File 'lib/tropo-provisioning/tropo-provisioning.rb', line 618</span>
 
 <span class='def def kw'>def</span> <span class='whitelist identifier id'>whitelist</span><span class='lparen token'>(</span><span class='user_id identifier id'>user_id</span><span class='assign token'>=</span><span class='nil nil kw'>nil</span><span class='rparen token'>)</span>
   <span class='if if kw'>if</span> <span class='user_id identifier id'>user_id</span>
@@ -5840,7 +5940,7 @@ rechargeAmount and rechargeThreshold</p>
 </div>
     
     <div id="footer">
-  Generated on Wed May 11 06:22:14 2011 by 
+  Generated on Wed May 11 20:08:41 2011 by 
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.6.8 (ruby-1.8.7).
 </div>
