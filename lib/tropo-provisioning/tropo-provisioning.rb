@@ -42,7 +42,7 @@ class TropoProvisioning
     result = request(:get, { :resource => 'users/' + user_identifier })
     if result['username']
       # Only add/update this if we are fetching the user we are logged in as
-      @user_data = result if result['username'] == @username
+      @user_data = result if result['username'].downcase == @username.downcase
     end
     result
   end
