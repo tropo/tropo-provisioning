@@ -4,24 +4,31 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 FakeWeb.allow_net_connect = false
 
 describe "TropoProvisioning" do
+  let(:applications) do
+    [ { "region" => "I-US", 
+                     "city"     => "iNum US", 
+                     "number"   => "883510001812716", 
+                     "href"     => "http://api.tropo.com/v1/applications/108000/addresses/number/883510001812716", 
+                     "prefix"   => "008", 
+                     "type"     => "number" }, 
+                   { "number"   => "9991436301", 
+                     "href"     => "http://api.tropo.com/v1/applications/108000/addresses/pin/9991436300", 
+                     "type"     => "pin" },
+                   { "href"     => "http://api.tropo.com/v1/applications/108000/addresses/jabber/xyz123", 
+                     "nickname" => "", 
+                     "username" => "xyz123", 
+                     "type"     => "jabber" },
+                   { "href"     => "http://api.tropo.com/v1/applications/108000/addresses/jabber/xyz123", 
+                     "nickname" => "", 
+                     "username" => "9991436300", 
+                     "type"     => "pin" },
+                   { "href"     => "http://api.tropo.com/v1/applications/108000/addresses/token/a1b2c3d4", 
+                     "nickname" => "", 
+                     "username" => "a1b2c3d4", 
+                     "type"     => "token" } ]
+  end
+
   before(:all) do
-    @applications = [ { "voiceUrl"    => "http://webhosting.voxeo.net/1234/www/simple.js", 
-                        "name"         => "API Test", 
-                        "href"         => "http://api.tropo.com/v1/applications/108000", 
-                        "partition"    => "staging", 
-                        "platform"     => "scripting" }, 
-                      { "voiceUrl"    => "http://hosting.tropo.com/1234/www/simon.rb", 
-                        "name"         => "Simon Game", 
-                        "href"         => "http://api.tropo.com/v1/applications/105838", 
-                        "partition"    => "staging", 
-                        "messagingUrl" => "http://hosting.tropo.com/1234/www/simon.rb", 
-                        "platform"     => "scripting" },
-                      { "voiceUrl"    => "http://webhosting.voxeo.net/1234/www/simple.js", 
-                        "name"         => "Foobar", 
-                        "href"         => "http://api.tropo.com/v1/applications/108002", 
-                        "partition"    => "staging", 
-                        "platform"     => "scripting" } ]
-    
     @addresses = [ { "region" => "I-US", 
                      "city"     => "iNum US", 
                      "number"   => "883510001812716", 
@@ -44,56 +51,6 @@ describe "TropoProvisioning" do
                      "username" => "a1b2c3d4", 
                      "type"     => "token" } ]
     
-    @exchanges =  '[
-                     {
-                        "prefix":"1407",
-                        "city":"Orlando",
-                        "state":"FL",
-                        "country":    "United States"
-                     },
-                     {
-                        "prefix":"1312",
-                        "city":"Chicago",
-                        "state":"IL",
-                            "country":"United States"
-                     },
-                     {
-                        "prefix":"1303",
-                        "city":"Denver",
-                            "state":"CO",
-                        "country":"United States"
-                     },
-                     {
-                        "prefix":"1310",
-                        "city":    "Los Angeles",
-                        "state":"CA",
-                        "country":"United States"
-                     },
-                     {
-                        "prefix":    "1412",
-                        "city":"Pittsburgh",
-                        "state":"PA",
-                        "country":    "United States"
-                     },
-                     {
-                        "prefix":"1415",
-                        "city":"San Francisco",
-                        "state":    "CA",
-                        "country":"United States"
-                     },
-                     {
-                        "prefix":"1206",
-                        "city":    "Seattle",
-                        "state":"WA",
-                        "country":"United States"
-                     },
-                     {
-                        "prefix":    "1301",
-                        "city":"Washington",
-                        "state":"DC",
-                        "country":    "United States"
-                     }
-                  ]'
     
     @new_user      = { 'user_id' => "12345", 'href' => "http://api.tropo.com/v1/users/12345", 'confirmation_key' => '1234' }
     @new_user_json = ActiveSupport::JSON.encode({ 'user_id' => "12345", 'href' => "http://api.tropo.com/v1/users/12345", 'confirmationKey' => '1234' })
@@ -211,13 +168,13 @@ describe "TropoProvisioning" do
     # A specific application
     FakeWeb.register_uri(:get, 
                          "http://foo:bar@api.tropo.com/v1/applications/108000", 
-                         :body => ActiveSupport::JSON.encode(@applications[0]),
+                         :body => ActiveSupport::JSON.encode(applications[0]),
                          :content_type => "application/json")
     
     # Applications
     FakeWeb.register_uri(:get, 
                          %r|http://foo:bar@api.tropo.com/v1/applications|, 
-                         :body => ActiveSupport::JSON.encode(@applications), 
+                         :body => ActiveSupport::JSON.encode(applications), 
                          :content_type => "application/json")
                          
     # Create an application       
@@ -296,7 +253,7 @@ describe "TropoProvisioning" do
     # Exchanges
     FakeWeb.register_uri(:get, 
                          "http://foo:bar@api.tropo.com/v1/exchanges", 
-                         :body => @exchanges, 
+                         :body => exchanges, 
                          :status => ["200", "OK"],
                          :content_type => "application/json")
 
@@ -606,12 +563,65 @@ describe "TropoProvisioning" do
                          :status => ["200", "OK"])
   end
   
-  before(:each) do      
-    @tropo_provisioning = TropoProvisioning.new('foo', 'bar')
+  let(:tropo_provisioning) do      
+    TropoProvisioning.new('foo', 'bar')
+  end
+  
+  let(:exchanges) do
+    '[
+       {
+          "prefix":"1407",
+          "city":"Orlando",
+          "state":"FL",
+          "country":    "United States"
+       },
+       {
+          "prefix":"1312",
+          "city":"Chicago",
+          "state":"IL",
+              "country":"United States"
+       },
+       {
+          "prefix":"1303",
+          "city":"Denver",
+              "state":"CO",
+          "country":"United States"
+       },
+       {
+          "prefix":"1310",
+          "city":    "Los Angeles",
+          "state":"CA",
+          "country":"United States"
+       },
+       {
+          "prefix":    "1412",
+          "city":"Pittsburgh",
+          "state":"PA",
+          "country":    "United States"
+       },
+       {
+          "prefix":"1415",
+          "city":"San Francisco",
+          "state":    "CA",
+          "country":"United States"
+       },
+       {
+          "prefix":"1206",
+          "city":    "Seattle",
+          "state":"WA",
+          "country":"United States"
+       },
+       {
+          "prefix":    "1301",
+          "city":"Washington",
+          "state":"DC",
+          "country":    "United States"
+       }
+    ]'
   end
   
   it "should create a TropoProvisioning object" do
-    @tropo_provisioning.instance_of?(TropoProvisioning).should == true
+    tropo_provisioning.instance_of?(TropoProvisioning).should == true
   end
   
   describe 'authentication' do
@@ -631,7 +641,7 @@ describe "TropoProvisioning" do
     it "should not provide a token for an existing account if wrong credentials" do
       pending('Need to work on tests for the new account')
       begin
-        result = @tropo_provisioning.account("foobar7474", 'fooeyfooey')
+        result = tropo_provisioning.account("foobar7474", 'fooeyfooey')
       rescue => e
         e.to_s.should == "403 - Invalid Login."
       end
@@ -639,27 +649,27 @@ describe "TropoProvisioning" do
     
     it "should provide a token for an existing account" do
       pending('Need to work on tests for the new account')
-      result = @tropo_provisioning.account("foobar7474", 'fooey')
+      result = tropo_provisioning.account("foobar7474", 'fooey')
       result.should == @list_account
     end
   end
   
   describe 'applications' do
     it "should get a list of applications" do
-      applications = []
-      @applications.each { |app| applications << app.merge({ 'application_id' => app['href'].split('/').last }) }
+      _applications = []
+      applications.each { |app| _applications << app.merge({ 'application_id' => app['href'].split('/').last }) }
 
-      @tropo_provisioning.applications.should == applications
+      tropo_provisioning.applications.should == _applications
     end
     
     it "should get a specific application" do
-      response = @tropo_provisioning.application '108000'
-      response['href'].should == @applications[0]['href']
+      response = tropo_provisioning.application '108000'
+      response['href'].should == applications[0]['href']
     end
   
     it "should raise ArgumentErrors if appropriate arguments are not specified" do
       begin
-        @tropo_provisioning.create_application({ :foo => 'bar' })
+        tropo_provisioning.create_application({ :foo => 'bar' })
       rescue => e
         e.to_s.should == ':name is a required parameter'
       end
@@ -667,7 +677,7 @@ describe "TropoProvisioning" do
   
     it "should raise ArgumentErrors if appropriate values are not passed" do
       begin
-        @tropo_provisioning.create_application({ :name         => 'foobar',
+        tropo_provisioning.create_application({ :name         => 'foobar',
                                                  :partition    => 'foobar',
                                                  :platform     => 'foobar',
                                                  :messagingUrl => 'http://foobar' })
@@ -676,18 +686,18 @@ describe "TropoProvisioning" do
       end
     
       begin
-        @tropo_provisioning.create_application({ :name         => 'foobar',
+        tropo_provisioning.create_application({ :name         => 'foobar',
                                                  :partition    => 'foobar',
                                                  :platform     => 'scripting',
                                                  :messagingUrl => 'http://foobar' })
       rescue => e
-        e.to_s.should == ":partiion must be 'staging' or 'production'"
+        e.to_s.should == ":partition must be 'staging' or 'production'"
       end
     end
   
     it "should receive an href back when we create a new application receiving an href back" do
       # With camelCase
-      result = @tropo_provisioning.create_application({ :name         => 'foobar',
+      result = tropo_provisioning.create_application({ :name         => 'foobar',
                                                         :partition    => 'production',
                                                         :platform     => 'scripting',
                                                         :messagingUrl => 'http://foobar' })
@@ -695,7 +705,7 @@ describe "TropoProvisioning" do
       result.application_id.should == '108016'
     
       # With underscores
-      result = @tropo_provisioning.create_application({ :name          => 'foobar',
+      result = tropo_provisioning.create_application({ :name          => 'foobar',
                                                         :partition     => 'production',
                                                         :platform      => 'scripting',
                                                         :messaging_url => 'http://foobar' })
@@ -705,14 +715,14 @@ describe "TropoProvisioning" do
   
     it "should receive an href back when we update an application receiving an href back" do
       # With camelCase
-      result = @tropo_provisioning.update_application('108000', { :name         => 'foobar',
+      result = tropo_provisioning.update_application('108000', { :name         => 'foobar',
                                                                   :partition    => 'production',
                                                                   :platform     => 'scripting',
                                                                   :messagingUrl => 'http://foobar' })
       result.href.should == "http://api.tropo.com/v1/applications/108016"
     
       # With underscore
-      result = @tropo_provisioning.update_application('108000', { :name          => 'foobar',
+      result = tropo_provisioning.update_application('108000', { :name          => 'foobar',
                                                                   :partition     => 'production',
                                                                   :platform      => 'scripting',
                                                                   :messaging_url => 'http://foobar' })
@@ -720,79 +730,79 @@ describe "TropoProvisioning" do
     end
   
     it "should delete an application" do
-      result = @tropo_provisioning.delete_application('108000')
+      result = tropo_provisioning.delete_application('108000')
       result.message.should == 'delete successful'
     end
   end
   
   describe 'addresses' do
     it "should list all of the addresses available for an application" do
-      result = @tropo_provisioning.addresses('108000')
+      result = tropo_provisioning.addresses('108000')
       result.should == @addresses
     end
   
     it "should list a single address when requested with a number for numbers" do
-      result = @tropo_provisioning.address('108000', '883510001812716')
+      result = tropo_provisioning.address('108000', '883510001812716')
       result.should == @addresses[0]
     end
   
     it "should list a single address of the appropriate type when requested" do
       # First a number
-      result = @tropo_provisioning.address('108000', '883510001812716')
+      result = tropo_provisioning.address('108000', '883510001812716')
       result.should == @addresses[0]
     
       # Then an IM username
-      result = @tropo_provisioning.address('108000', 'xyz123')
+      result = tropo_provisioning.address('108000', 'xyz123')
       result.should == @addresses[2]
     
       # Then a pin
-      result = @tropo_provisioning.address('108000', '9991436300')
+      result = tropo_provisioning.address('108000', '9991436300')
       result.should == @addresses[3]
     
       # Then a token
-      result = @tropo_provisioning.address('108000', 'a1b2c3d4')
+      result = tropo_provisioning.address('108000', 'a1b2c3d4')
       result.should == @addresses[4]
     end
   
     it "should generate an error of the addition of the address does not have a required field" do
       # Add a address without a type
       begin
-        @tropo_provisioning.create_address('108000')
+        tropo_provisioning.create_address('108000')
       rescue => e
         e.to_s.should == ":type is a required parameter"
       end
     
       # Add a number without a prefix
       begin
-        @tropo_provisioning.create_address('108000', { :type => 'number' })
+        tropo_provisioning.create_address('108000', { :type => 'number' })
       rescue => e
         e.to_s.should == ":prefix required to add a number address"
       end
     
       # Add a jabber without a username
       begin
-        @tropo_provisioning.create_address('108000', { :type => 'jabber' })
+        tropo_provisioning.create_address('108000', { :type => 'jabber' })
       rescue => e
         e.to_s.should == ":username is a required parameter"
       end
     
       # Add an aim without a password
       begin
-        @tropo_provisioning.create_address('108000', { :type => 'aim', :username => 'joeblow@aim.com' })
+        tropo_provisioning.create_address('108000', { :type => 'aim', :username => 'joeblow@aim.com' })
       rescue => e
         e.to_s.should == ":password is a required parameter"
       end
     
       # Add a token without a channel
       begin
-        @tropo_provisioning.create_address('108000', { :type => 'token' })
+        tropo_provisioning.create_address('108000', { :type => 'token' })
       rescue => e
         e.to_s.should == ":channel is a required parameter"
       end
     
       # Add a token with an invalid channel type
       begin
-        @tropo_provisioning.create_address('108000', { :type => 'token', :channel => 'BBC' })
+        tropo_provisioning.create_address('108000', { :type => 'token', :channel => 'BBC' })
       rescue => e
         e.to_s.should == ":channel must be voice or messaging"
       end
@@ -800,157 +810,157 @@ describe "TropoProvisioning" do
   
     it "should add appropriate addresses" do  
       # Add a address based on a prefix
-      result = @tropo_provisioning.create_address('108000', { :type => 'number', :prefix => '1303' })
+      result = tropo_provisioning.create_address('108000', { :type => 'number', :prefix => '1303' })
       result[:href].should == "http://api.tropo.com/v1/applications/108000/addresses/number/7202551912"
       result[:address].should == '7202551912'
     
       # Add a jabber account
-      result = @tropo_provisioning.create_address('108001', { :type => 'jabber', :username => 'xyz123@bot.im' })
+      result = tropo_provisioning.create_address('108001', { :type => 'jabber', :username => 'xyz123@bot.im' })
       result[:href].should == "http://api.tropo.com/v1/applications/108001/addresses/jabber/xyz123@bot.im"
       result[:address].should == 'xyz123@bot.im' 
     
       # Add a token
-      result = @tropo_provisioning.create_address('108002', { :type => 'token', :channel => 'voice' })
+      result = tropo_provisioning.create_address('108002', { :type => 'token', :channel => 'voice' })
       result[:href].should == "http://api.tropo.com/v1/applications/108002/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b"
       result[:address].should == '12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b'
     end
     
     it "should delete a address" do
-      result = @tropo_provisioning.delete_address('108000', '883510001812716')
+      result = tropo_provisioning.delete_address('108000', '883510001812716')
       result[:message].should == "delete successful"
     end
 
     it "should raise an ArgumentError if the right params are not passed to move_address" do
       begin
-        @tropo_provisioning.move_address({ :to => '108002', :address => '883510001812716'})
+        tropo_provisioning.move_address({ :to => '108002', :address => '883510001812716'})
       rescue => e
         e.to_s.should == ':from is a required parameter'
       end
 
       begin
-        @tropo_provisioning.move_address({ :from => '108002', :address => '883510001812716'})
+        tropo_provisioning.move_address({ :from => '108002', :address => '883510001812716'})
       rescue => e
         e.to_s.should == ':to is a required parameter'
       end
 
       begin
-        @tropo_provisioning.move_address({ :from => '108002', :to => '883510001812716'})
+        tropo_provisioning.move_address({ :from => '108002', :to => '883510001812716'})
       rescue => e
         e.to_s.should == ':address is a required parameter'
       end
     end
 
     it "should move a address" do
-      results = @tropo_provisioning.move_address({ :from => '108000', :to => '108002', :address => '883510001812716'})
+      results = tropo_provisioning.move_address({ :from => '108000', :to => '108002', :address => '883510001812716'})
       results.should == { 'message' => 'delete successful' }
     end
     
     it "should return accounts with associated addresses" do
       pending()
-      result = @tropo_provisioning.account_with_addresses('108000')
+      result = tropo_provisioning.account_with_addresses('108000')
       result.should == nil
 
-      result = @tropo_provisioning.accounts_with_addresses
+      result = tropo_provisioning.accounts_with_addresses
       result.should == nil
     end
   end
   
   describe 'exchanges' do
     it "should obtain a list of available exchanges" do
-      results = @tropo_provisioning.exchanges
-      results.should == ActiveSupport::JSON.decode(@exchanges)
+      results = tropo_provisioning.exchanges
+      results.should == ActiveSupport::JSON.decode(exchanges)
     end
   end
   
   describe 'user' do
     it "should raise argument errors on create_user if required params not passed" do
       begin
-        @tropo_provisioning.create_user
+        tropo_provisioning.create_user
       rescue => e
         e.to_s.should == ':username is a required parameter'
       end
     
       begin
-        @tropo_provisioning.create_user({ :username => "foobar7474" })
+        tropo_provisioning.create_user({ :username => "foobar7474" })
       rescue => e
         e.to_s.should == ':password is a required parameter'
       end
     
       begin
-        @tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey' })
+        tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey' })
       rescue => e
         e.to_s.should == ':email is a required parameter'
       end
     end
     
     it "should create a new user" do
-      result = @tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey', :email => 'jsgoecke@voxeo.com' })
+      result = tropo_provisioning.create_user({ :username => "foobar7474", :password => 'fooey', :email => 'jsgoecke@voxeo.com' })
       result.should == @new_user
     end
   
     it "should confirm a user" do
-      result = @tropo_provisioning.confirm_user('12345', '1234', '127.0.0.1')
+      result = tropo_provisioning.confirm_user('12345', '1234', '127.0.0.1')
       result.message.should == "successfully confirmed user 12345"
     end
   
     it "should obtain details about a user" do
-      result = @tropo_provisioning.user('12345')
+      result = tropo_provisioning.user('12345')
       result.should == @existing_user
     end
     
     it 'should return a list of search terms that we search for' do
-      result = @tropo_provisioning.search_users('username=foobar')
+      result = tropo_provisioning.search_users('username=foobar')
       result.should == @search_accounts
     end
 
     it 'should modify a user' do
-      result = @tropo_provisioning.modify_user('12345', { :password => 'foobar' })
+      result = tropo_provisioning.modify_user('12345', { :password => 'foobar' })
       result.href.should == 'http://api-smsified-eng.voxeo.net/v1/users/12345'
-      @tropo_provisioning.user_data['password'].should == 'foobar'
+      tropo_provisioning.user_data['password'].should == 'foobar'
     end
     
     it 'should see if a username is available' do
-      @tropo_provisioning.username_exists?('12345').should == @username_check
+      tropo_provisioning.username_exists?('12345').should == @username_check
     end
   end
   
   describe 'features' do
     it "should return a list of available features" do
-      result = @tropo_provisioning.features
+      result = tropo_provisioning.features
       result.should == @features
     end
   
     it "should return a list of features configured for a user" do
-      result = @tropo_provisioning.user_features('12345')
+      result = tropo_provisioning.user_features('12345')
       result.should == @user_features
     end
   
     it "should add a feature to a user" do
-      result = @tropo_provisioning.user_enable_feature('12345', 'http://api-smsified-eng.voxeo.net/v1/features/8')
+      result = tropo_provisioning.user_enable_feature('12345', 'http://api-smsified-eng.voxeo.net/v1/features/8')
       result.should == @feature
     end
   
     it "should disable a feature for a user" do
-      result = @tropo_provisioning.user_disable_feature('12345', '8')
+      result = tropo_provisioning.user_disable_feature('12345', '8')
       result.should == @feature_delete_message
     end
   end
   
   describe 'platforms and partitions' do
     it 'should list the available partitions' do
-      result = @tropo_provisioning.partitions
+      result = tropo_provisioning.partitions
       result[0]['name'].should == 'staging'
     end
   
     it 'should return a list of available platforms under a partition' do
-      result = @tropo_provisioning.platforms('staging')
+      result = tropo_provisioning.platforms('staging')
       result[0].name.should == 'sms'
     end
   end
   
   describe 'payments' do
     it "should add a payment method to a user" do
-      result = @tropo_provisioning.add_payment_info('12345', { :account_number     => '1234567890',
+      result = tropo_provisioning.add_payment_info('12345', { :account_number     => '1234567890',
                                                                :payment_type       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
                                                                :address            => '123 Smith Avenue',
                                                                :city               => 'San Carlos',
@@ -968,7 +978,7 @@ describe "TropoProvisioning" do
     end
     
     it "should add a payment method to a user in camelCase" do
-      result = @tropo_provisioning.add_payment_info('12345', { :accountNumber     => '1234567890',
+      result = tropo_provisioning.add_payment_info('12345', { :accountNumber     => '1234567890',
                                                                :paymentType       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
                                                                :address           => '123 Smith Avenue',
                                                                :city              => 'San Carlos',
@@ -987,7 +997,7 @@ describe "TropoProvisioning" do
     end
 
     it 'should add a payment method to a user keys as strings' do
-      result = @tropo_provisioning.add_payment_info('12345', { 'account_number'     => '1234567890',
+      result = tropo_provisioning.add_payment_info('12345', { 'account_number'     => '1234567890',
                                                                'payment_type'       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
                                                                'address'            => '123 Smith Avenue',
                                                                'city'               => 'San Carlos',
@@ -1007,7 +1017,7 @@ describe "TropoProvisioning" do
     end
         
     it 'should add a payment method to a user in camelCase and keys as strings' do
-      result = @tropo_provisioning.add_payment_info('12345', { 'accountNumber'     => '1234567890',
+      result = tropo_provisioning.add_payment_info('12345', { 'accountNumber'     => '1234567890',
                                                                'paymentType'       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
                                                                'address'           => '123 Smith Avenue',
                                                                'city'              => 'San Carlos',
@@ -1026,59 +1036,59 @@ describe "TropoProvisioning" do
     end
     
     it 'should return the balance' do
-      result = @tropo_provisioning.balance('12345')
+      result = tropo_provisioning.balance('12345')
       result['balance'].should == "3.00"
     end
     
     it 'should make a payment' do
-      result = @tropo_provisioning.make_payment('1234', 1.0)
+      result = tropo_provisioning.make_payment('1234', 1.0)
       result.message.should == "successfully posted payment for the amount 1.000000"
     end
     
     it "should get the payment method for a user" do
-      result = @tropo_provisioning.user_payment_method('12345')
+      result = tropo_provisioning.user_payment_method('12345')
       result.should == @payment_method
     end
 
     it "should return a list of available payment types" do
-      result = @tropo_provisioning.available_payment_types
+      result = tropo_provisioning.available_payment_types
       result.should == @payment_methods
     end
     
     it 'should raise an error if a float is not passed in amount for make_payment' do
       begin
-        @tropo_provisioning.make_payment('1234', { :foo => 'bar' })
+        tropo_provisioning.make_payment('1234', { :foo => 'bar' })
       rescue => e
         e.to_s.should == "amount must be of type Float"
       end
     end
     
     it 'should update the recurring payment details' do
-      result = @tropo_provisioning.update_recurrence('1234', { :recharge_amount => 13.50, :threshold_percentage => 10 })
+      result = tropo_provisioning.update_recurrence('1234', { :recharge_amount => 13.50, :threshold_percentage => 10 })
       result.should == @recurrence_updated
     end
     
     it 'should get the existing recurrent payment details' do
-      @tropo_provisioning.get_recurrence('1234').should == @recurrence
+      tropo_provisioning.get_recurrence('1234').should == @recurrence
     end
   end
   
   describe 'whitelists' do
     it 'should get the whitelist for a user account' do
-      result = @tropo_provisioning.whitelist('12345')
+      result = tropo_provisioning.whitelist('12345')
       result.should == @whitelist
       
-      result = @tropo_provisioning.whitelist
+      result = tropo_provisioning.whitelist
       result.should == @whitelist
     end
     
     it 'should add to a whitelist' do
-      result = @tropo_provisioning.add_whitelist({ :user_id => '12345', :value => '14155551212' })
+      result = tropo_provisioning.add_whitelist({ :user_id => '12345', :value => '14155551212' })
       result.should == @whitelist
     end
     
     it 'should remove from a whitelist' do
-      result = @tropo_provisioning.delete_whitelist({ :user_id => '12345', :value => '14155551212' })
+      result = tropo_provisioning.delete_whitelist({ :user_id => '12345', :value => '14155551212' })
       result.should == @whitelist
     end
   end
@@ -1086,7 +1096,7 @@ describe "TropoProvisioning" do
   describe 'custome error' do
     it 'should raise a custom error with an http_status code on the error object' do
       begin
-        @tropo_provisioning.user('98765')
+        tropo_provisioning.user('98765')
       rescue => e
         e.http_status.should == "404"
         e.message.should == '404: Got an error here! - '
@@ -1096,73 +1106,72 @@ describe "TropoProvisioning" do
   
   describe 'geography' do
     it 'should return a list of countries' do
-      @tropo_provisioning.countries.should == @countries
+      tropo_provisioning.countries.should == @countries
     end
     
     it 'should have the id added for the country' do
-      result = @tropo_provisioning.countries[1][:id].should == '36'
+      result = tropo_provisioning.countries[1][:id].should == '36'
     end
     
     it 'should return a list of states' do
-      @tropo_provisioning.states('36').should == @states
+      tropo_provisioning.states('36').should == @states
     end
     
     it 'should have the id added for the state' do
-      @tropo_provisioning.states('36')[1]['id'].should == '50'
+      tropo_provisioning.states('36')[1]['id'].should == '50'
     end
   end
   
   describe 'invitations' do
     it 'should return a list of inivitations' do
-      @tropo_provisioning.invitations.should == @invitations
+      tropo_provisioning.invitations.should == @invitations
     end
     
     it 'should return an invitation' do
-      @tropo_provisioning.invitation('ABC457').should == @invitations[1]
+      tropo_provisioning.invitation('ABC457').should == @invitations[1]
     end
     
     it 'should create an invitation' do
-      @tropo_provisioning.create_invitation({ :code   => 'ABC457',
+      tropo_provisioning.create_invitation({ :code   => 'ABC457',
                                               :count  => 100,
                                               :credit => 10 }).should == @invitation_created
     end
     
     it 'should create an invitationfor a specific user' do
-      @tropo_provisioning.create_invitation('15909',
+      tropo_provisioning.create_invitation('15909',
                                             { :code   => 'ABC457',
                                               :count  => 100,
                                               :credit => 10 }).should == @invitation_created
     end
     
     it 'should update an invitation' do
-      @tropo_provisioning.update_invitation('ABC457', :count  => 200).should == @invitation_created
+      tropo_provisioning.update_invitation('ABC457', :count  => 200).should == @invitation_created
     end
     
     it 'should update an invitation for a specific user' do
-      @tropo_provisioning.update_invitation('ABC457', '15909', :count  => 200).should == @invitation_created
+      tropo_provisioning.update_invitation('ABC457', '15909', :count  => 200).should == @invitation_created
     end
     
     it 'should delete an invitation' do
-      @tropo_provisioning.delete_invitation('ABC457').should == @deleted_invitation
+      tropo_provisioning.delete_invitation('ABC457').should == @deleted_invitation
     end
     
     it 'should delete a specific user invitation' do
-      @tropo_provisioning.delete_invitation('ABC457', '15909').should == @deleted_invitation
+      tropo_provisioning.delete_invitation('ABC457', '15909').should == @deleted_invitation
     end
     
     it 'should fetch the invitations for a user' do
-      @tropo_provisioning.user_invitations('15909').should == [@invitation_created]
+      tropo_provisioning.user_invitations('15909').should == [@invitation_created]
     end
     
     it 'should list a specific invitation for a user' do
-      @tropo_provisioning.invitation('ABC457', '15909').should == @invitations[1]
+      tropo_provisioning.invitation('ABC457', '15909').should == @invitations[1]
     end
   end
   
   describe "HTTPS/SSL support" do
     it 'should fetch invitations via HTTPS/SSL' do
-      tp = TropoProvisioning.new('foo', 'bar', :base_uri => 'https://foo:bar@api.tropo.com/v1')
-      tp.invitations.should == @invitations
+      tropo_provisioning.invitations.should == @invitations
     end
   end
 end

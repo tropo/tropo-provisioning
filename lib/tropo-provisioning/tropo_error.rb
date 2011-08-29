@@ -1,4 +1,5 @@
-class ProvisioningApiRuntimeError < RuntimeError
+
+class TropoError < RuntimeError
   attr_reader :http_status
   
   def initialize(http_status)

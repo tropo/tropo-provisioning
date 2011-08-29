@@ -1,3 +1,6 @@
+require 'tropo-provisioning/tropo_client'
+require 'tropo-provisioning/tropo_error'
+
 class TropoProvisioning
   
   # Defaults for the creation of applications
@@ -14,10 +17,8 @@ class TropoProvisioning
   # @option params [optional, String] :base_uri to use for accessing the provisioning API if you would like a custom one
   # @return [Object] a TropoProvisioning object
   def initialize(username, password, params={})   
-    @username            = username
-    @password            = password
-    @base_uri            = params[:base_uri] || "http://api.tropo.com/v1"
-    @headers             = { 'Content-Type' => 'application/json' }
+    base_uri             = params[:base_uri] || "http://api.tropo.com/v1/"
+    @tropo_client        = TropoClient.new(base_uri, username, password, { 'Content-Type' => 'application/json' })
     user(username)
   end
     
@@ -30,6 +31,11 @@ class TropoProvisioning
     end
     temp_request(:get, "/#{action}.jsp?username=#{username}&password=#{password}")
   end
+  
+  def username
+    @tropo_client.username
+  end
+  
   alias :authenticate_account :account
   
   ##
@@ -42,7 +48,7 @@ class TropoProvisioning
     result = request(:get, { :resource => 'users/' + user_identifier })
     if result['username']
       # Only add/update this if we are fetching the user we are logged in as
-      @user_data = result if result['username'].downcase == @username.downcase
+      result['username'].downcase == username.downcase and @user_data = result
     end
     result
   end
@@ -374,7 +380,7 @@ class TropoProvisioning
   # @option params [optional, String] :voiceUrl or :voice_url the URL that powers voices calls for your application
   # @return [Hash] returns the href of the application created and the application_id of the application created
   def create_application(params={})
-    merged_params = DEFAULT_OPTIONS.merge(camelize_params(params))
+    merged_params = DEFAULT_OPTIONS.merge(params)
     validate_application_params(merged_params)
     result = request(:post, { :resource => 'applications', :body => params })
     result[:application_id] = get_element(result.href)
@@ -664,32 +670,11 @@ class TropoProvisioning
   private
   
   ##
-  #
-  def camelize_params(params)
-    camelized = {}
-    params.each { |k,v| camelized.merge!(k.to_s.camelize(:lower).to_sym => v) }
-    camelized
-  end
-  
-  ##
   # Returns the current method name
   #
   # @return [String] current method name
   def current_method_name
     caller[0] =~ /`([^']*)'/ and $1
-  end
-  
-  ##
-  # Converts the hashes inside the array to Hashie::Mash objects
-  #
-  # @param [required, Array] array to be Hashied
-  # @param [Array] array that is now Hashied
-  def hashie_array(array)
-    hashied_array = []
-    array.each do |ele|
-      hashied_array << Hashie::Mash.new(ele)
-    end
-    hashied_array
   end
   
   ##
@@ -736,35 +721,7 @@ class TropoProvisioning
   # @raise [RuntimeError]
   #   if it can not connect to the API server or if the response.code is not 200 
   def request(method, params={})
-    params[:body] = camelize_params(params[:body]) if params[:body]
-    
-    if params[:resource]
-      uri = URI.parse(@base_uri + '/' + params[:resource])
-    else
-      uri = URI.parse(@base_uri)
-    end
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true if uri.scheme == 'https' 
-    
-    request = set_request_type(method, uri)
-    request.initialize_http_header(@headers)
-    request.basic_auth @username, @password
-    request.body = ActiveSupport::JSON.encode params[:body] if params[:body]
-    
-    begin
-      response = http.request(request)
-    rescue => e
-      raise RuntimeError, "Unable to connect to the Provisioning API server - #{e.to_s}"
-    end
-
-    raise ProvisioningApiRuntimeError.new(response.code), "#{response.code}: #{response.message} - #{response.body}" unless response.code == '200'
-    
-    result = ActiveSupport::JSON.decode response.body
-    if result.instance_of? Array
-      hashie_array(result)
-    else
-      Hashie::Mash.new(result)
-    end
+    @tropo_client.request(method, params)
   end
   
   ##
@@ -791,25 +748,7 @@ class TropoProvisioning
     end
   end
   
-  ##
-  # Sets the HTTP REST type based on the method being called
-  # 
-  # @param [required, ymbol] the HTTP method to use, may be :delete, :get, :post or :put
-  # @param [Object] the uri object to create the request for
-  # @return [Object] the request object to be used to operate on the resource
-  def set_request_type(method, uri)
-    case method
-    when :delete
-      Net::HTTP::Delete.new(uri.request_uri)
-    when :get
-      Net::HTTP::Get.new(uri.request_uri)
-    when :post
-      Net::HTTP::Post.new(uri.request_uri)
-    when :put
-      Net::HTTP::Put.new(uri.request_uri)
-    end
-  end
-  
+
   ##
   # Used to validate required params in either underscore or camelCase formats
   #
@@ -842,7 +781,7 @@ class TropoProvisioning
     
     # Make sure the arguments have valid values
     raise ArgumentError, ":platform must be 'scripting' or 'webapi'" unless params[:platform] == 'scripting' || params[:platform] == 'webapi' || params['platform'] == 'scripting' || params['platform'] == 'webapi'
-    raise ArgumentError, ":partiion must be 'staging' or 'production'" unless params[:partition] == 'staging' || params[:partition] == 'production' || params['partition'] == 'staging' || params['partition'] == 'production'
+    raise ArgumentError, ":partition must be 'staging' or 'production'" unless params[:partition] == 'staging' || params[:partition] == 'production' || params['partition'] == 'staging' || params['partition'] == 'production'
   end
   
   def validate_address_parameters(params={})
