@@ -65,10 +65,10 @@ Any HTTP method can be accessed using the TropoProvisioning wrapper:
 
 ==== Tropo Provisioning API Documentation
 
-	$ git clone https://github.com/tropo/tropo-provisioning
-	$ cd tropo-provisioning
-	$ bundle install
-	$ rake rdoc
+    git clone https://github.com/tropo/tropo-provisioning
+    cd tropo-provisioning
+    bundle install
+    rake rdoc
 	
 === Local & Generating Documentation
 
