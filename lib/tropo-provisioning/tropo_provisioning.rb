@@ -1,27 +1,45 @@
-require 'tropo-provisioning/tropo_client'
-require 'tropo-provisioning/tropo_error'
+require 'active_support'
+require 'active_support/inflector'
 
+##
+# This class is a wrapper that allows an easy way to access Tropo HTTP Provisioning API
+# It defines a set of methods to create, update, retrieve or delete different kind of resources.
 class TropoProvisioning
+  
+  autoload :TropoClient, 'tropo-provisioning/tropo_client'
+  autoload :TropoError, 'tropo-provisioning/tropo_error'
   
   # Defaults for the creation of applications
   DEFAULT_OPTIONS = { :partition => 'staging', :platform  => 'scripting' }
+  
+  # Array of supported platforms in Tropo
+  VALID_PLATFORMS = %w(scripting webapi)
+  # Array of supported partitions in Tropo
+  VALID_PARTITIONS = %w(staging production)
   
   attr_reader :user_data
   
   ##
   # Creates a new TropoProvisioning object
   #
-  # @param [required, String] username for your Tropo user
-  # @param [required, String] password for your Tropo user
-  # @param [optional, Hash] params 
-  # @option params [optional, String] :base_uri to use for accessing the provisioning API if you would like a custom one
-  # @return [Object] a TropoProvisioning object
+  # ==== Parameters
+  # * [required, String] username for your Tropo user
+  # * [required, String] password for your Tropo user
+  # * [optional, Hash] params 
+  #   * [optional, String] :base_uri to use for accessing the provisioning API if you would like a custom one
+  #
+  # ==== Return
+  #
+  # TropoProvisioning object
   def initialize(username, password, params={})   
     base_uri             = params[:base_uri] || "http://api.tropo.com/v1/"
-    @tropo_client        = TropoClient.new(base_uri, username, password, { 'Content-Type' => 'application/json' })
+    @tropo_client        = TropoClient.new(username, password, base_uri, { 'Content-Type' => 'application/json' })
     user(username)
   end
     
+  ##
+  # Retrieves specific user information
+  # ==== Parameters
   def account(username, password)
     case current_method_name
     when 'account'
@@ -29,9 +47,11 @@ class TropoProvisioning
     when 'authenticate_account'
       action = 'authenticate'
     end
-    temp_request(:get, "/#{action}.jsp?username=#{username}&password=#{password}")
+    temp_request("/#{action}.jsp?username=#{username}&password=#{password}")
   end
   
+  ##
+  # Username used for HTTP authentication (valid Tropo user)
   def username
     @tropo_client.username
   end
@@ -41,11 +61,14 @@ class TropoProvisioning
   ##
   # Obtain information about a user
   #
-  # @param [required, String] the user ID or username to obtain the account details of
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] the user ID or username to obtain the account details of
+  #
+  # ==== Return
+  # * [Hash]
   #   contains the information on the user
   def user(user_identifier)
-    result = request(:get, { :resource => 'users/' + user_identifier })
+    result = @tropo_client.get("users/#{user_identifier}")
     if result['username']
       # Only add/update this if we are fetching the user we are logged in as
       result['username'].downcase == username.downcase and @user_data = result
@@ -57,14 +80,17 @@ class TropoProvisioning
   # Confirms a user after they have been created. For example, you may want to email your user to make
   # sure they are real before activating the user.
   #
-  # @param [required, String] user_id returned when you created the user you now want to confirm
-  # @param [required, String] confirmation_key returned when you created the user you now want to confirm
-  # @param [required, String] the ip_address of the user client that did the confirmation
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] user_id returned when you created the user you now want to confirm
+  # * [required, String] confirmation_key returned when you created the user you now want to confirm
+  # * [required, String] the ip_address of the user client that did the confirmation
+  #
+  # ==== Return
+  # * [Hash]
   #   contains a message key confirming the confirmation was successful
   def confirm_user(user_id, confirmation_key, ip_address)
     params = { :key => confirmation_key, :endUserHost => ip_address }
-    request(:post, { :resource => 'users/' + user_id + '/confirmations', :body => params })
+    @tropo_client.post("users/#{user_id}/confirmations", params)
   end
   
   ##
@@ -72,27 +98,30 @@ class TropoProvisioning
   # you may then invoke the confirm_user method once you have taken appropriate steps to confirm the
   # user
   #
-  # @param [required, Hash] params to create the user
-  # @option params [required, String] :username the name of the user to create the user for
-  # @option params [required, String] :password the password to use for the user
-  # @option params [required, String] :email the email address to use
-  # @option params [optional, String] :first_name of the user
-  # @option params [optional, String] :last_name of the user
-  # @option params [optional, String] :website the URL of the user's website
-  # @option params [optional, String] :organization of the user, such as a company name
-  # @option params [optional, String] :job_title of the user
-  # @option params [optional, String] :address of the user
-  # @option params [optional, String] :address2 second live of the address of the user
-  # @option params [optional, String] :city of the user
-  # @option params [optional, String] :state of the user
-  # @option params [optional, String] :postal_code of the user
-  # @option params [optional, String] :country of the user
-  # @option params [optional, String] :marketing_opt_in
-  # @option params [optional, String] :twitter_id
-  # @option params [optional, String] :joined_from_host IP address of the host they signed up from
-  # @return [Hash] details of the user created
+  # ==== Parameters
+  # * [required, Hash] params to create the user
+  #   * [required, String] :username the name of the user to create the user for
+  #   * [required, String] :password the password to use for the user
+  #   * [required, String] :email the email address to use
+  #   * [optional, String] :first_name of the user
+  #   * [optional, String] :last_name of the user
+  #   * [optional, String] :website the URL of the user's website
+  #   * [optional, String] :organization of the user, such as a company name
+  #   * [optional, String] :job_title of the user
+  #   * [optional, String] :address of the user
+  #   * [optional, String] :address2 second live of the address of the user
+  #   * [optional, String] :city of the user
+  #   * [optional, String] :state of the user
+  #   * [optional, String] :postal_code of the user
+  #   * [optional, String] :country of the user
+  #   * [optional, String] :marketing_opt_in
+  #   * [optional, String] :twitter_id
+  #   * [optional, String] :joined_from_host IP address of the host they signed up from
+  #
+  # ==== Return
+  # * [Hash] details of the user created
   #   includes the href, user_id and confirmation_key
-  # @raise [ArgumentError]
+  # * [ArgumentError]
   #   if missing the :username, :password or :email parameters
   def create_user(params={})
     validate_params(params, %w(username password email))
@@ -100,7 +129,7 @@ class TropoProvisioning
     # Set the Company Branding ID, or use default
     params[:website] = 'tropo' unless params[:website]    
     
-    result = request(:post, { :resource => 'users', :body => params })
+    result = @tropo_client.post("users", params)
     result[:user_id] = get_element(result.href)
     result[:confirmation_key] = result['confirmationKey']
     result.delete('confirmationKey')
@@ -110,12 +139,15 @@ class TropoProvisioning
   ##
   # Modify/update an existing user
   #
-  # @param [required, String] user_id of the user you would like to update
-  # @param [required, Hash] the parameters of the user you would like to update
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] user_id of the user you would like to update
+  # * [required, Hash] the parameters of the user you would like to update
+  #
+  # ==== Return
+  # * [Hash]
   #   the href of the resource that was modified/updated
   def modify_user(user_id, params={})
-    result = request(:put, { :resource => 'users/' + user_id, :body => params })
+    result = @tropo_client.put("users/#{user_id}", params)
     if result['href']
       # Only add/update this if we are fetching the user we are logged in as
       @user_data.merge!(params) if user_id == @user_data['id']
@@ -126,31 +158,47 @@ class TropoProvisioning
   ##
   # Allows you to search users to find a list of users
   #
-  # @param [required, String] a key/value of the search term you would like to use, such as 'username=foobar', or 'city=Orlando'
-  # @return [Array]
+  # ==== Parameters
+  # * [required] search_term
+  #   * [String] a key/value of the search term you would like to use, such as 'username=foobar', or 'city=Orlando'
+  #   * [Hash] a Hash instance, such as {:username => "foobar"}, or {:city => "Orlando"}
+  #
+  # ==== Return
+  # * [Array]
   #   a hash containing an array of hashes with the qualifying account details
   def search_users(search_term)
-    request(:get, { :resource => 'users/?' + search_term })
+    if search_term.is_a?(String)
+      @tropo_client.get("users/?#{search_term}")
+    elsif search_term.is_a?(Hash)
+      @tropo_client.get('users/', search_term)
+    else
+      nil
+    end
   end
 
   ##
   # Allows you to search if a username exists or not
   #
-  # @param [required, String] a username to check
-  # @return [Array]
+  # ==== Parameters
+  # * [required, String] a username to check
+  # ==== Return
+  # * [Array]
   #   a hash containing an array of hashes with the qualifying account details  
   def username_exists?(username)
-    request(:get, { :resource => 'usernames/' + username })
+    @tropo_client.get("usernames/#{username}")
   end
   
   ##
   # Fetches the payment information for a user
   #
-  # @param [required, String] user_id to fetch the payment details for
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] user_id to fetch the payment details for
+  #
+  # ==== Return
+  # * [Hash]
   #   a hash containing the accountNumber, paymentType, paymentTypeName, rechargeAmount and rechargeThreshold
   def user_payment_method(user_id)
-    result = request(:get, { :resource => 'users/' + user_id + '/payment/method'})
+    result = @tropo_client.get("users/#{user_id}/payment/method")
     result.merge!({ :id => get_element(result.paymentType) })
     result
   end
@@ -158,166 +206,191 @@ class TropoProvisioning
   ##
   # Lists the available payment types
   #
-  # @return [Hash]
+  # ==== Return
+  # * [Hash]
   #   an array of available payment types that each include an id, href and name
   def available_payment_types
-    request(:get, { :resource => 'types/payment' })
+    @tropo_client.get("types/payment")
   end
   
   ##
   # Obtain the current balance of a user
   #
-  # @param [required, String] user_id of the user to obtain the balance for
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] user_id of the user to obtain the balance for
+  #
+  # ==== Return
+  # * [Hash]
   #   the balance, pendingRechargeAmount and pendingUsageAmount for the user account
   def balance(user_id)
-    request(:get, { :resource => 'users/' + user_id + '/usage'})
+    @tropo_client.get("users/#{user_id}/usage")
   end
   
   ##
   # Return the list of available countries
   #
-  # @return [Hash]
+  # ==== Return
+  # * [Hash]
   #   returns an Array of hashes that include the country details available
   def countries
-    result = request(:get, { :resource => 'countries' })
+    result = @tropo_client.get("countries")
     add_ids(result)
   end
   
   ##
   # Return the list of available states for a country
   #
-  # @return [Hash]
+  # ==== Return
+  # * [Hash]
   #   returns an Array of hashes that include the state details for a country that are available
   def states(id)
-    result = request(:get, { :resource => 'countries' + "/#{id}/" + 'states' })
+    result = @tropo_client.get("countries/#{id}/states")
     add_ids(result)
   end
   
   ##
   # Lists the available features
   #
-  # @return [Hash]
+  # ==== Return
+  # * [Hash]
   #   an array of available features that each include an id, href, name and description
   def features
-    request(:get, { :resource => 'features' })
+    @tropo_client.get("features")
   end
 
   ##
   # Lists the features configured for a user
   #
-  # @return [Hash]
+  # ==== Return
+  # * [Hash]
   #   an array of available features that each include an href, feature and featureName
   def user_features(user_id)
-    request(:get, { :resource => 'users/' + user_id + '/features' })
+    @tropo_client.get("users/#{user_id}/features")
   end
   
   ##
   # Enable a particular feature for a user
   #
-  # @param [required, String] user_id of the user to add the feature to
-  # @param [required, String] feature identifier of the feature you want to add
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] user_id of the user to add the feature to
+  # * [required, String] feature identifier of the feature you want to add
+  #
+  # ==== Return
+  # * [Hash]
   #   the href of the feature added
   def user_enable_feature(user_id, feature)
-    request(:post, { :resource => 'users/' + user_id + '/features', :body => { :feature => feature } })
+    @tropo_client.post("users/#{user_id}/features", { :feature => feature })
   end
   
   ##
   # Disable a particular feature for a user
   #
-  # @param [required, String] user_id of the user to disable the feature to
-  # @param [required, String] feature number of the feature you want to disable
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] user_id of the user to disable the feature to
+  # * [required, String] feature number of the feature you want to disable
+  #
+  # ==== Return
+  # * [Hash]
   #   the href of the feature disable
   def user_disable_feature(user_id, feature_number)
-    request(:delete, { :resource => 'users/' + user_id + '/features/' + feature_number  })
+    @tropo_client.delete("users/#{user_id}/features/#{feature_number}")
   end
   
   ##
   # Add/modify payment info for a user
   #
-  # @param [required, String] user_id to add the payment details for
-  # @param [require, Hash] params the params to add the payment info
-  # @option params [required, String] :account_number the credit card number
-  # @option params [required, String] :payment_type the type, such as visa, mastercard, etc
-  # @option params [required, String] :address 
-  # @option params [optional, String] :address2
-  # @option params [required, String] :city
-  # @option params [required, String] :state
-  # @option params [required, String] :postal_code
-  # @option params [required, String] :country
-  # @option params [optional, String] :email
-  # @option params [required, String] :name_on_account name on the credit card
-  # @option params [required, String] :expiration_date expiration date of the credit card
-  # @option params [required, String] :security_code back panel/front panel (Amex) code on the card
-  # @option params [optional, String] :phone_number
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] user_id to add the payment details for
+  # * [require, Hash] params the params to add the payment info
+  #   * [required, String] :account_number the credit card number
+  #   * [required, String] :payment_type the type, such as visa, mastercard, etc
+  #   * [required, String] :address 
+  #   * [optional, String] :address2
+  #   * [required, String] :city
+  #   * [required, String] :state
+  #   * [required, String] :postal_code
+  #   * [required, String] :country
+  #   * [optional, String] :email
+  #   * [required, String] :name_on_account name on the credit card
+  #   * [required, String] :expiration_date expiration date of the credit card
+  #   * [required, String] :security_code back panel/front panel (Amex) code on the card
+  #   * [optional, String] :phone_number
+  #
+  # ==== Return
+  # * [Hash]
   #   the href of the payment method added
-  # @raise [ArgumentError]
+  # * [ArgumentError]
   #   if a required param is not present
   def add_payment_info(user_id, params={})
     #validate_params(params, %w(account_number payment_type address city state postal_code country name_on_account expiration_date security_code recharge_amount email phone_number))
-    
-    result = request(:put, { :resource => 'users/' + user_id + '/payment/method', :body => params })
-    result
+    @tropo_client.put("users/#{user_id}/payment/method", params)
   end
   alias :modify_payment_info :add_payment_info
   
   ##
   # Add/modify recurring fund amount and threshold
   # 
-  # @param [required, String] user_id to add the payment details for
-  # @param [require, Hash] params the params to add the recurrence
-  # @option params [required, Float] :recharge_amount
-  # @option params [required, Float] :recharge_threshold
+  # ==== Parameters
+  # * [required, String] user_id to add the payment details for
+  # * [require, Hash] params the params to add the recurrence
+  #   * [required, Float] :recharge_amount
+  #   * [required, Float] :recharge_threshold
   #
-  # @return [Hash]
+  # ==== Return
+  # * [Hash]
   def update_recurrence(user_id, params={})
     validate_params(params, %w(recharge_amount threshold_percentage))
     
-    result = request(:put, { :resource => 'users/' + user_id + '/payment/recurrence', :body => params })
+    @tropo_client.put("users/#{user_id}/payment/recurrence", params)
   end
   
   ##
   # Add/modify recurring fund amount and threshold
   # 
-  # @param [required, String] user_id to get the recurrence info for
+  # ==== Parameters
+  # * [required, String] user_id to get the recurrence info for
   #
-  # @return [Hash]
+  # ==== Return
+  # * [Hash]
   def get_recurrence(user_id)
-    result = request(:get, { :resource => 'users/' + user_id + '/payment/recurrence' })
+    result = @tropo_client.get("users/#{user_id}/payment/recurrence")
   end
   
   ##
   # Makes a payment on behalf of a user
   #
-  # @param [required, String] the user_id to make the payment for
-  # @param [required, Float] the amount, in US Dollars to make the payment for
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] the user_id to make the payment for
+  # * [required, Float] the amount, in US Dollars to make the payment for
+  #
+  # ==== Return
+  # * [Hash]
   #   a message with the success or failure of the payment
   def make_payment(user_id, amount)
-    raise ArgumentError, 'amount must be of type Float' if amount.instance_of?(Float) == false
+    amount.instance_of?(Float) or raise ArgumentError, 'amount must be of type Float'
     
-    request(:post, { :resource => 'users/' + user_id + '/payments', :body => { :amount => amount } })
+    @tropo_client.post("users/#{user_id}/payments", { :amount => amount })
   end
   
   ##
   # Creates an address to an existing application
   #
-  # @param [required, String] application_id to add the address to
-  # @param [required, Hash] params the parameters used to request the address
-  # @option params [String] :type this defines the type of address. The possibles types are number (phone numbers), pin (reserved), token, aim, jabber, msn, yahoo, gtalk & skype
-  # @option params [String] :prefix this defines the country code and area code for phone numbers
-  # @option params [String] :username the messaging/IM account's username
-  # @option params [String] :password the messaging/IM account's password
-  # @return [Hash] params the key/values that make up the application
-  # @option params [String] :href identifies the address that was added, refer to address method for details
-  # @option params [String] :address the address that was created
+  # ==== Parameters
+  # * [required, String] application_id to add the address to
+  # * [required, Hash] params the parameters used to request the address
+  #   * [String] :type this defines the type of address. The possibles types are number (phone numbers), pin (reserved), token, aim, jabber, msn, yahoo, gtalk & skype
+  #   * [String] :prefix this defines the country code and area code for phone numbers
+  #   * [String] :username the messaging/IM account's username
+  #   * [String] :password the messaging/IM account's password
+  #
+  # ==== Return
+  # * [Hash] params the key/values that make up the application
+  #   * [String] :href identifies the address that was added, refer to address method for details
+  #   * [String] :address the address that was created
   def create_address(application_id, params={})
     validate_address_parameters(params)
     
-    result = request(:post, { :resource => 'applications/' + application_id.to_s + '/addresses', :body => params })
+    result = @tropo_client.post("applications/#{application_id.to_s}/addresses", params)
     result[:address] = get_element(result.href)
     result
   end
@@ -325,25 +398,29 @@ class TropoProvisioning
   ##
   # Get a specific application
   #
-  # @param [required, String] application_id of the application to get
-  # @return [Hash] params the key/values that make up the application
-  # @option params [String] :href the REST address for the application
-  # @option params [String] :name the name of the application
-  # @option params [String] :voiceUrl the URL that powers voice calls for your application
-  # @option params [String] :messagingUrl the URL that powers the SMS/messaging calls for your session
-  # @option params [String] :platform defines whether the application will use the Scripting API or the Web API
-  # @option params [String] :partition defines whether the application is in staging/development or production
+  # ==== Parameters
+  # * [required, String] application_id of the application to get
+  #
+  # ==== Return
+  # * [Hash] params the key/values that make up the application
+  #   * [String] :href the REST address for the application
+  #   * [String] :name the name of the application
+  #   * [String] :voiceUrl the URL that powers voice calls for your application
+  #   * [String] :messagingUrl the URL that powers the SMS/messaging calls for your session
+  #   * [String] :platform defines whether the application will use the Scripting API or the Web API
+  #   * [String] :partition defines whether the application is in staging/development or production
   def application(application_id)
-    app = request(:get, { :resource => 'applications/' + application_id.to_s })
+    app = @tropo_client.get("applications/#{application_id.to_s}")
     app.merge!({ :application_id => get_element(app.href) })
   end
     
   ##
   # Fetches all of the applications configured for a user
   #
-  # @return [Hash] contains the results of the inquiry with a list of applications for the authenticated user, refer to the application method for details
+  # ==== Return
+  # * [Hash] contains the results of the inquiry with a list of applications for the authenticated user, refer to the application method for details
   def applications
-    results = request(:get, { :resource => 'applications' })
+    results = @tropo_client.get("applications")
     result_with_ids = []
     results.each do |app|
       result_with_ids << app.merge!({ :application_id => get_element(app.href) })
@@ -354,8 +431,11 @@ class TropoProvisioning
   ##
   # Fetches the application(s) with the associated addresses in the hash
   #
-  # @param [optional, String] application_id will return a single application with addresses if present
-  # @return [Hash] contains the results of the inquiry with a list of applications for the authenticated user, refer to the application method for details
+  # ==== Parameters
+  # * [optional, String] application_id will return a single application with addresses if present
+  #
+  # ==== Return
+  # * [Hash] contains the results of the inquiry with a list of applications for the authenticated user, refer to the application method for details
   def applications_with_addresses(application_id=nil)
     if application_id
       associate_addresses_to_application(application(application_id))
@@ -372,17 +452,20 @@ class TropoProvisioning
   ##
   # Create a new application
   #
-  # @param [required, Hash] params to create the application
-  # @option params [required, String] :name the name to assign to the application
-  # @option params [required, String] :partition this defines whether the application is in staging/development or production
-  # @option params [required, String] :platform (scripting) whether to use scripting or the webapi
-  # @option params [required, String] :messagingUrl or :messaging_url The URL that powers the SMS/messages sessions for your application
-  # @option params [optional, String] :voiceUrl or :voice_url the URL that powers voices calls for your application
-  # @return [Hash] returns the href of the application created and the application_id of the application created
+  # ==== Parameters
+  # * [required, Hash] params to create the application
+  #   * [required, String] :name the name to assign to the application
+  #   * [required, String] :partition this defines whether the application is in staging/development or production
+  #   * [required, String] :platform (scripting) whether to use scripting or the webapi
+  #   * [required, String] :messagingUrl or :messaging_url The URL that powers the SMS/messages sessions for your application
+  #   * [optional, String] :voiceUrl or :voice_url the URL that powers voices calls for your application
+  #
+  # ==== Return
+  # * [Hash] returns the href of the application created and the application_id of the application created
   def create_application(params={})
     merged_params = DEFAULT_OPTIONS.merge(params)
     validate_application_params(merged_params)
-    result = request(:post, { :resource => 'applications', :body => params })
+    result = @tropo_client.post("applications", params)
     result[:application_id] = get_element(result.href)
     result
   end
@@ -390,46 +473,51 @@ class TropoProvisioning
   ##
   # Deletes an application
   #
-  # @param [required, String] application_id to be deleted
-  # @return [Hash] not sure since it does 204 now, need to check with Cervantes, et al
+  # ==== Parameters
+  # * [required, String] application_id to be deleted
+  #
+  # ==== Return
+  # * [Hash] not sure since it does 204 now, need to check with Cervantes, et al
   def delete_application(application_id)
-    request(:delete, { :resource => 'applications/' + application_id.to_s })
+    @tropo_client.delete("applications/#{application_id.to_s}")
   end
   
   ##
   # Deletes a address from a specific application
   #
-  # @param [String] application_id that the address is associated to
-  # @param [String] address_id for the address
-  # @return
+  # ==== Parameters
+  # * [String] application_id that the address is associated to
+  # * [String] address_id for the address
   def delete_address(application_id, address_id)
     address_to_delete = address(application_id, address_id)
     
-    request(:delete, { :resource => 'applications/' + application_id.to_s + '/addresses/' + address_to_delete['type'] + '/' + address_id.to_s })
+    @tropo_client.delete("applications/#{application_id.to_s}/addresses/#{address_to_delete['type']}/#{address_id.to_s}")
   end
   
   ##
   # Provides a list of available exchanges to obtain Numbers from
   #
-  # @return [Array] the list of available exchanges
+  # ==== Return
+  # * [Array] the list of available exchanges
   def exchanges
-    request(:get, { :resource => 'exchanges' })
+    @tropo_client.get("exchanges")
   end
   
   ##
   # Used to move a address between one application and another
   #
-  # @param [Hash] params contains a hash of the applications and address to move
-  # @option params [required, String] :from
-  # @option params [required, String] :to
-  # @option params [required, String] :address
+  # ==== Parameters
+  # * [Hash] params contains a hash of the applications and address to move
+  #   * [required, String] :from
+  #   * [required, String] :to
+  #   * [required, String] :address
   def move_address(params={})
     validate_params(params, %w(from to address))
     
     begin
       address_to_move = address(params[:from], params[:address])
       delete_address(params[:from], params[:address])
-      request(:post, { :resource => 'applications/' + params[:to] + '/addresses/' + address_to_move['type'] + '/' + params[:address]})
+      @tropo_client.post("applications/#{params[:to]}/addresses/#{address_to_move['type']}/#{params[:address]}")
     rescue
       raise RuntimeError, 'Unable to move the address'
     end
@@ -438,23 +526,26 @@ class TropoProvisioning
   ##
   # Get a specific address for an application
   #
-  # @param [required, String] application_id to obtain the address for
-  # @param [required, String] address_id of the address to obtain the details for
-  # @return [Hash] the details of the address
-  # @option params [String] :href the REST address for the application
-  # @option params [String] :name the name of the application
-  # @option params [String] :voiceUrl the URL that powers voices calls for your application
-  # @option params [String] :messagingUrl The URL that powers the SMS/messages sessions for your application
-  # @option params [String] :partition this defines whether the application is in staging/development or production
-  # @option params [String] :type this defines the type of address. The possibles types are number (phone numbers), pin (reserved), token, aim, jabber, msn, yahoo, gtalk & skype
-  # @option params [String] :prefix this defines the country code and area code for phone numbers
-  # @option params [String] :number the phone number assigned to the application
-  # @option params [String] :city the city associated with the assigned phone number
-  # @option params [String] :state the state associated with the assigned phone number
-  # @option params [String] :channel idenifites the type of channel, maybe 'voice' or 'messaging'
-  # @option params [String] :username the messaging/IM account's username
-  # @option params [String] :password the messaging/IM account's password
-  # @option params [String] :token alphanumeric string that identifies your Tropo application, used with the Session API
+  # ==== Parameters
+  # * [required, String] application_id to obtain the address for
+  # * [required, String] address_id of the address to obtain the details for
+  #
+  # ==== Return
+  # * [Hash] the details of the address
+  #   * [String] :href the REST address for the application
+  #   * [String] :name the name of the application
+  #   * [String] :voiceUrl the URL that powers voices calls for your application
+  #   * [String] :messagingUrl The URL that powers the SMS/messages sessions for your application
+  #   * [String] :partition this defines whether the application is in staging/development or production
+  #   * [String] :type this defines the type of address. The possibles types are number (phone numbers), pin (reserved), token, aim, jabber, msn, yahoo, gtalk & skype
+  #   * [String] :prefix this defines the country code and area code for phone numbers
+  #   * [String] :number the phone number assigned to the application
+  #   * [String] :city the city associated with the assigned phone number
+  #   * [String] :state the state associated with the assigned phone number
+  #   * [String] :channel idenifites the type of channel, maybe 'voice' or 'messaging'
+  #   * [String] :username the messaging/IM account's username
+  #   * [String] :password the messaging/IM account's password
+  #   * [String] :token alphanumeric string that identifies your Tropo application, used with the Session API
   def address(application_id, address_id)
     addresses(application_id).each { |address| return address if address['number']   == address_id || 
                                                                  address['username'] == address_id || 
@@ -466,25 +557,31 @@ class TropoProvisioning
   ##
   # Get all of the configured addresses for an application
   #
-  # @param [required, String] application_id to fetch the addresses for
-  # @return [Hash] all of the addresses configured for the application
+  # ==== Parameters
+  # * [required, String] application_id to fetch the addresses for
+  #
+  # ==== Return
+  # * [Hash] all of the addresses configured for the application
   def addresses(application_id)
-    request(:get, { :resource => 'applications/' + application_id.to_s + '/addresses' })
+    @tropo_client.get("applications/#{application_id.to_s}/addresses")
   end
   
   ##
   # Updated an existing application
   #
-  # @param [required, String] the application id to update
-  # @param [required, Hash] params the parameters used to create the application
-  # @option params [optional, String] :name the name of the application
-  # @option params [optional, String] :voiceUrl the URL that powers voices calls for your application
-  # @option params [optional, String] :messagingUrl The URL that powers the SMS/messages sessions for your application
-  # @option params [optional, String] :partition whether to create in staging or production
-  # @option params [optional, String] :platform whehter to use scripting or the webapi
-  # @return [Hash] returns the href of the application created
+  # ==== Parameters
+  # * [required, String] the application id to update
+  # * [required, Hash] params the parameters used to create the application
+  #   * [optional, String] :name the name of the application
+  #   * [optional, String] :voiceUrl the URL that powers voices calls for your application
+  #   * [optional, String] :messagingUrl The URL that powers the SMS/messages sessions for your application
+  #   * [optional, String] :partition whether to create in staging or production
+  #   * [optional, String] :platform whehter to use scripting or the webapi
+  #
+  # ==== Return
+  # * [Hash] returns the href of the application created
   def update_application(application_id, params={})
-    request(:put, { :resource => 'applications/' + application_id.to_s, :body => params })
+    @tropo_client.put("applications/#{application_id.to_s}", params )
   end
   
   ##
@@ -492,13 +589,16 @@ class TropoProvisioning
   #
   # @overload def invitations()
   # @overload def user_inivitations(user_id)
-  #   @param [optional, String] the user_id to fetch the invitations for, if not present, will fetch all invitations
-  # @return [Hash] returns a list of the invitations
-  def invitations(user_id=nil)
+  # ==== Parameters
+  #   * [optional, String] the user_id to fetch the invitations for, if not present, will fetch all invitations
+  #
+  # ==== Return
+  # * [Hash] returns a list of the invitations
+  def invitations(user_id = nil)
     if user_id
-      request(:get, { :resource => 'users' + "/#{user_id}" + '/invitations'})
+      @tropo_client.get("users/#{user_id}/invitations")
     else
-      request(:get, { :resource => 'invitations' })
+      @tropo_client.get("invitations")
     end
   end
   alias :user_invitations :invitations
@@ -507,64 +607,72 @@ class TropoProvisioning
   # Fetch an invitation
   #
   # @overload def invitation(invitation_id)
-  #   @param [required, String] the invitation id to fetch
+  # ==== Parameters
+  #   * [required, String] the invitation id to fetch
   # @overload def user_invitation(user_id, invitation_id)
-  #   @param [required, String] the invitation id to fetch
-  #   @param [optional, String] the user id to fetch the invitation for
-  # @return [Hash] return an invitation
-  def invitation(*args)
-    if args.length == 1
-      request(:get, { :resource => 'invitations' + "/#{args[0]}" })
-    elsif args.length == 2
-      request(:get, { :resource => 'users' + "/#{args[1]}" + '/invitations' + "/#{args[0]}" })
-    else
-      raise ArgumentError, 'Only accepts two arguments, invitation_id and user_id'
-    end
+  # ==== Parameters
+  #   * [required, String] the invitation id to fetch
+  #   * [optional, String] the user id to fetch the invitation for
+  #
+  # ==== Return
+  # * [Hash] return an invitation
+  def invitation(invitation_id, user_id = nil)
+    path = user_id.nil? ? "invitations/#{invitation_id}" : "users/#{user_id}/invitations/#{invitation_id}"
+    
+    @tropo_client.get(path)
   end
+
   alias :user_invitation :invitation
   
   ##
   # Fetch an invitation
   #
   # @overload def delete_invitation(invitation_id)
-  #   @param [required, String] the invitation id to delete
+  # ==== Parameters
+  #   * [required, String] the invitation id to delete
   # @overload def delete_user_invitation(invitation_id, user_id)
-  #  @param [required, String] the invitation id to delete
-  #  @param [required, String] the user id to delete
-  # @return [Hash] return an invitation
-  def delete_invitation(*args)
-    if args.length == 1
-      request(:delete, { :resource => 'invitations' + "/#{args[0]}" })
-    elsif args.length == 2
-      request(:delete, { :resource => 'users' + "/#{args[1]}" + '/invitations' + "/#{args[0]}" })
-    end
+  # ==== Parameters
+  #  * [required, String] the invitation id to delete
+  #  * [required, String] the user id to delete
+  #
+  # ==== Return
+  # * [Hash] return an invitation
+  def delete_invitation(invitation_id, user_id = nil)
+    path = user_id.nil? ? "invitations/#{invitation_id}" : "users/#{user_id}/invitations/#{invitation_id}"
+    
+    @tropo_client.delete(path)
   end
+
   alias :delete_user_invitation :delete_invitation
   
   ##
   # Create an invitation
   #
   # @overload def create_invitation(options)
-  #   @param [required, Hash] params the parameters used to create the application
-  #   @option params [optional, String] :code the invitation code (defaults to a random alphanum string of length 6 if not specified on POST) 
-  #   @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
-  #   @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
-  #   @option params [optional, String] :partition whether to create in staging or production
-  #   @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
+  # ==== Parameters
+  #   * [required, Hash] params the parameters used to create the application
+  #     * [optional, String] :code the invitation code (defaults to a random alphanum string of length 6 if not specified on POST) 
+  #     * [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  #     * [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  #     * [optional, String] :partition whether to create in staging or production
+  #     * [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
   # @overload def create_user_invitation(user_id, options)
-  #   @param [requried, String] user_id to create the invitation for
-  #   @param [required, Hash] params the parameters used to create the application
-  #   @option params [optional, String] :code the invitation code (defaults to a random alphanum string of length 6 if not specified on POST) 
-  #   @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
-  #   @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
-  #   @option params [optional, String] :partition whether to create in staging or production
-  #   @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code)
-  # @return [Hash] returns the href of the invitation created
+  # ==== Parameters
+  #   * [requried, String] user_id to create the invitation for
+  #   * [required, Hash] params the parameters used to create the application
+  #     * [optional, String] :code the invitation code (defaults to a random alphanum string of length 6 if not specified on POST) 
+  #     * [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  #     * [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  #     * [optional, String] :partition whether to create in staging or production
+  #     * [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code)
+  #
+  # ==== Return
+  # * [Hash] returns the href of the invitation created
   def create_invitation(*args)
     if args.length == 1
-      request(:post, { :resource => 'invitations', :body => args[0] })
+      @tropo_client.post("invitations", args[0])
     elsif args.length == 2
-      request(:post, { :resource => 'users' + "/#{args[0]}" + '/invitations', :body => args[1] })
+      @tropo_client.post("users/#{args[0]}/invitations", args[1])
     end
   end
   alias :create_user_invitation :create_invitation
@@ -573,26 +681,30 @@ class TropoProvisioning
   # Update an invitation
   #
   # @overload def update_invitation(invitation_id, options)
-  #   @param [required, String] id of the invitation to udpate (code)
-  #   @param [required, Hash] params the parameters used to update the application
-  #   @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
-  #   @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
-  #   @option params [optional, String] :partition whether to create in staging or production
-  #   @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
+  # ==== Parameters
+  #   * [required, String] id of the invitation to udpate (code)
+  #   * [required, Hash] params the parameters used to update the application
+  #     * [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  #     * [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  #     * [optional, String] :partition whether to create in staging or production
+  #     * [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code) 
   # @overload def updated_user_invitation(invitation_id, user_id, options)
-  #   @param [required, String] id of the invitation to udpate (code)
-  #   @param [required, String] id of the user to update the invitation code for
-  #   @param [required, Hash] params the parameters used to update the application
-  #   @option params [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
-  #   @option params [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
-  #   @option params [optional, String] :partition whether to create in staging or production
-  #   @option params [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code)
-  # @return [Hash] returns the href of the invitation created
+  # ==== Parameters
+  #   * [required, String] id of the invitation to udpate (code)
+  #   * [required, String] id of the user to update the invitation code for
+  #   * [required, Hash] params the parameters used to update the application
+  #     * [optional, String] :count the number of accounts that may signup with this code (decrements on each signup) 
+  #     * [optional, String] :credit starting account balance for users who signup with this code (replaces the default for the brand) 
+  #     * [optional, String] :partition whether to create in staging or production
+  #     * [optional, String] :owner URI identifying the user to which this invite code belongs (optional - null implies this is a "global" code)
+  #
+  # ==== Return
+  # * [Hash] returns the href of the invitation created
   def update_invitation(*args)
     if args.length == 2
-      request(:put, { :resource => 'invitations' + "/#{args[0]}", :body => args[1] })
+      @tropo_client.put("invitations/#{args[0]}", args[1])
     elsif args.length == 3
-      request(:put, { :resource => 'users' + "/#{args[1]}" + '/invitations' + "/#{args[0]}", :body => args[2] })
+      @tropo_client.put("users/#{args[1]}/invitations/#{args[0]}", args[2])
     end
   end
   alias :update_user_invitation :update_invitation
@@ -600,71 +712,72 @@ class TropoProvisioning
   ##
   # Get the available partitions available
   #
-  # @return [Array]
+  # ==== Return
+  # * [Array]
   #   an array of hashes containing the partitions available
   def partitions
-    request(:get, { :resource => 'partitions' })
+    @tropo_client.get("partitions")
   end
   
   ##
   # Get the available platforms available under a certain partition
   #
-  # @return [Array]
+  # ==== Parameters
+  #
+  # ==== Return
+  # * [Array]
   #   an array of hashes containing the platforms available
   def platforms(partition)
-    request(:get, { :resource => 'partitions/' + partition + '/platforms' })
+    @tropo_client.get("partitions/#{partition}/platforms")
   end
   
   ##
   # Get the whitelist of the numbers on a particular users list
   #
-  # @param [required, String] user_id of the user you would like to update
-  # @return [Hash]
+  # ==== Parameters
+  # * [required, String] user_id of the user you would like to update
+  #
+  # ==== Return
+  # * [Hash]
   #   the href and value containing the number on the whitelist
-  def whitelist(user_id=nil)
-    if user_id
-      resource = 'users/' + user_id + '/partitions/production/platforms/sms/whitelist'
-    else
-      resource = 'users/partitions/production/platforms/sms/whitelist'
-    end
+  def whitelist(user_id = nil)
+    resource = user_id.nil? ? "users/partitions/production/platforms/sms/whitelist" : "users/#{user_id}/partitions/production/platforms/sms/whitelist"
     
-    request(:get, { :resource => resource })
+    @tropo_client.get(resource)
   end
   
   ##
   # Add to a whitelist for a particular user
   #
-  # @param [Hash] params contains a hash of the user_id and value to add
-  # @option params [optional, String] :user_id if present the user_id to add to, if not it will add to the user logged in as
-  # @option params [required, String] :value the value to add to the whitelist
-  # @return [Hash]
+  # ==== Parameters
+  # * [Hash] params contains a hash of the user_id and value to add
+  #   * [optional, String] :user_id if present the user_id to add to, if not it will add to the user logged in as
+  #   * [required, String] :value the value to add to the whitelist
+  #
+  # ==== Return
+  # * [Hash]
   #   the href 
   def add_whitelist(params={})
-    if params[:user_id]
-      resource = 'users/' + params[:user_id] + '/partitions/production/platforms/sms/whitelist'
-    else
-      resource = 'users/partitions/production/platforms/sms/whitelist'
-    end
-    
-    request(:post, { :resource => resource, :body => { :value => params[:value] } })
+    resource = params.has_key?(:user_id) ? 
+      "users/#{params[:user_id]}/partitions/production/platforms/sms/whitelist" : 
+      "users/partitions/production/platforms/sms/whitelist"
+    @tropo_client.post(resource, {:value => params[:value]})
   end
 
   ##
   # Delete from a whitelist for a particular user
   #
-  # @param [Hash] params contains a hash of the user_id and value to delete
-  # @option params [optional, String] :user_id if present the user_id to delete from, if not it will add to the user logged in as
-  # @option params [required, String] :value the value to delete from the whitelist
-  # @return [Hash]
+  # * [Hash] params contains a hash of the user_id and value to delete
+  #   * [optional, String] :user_id if present the user_id to delete from, if not it will add to the user logged in as
+  #   * [required, String] :value the value to delete from the whitelist
+  #
+  # ==== Return
+  # * [Hash]
   #   the href 
   def delete_whitelist(params={})
-    if params[:user_id]
-      resource = 'users/' + params[:user_id] + '/partitions/production/platforms/sms/whitelist/'
-    else
-      resource = 'users/partitions/production/platforms/sms/whitelist/'
-    end
-    
-    request(:delete, { :resource => resource + params[:value] })
+    resource = params.has_key?(:user_id) ? "users/#{params[:user_id]}/partitions/production/platforms/sms/whitelist/" : "users/partitions/production/platforms/sms/whitelist/"
+
+    @tropo_client.delete("#{resource}#{params[:value]}")
   end
   
   private
@@ -672,7 +785,8 @@ class TropoProvisioning
   ##
   # Returns the current method name
   #
-  # @return [String] current method name
+  # ==== Return
+  # * [String] current method name
   def current_method_name
     caller[0] =~ /`([^']*)'/ and $1
   end
@@ -680,13 +794,15 @@ class TropoProvisioning
   ##
   # Adds the IDs to an Array of Hashes if no ID is present
   #
-  # @param [required, Array] array of hashes to add IDs to
+  # ==== Parameters
+  # * [required, Array] array of hashes to add IDs to
   # 
-  # @return [Array]
+  # ==== Return
+  # * [Array]
   #   the array of hashes with ID added
   def add_ids(array)
     array.each do |element|
-      element[:id] = get_element(element.href) if element[:id].nil?
+      element[:id].nil? and element[:id] = get_element(element.href)
     end
     array
   end
@@ -694,8 +810,11 @@ class TropoProvisioning
   ##
   # Parses the URL and returns the last element
   #
-  # @param [required, String] the URL to parse for the application ID
-  # @return [String] the application id parsed from the URL
+  # ==== Parameters
+  # * [required, String] the URL to parse for the application ID
+  #
+  # ==== Return
+  # * [String] the application id parsed from the URL
   def get_element(url)
     url.split('/').last
   end
@@ -703,42 +822,34 @@ class TropoProvisioning
   ##
   # Associates the addresses to an application
   #
-  # @param [Object] application object to associate the address to
-  # @return [Object] returns the application object with the associated addresses embedded
+  # ==== Parameters
+  # * [Object] application object to associate the address to
+  #
+  # ==== Return
+  # * [Object] returns the application object with the associated addresses embedded
   def associate_addresses_to_application(app)
     add = addresses(app.application_id)
     app.merge!({ :addresses => add })
   end
   
   ##
-  # Creates the appropriate URI and HTTP handlers for our request
-  #
-  # @param [required, Symbol] the HTTP action to use :delete, :get, :post or :put
-  # @param [required, Hash] params used to create the request
-  # @option params [String] :resource the resource to call on the base URL
-  # @option params [Hash] :body the details to use when posting, putting or deleting an object, converts into the appropriate JSON
-  # @return [Hash] the result of the request
-  # @raise [RuntimeError]
-  #   if it can not connect to the API server or if the response.code is not 200 
-  def request(method, params={})
-    @tropo_client.request(method, params)
-  end
-  
-  ##
   # Creates the appropriate request for the temporary Evolution account API
   #
-  # @return [Hash] the result of the request
-  def temp_request(method, fields)
+  # ==== Parameters
+  # * [required, String] path: URI path
+  # ==== Return
+  # * [Hash] the result of the request
+  def temp_request(path)
     #base_uri = 'http://evolution.voxeo.com/api/account'
     base_uri = 'http://web141.supernonstop.com/api/account'
-    uri = URI.parse(base_uri + fields)
+    uri = URI.parse(base_uri + path)
     http = Net::HTTP.new(uri.host, uri.port)
 
-    request = set_request_type(method, uri)
-    request.initialize_http_header(@headers)
+    request = Net::HTTP::Delete.new(uri)
+    request.initialize_http_header({'Content-Type' => 'application/json'})
 
     response = http.request(request)
-    raise RuntimeError, "#{response.code} - #{response.message}" unless response.code == '200'
+    raise TropoError, "#{response.code} - #{response.message}" unless response.code == '200'
 
     result = ActiveSupport::JSON.decode response.body
     if result.instance_of? Array
@@ -752,9 +863,12 @@ class TropoProvisioning
   ##
   # Used to validate required params in either underscore or camelCase formats
   #
-  # @param [required, Hash] params to be checked
-  # @param [required, Array] requirements of which fields much be present
-  # @raise ArgumentError
+  # ==== Parameters
+  # * [required, Hash] params to be checked
+  # * [required, Array] requirements of which fields much be present
+  #
+  # ==== Returns
+  # * ArgumentError
   #   if a param is not present that is required
   def validate_params(params, requirements)
     requirements.each do |requirement|
@@ -768,22 +882,35 @@ class TropoProvisioning
   ##
   # Validates that we have all of the appropriate params when creating an application
   #
-  # @param [Hash] params to create the application
-  # @option params [required, String] :name the name to assign to the application
-  # @option params [required, String] :partition whether to create in staging or production
-  # @option params [required, String] :platform whehter to use scripting or the webapi
-  # @option params [String] :messagingUrl the Url to use for handiling messaging requests
-  # @option params [String] :voiceUrl the Url to use for handling voice requests
-  # @return nil
+  # ==== Parameters
+  # * [Hash] params to create the application
+  #   * [required, String] :name the name to assign to the application
+  #   * [required, String] :partition whether to create in staging or production
+  #   * [required, String] :platform whehter to use scripting or the webapi
+  #   * [String] :messagingUrl the Url to use for handiling messaging requests
+  #   * [String] :voiceUrl the Url to use for handling voice requests
+  #
+  # ==== Return
+  # * nil
   def validate_application_params(params={})
     # Make sure all of the arguments are present
     raise ArgumentError, ':name is a required parameter' unless params[:name] || params['name']
     
     # Make sure the arguments have valid values
-    raise ArgumentError, ":platform must be 'scripting' or 'webapi'" unless params[:platform] == 'scripting' || params[:platform] == 'webapi' || params['platform'] == 'scripting' || params['platform'] == 'webapi'
-    raise ArgumentError, ":partition must be 'staging' or 'production'" unless params[:partition] == 'staging' || params[:partition] == 'production' || params['partition'] == 'staging' || params['partition'] == 'production'
+    raise ArgumentError, ":platform must be #{VALID_PLATFORMS.map{|platform| "\'#{platform}\'"}.join(' or ')}" unless VALID_PLATFORMS.include?(params[:platform]) or VALID_PLATFORMS.include?(params["platform"])
+    raise ArgumentError, ":partition must be #{VALID_PARTITIONS.map{|partition| "\'#{partition}\'"}.join(' or ')}" unless VALID_PARTITIONS.include?(params[:partition]) or VALID_PARTITIONS.include?(params["partition"])
   end
   
+  ##
+  # Validates a create address request parameters
+  #
+  # ==== Parameters
+  # * [required, Hash] required parameters values
+  # 
+  # ==== Return
+  # * nil if successful validation 
+  # * ArgumentError is a required parameter is missing
+  #
   def validate_address_parameters(params={})
     raise ArgumentError, ":type is a required parameter" unless params[:type] || params['type']
     
