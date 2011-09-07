@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec_helper'
 
 # These tests are all local unit tests
 FakeWeb.allow_net_connect = false
@@ -910,6 +910,11 @@ describe "TropoProvisioning" do
     
     it 'should return a list of search terms that we search for' do
       result = tropo_provisioning.search_users('username=foobar')
+      result.should == @search_accounts
+    end
+
+    it 'should return a list of search terms that we search for using a Hash parameter' do
+      result = tropo_provisioning.search_users({:username => "foobar"})
       result.should == @search_accounts
     end
 
