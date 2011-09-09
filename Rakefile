@@ -1,46 +1,31 @@
-require 'rubygems'
-require 'rake'
+require 'bundler'
+Bundler::GemHelper.install_tasks
 
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "tropo-provisioning"
-    gem.summary = "Library for interacting with the Tropo Provisioning API"
-    gem.description = "Library for interacting with the Tropo Provisioning API"
-    gem.email = "jsgoecke@voxeo.com"
-    gem.homepage = "http://github.com/voxeo/tropo-provisioning"
-    gem.authors = ["Jason Goecke"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
-    gem.add_dependency "hashie", ">= 0.2.1"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  end
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
+task :default => [:test]
+
+require 'rspec/core/rake_task'
+require 'rake/rdoctask'
+require 'tropo-provisioning/version'
+
+
+RSpec::Core::RakeTask.new(:test) do |spec|
+    spec.skip_bundler = true
+    spec.pattern = ['spec/*_spec.rb']
+    spec.rspec_opts = '--color --format doc'
 end
 
-require 'spec/rake/spectask'
-Spec::Rake::SpecTask.new(:spec) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.spec_files = FileList['spec/**/*_spec.rb']
-end
 
-Spec::Rake::SpecTask.new(:rcov) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.pattern = 'spec/**/*_spec.rb'
+RSpec::Core::RakeTask.new(:rcov) do |spec|
+  spec.pattern = 'spec/*_spec.rb'
   spec.rcov = true
 end
 
-task :spec => :check_dependencies
-
-task :default => :spec
-
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+RDoc::Task.new do |rdoc|
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "tropo-provisioning #{version}"
+  rdoc.title = "tropo-provisioning #{TropoProvisioning::VERSION}"
+  rdoc.rdoc_files.include('LICENSE')
+  rdoc.options << '-c' << 'utf-8'
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
