@@ -808,17 +808,21 @@ describe "TropoProvisioning" do
       end
     end
   
-    it "should add appropriate addresses" do  
+    it "should add appropriate number address" do  
       # Add a address based on a prefix
       result = tropo_provisioning.create_address('108000', { :type => 'number', :prefix => '1303' })
       result[:href].should == "http://api.tropo.com/v1/applications/108000/addresses/number/7202551912"
       result[:address].should == '7202551912'
+    end
     
+    it "should add appropriate jabber address" do  
       # Add a jabber account
       result = tropo_provisioning.create_address('108001', { :type => 'jabber', :username => 'xyz123@bot.im' })
       result[:href].should == "http://api.tropo.com/v1/applications/108001/addresses/jabber/xyz123@bot.im"
       result[:address].should == 'xyz123@bot.im' 
-    
+    end
+
+    it "should add appropriate token address" do  
       # Add a token
       result = tropo_provisioning.create_address('108002', { :type => 'token', :channel => 'voice' })
       result[:href].should == "http://api.tropo.com/v1/applications/108002/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b"
