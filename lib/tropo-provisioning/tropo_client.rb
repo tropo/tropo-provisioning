@@ -170,7 +170,7 @@ class TropoClient
     http_request.basic_auth username, password
 
     # Include body if received
-    body.empty? or http_request.body = ActiveSupport::JSON.encode(body) 
+    body.empty? or http_request.body = ActiveSupport::JSON.encode(camelize_params(body)) 
 
     begin
       response = http.request(http_request)
