@@ -148,10 +148,14 @@ class TropoClient
       if @proxy.nil?
         base = Net::HTTP
       else
+        [:host, :port].each{|item|
+          if @proxy.has_key(item)
+            proxy[item.to_s] = proxy[item]
+          end
+        }
         if @proxy.has_key?("host") && @proxy.has_key?("port")
           base = Net::HTTP::Proxy(@proxy["host"], @proxy["port"])
         else
-          logger.warn("Invalid proxy configured: #{@proxy}")
           base = Net::HTTP
         end
       end
