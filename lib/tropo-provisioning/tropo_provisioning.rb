@@ -33,7 +33,8 @@ class TropoProvisioning
   # TropoProvisioning object
   def initialize(username, password, params={})   
     base_uri             = params[:base_uri] || "http://api.tropo.com/v1/"
-    @tropo_client        = TropoClient.new(username, password, base_uri, { 'Content-Type' => 'application/json' })
+    proxy                = params[:proxy] || nil
+    @tropo_client        = TropoClient.new(username, password, base_uri, { 'Content-Type' => 'application/json' }, proxy)
     user(username)
   end
     
@@ -161,7 +162,7 @@ class TropoProvisioning
   # ==== Parameters
   # * [required] search_term
   #   * [String] a key/value of the search term you would like to use, such as 'username=foobar', or 'city=Orlando'
-  #   * [Hash] a Hash instance, such as {:username => "foobar"}, or {:city => "Orlando"}
+  #   * [Hash] a Hash instance, such as {"username" => "foobar"}, or {"city" => "Orlando"}
   #
   # ==== Return
   # * [Array]
@@ -300,9 +301,9 @@ class TropoProvisioning
   # Add/modify payment info for a user
   #
   # ==== Parameters
-  # * [required, String] user_id to add the payment details for
+  # * [user_id - required, String]  to add the payment details for
   # * [require, Hash] params the params to add the payment info
-  #   * [required, String] :account_number the credit card number
+  #   * [:account_number] [required, String] the credit card number
   #   * [required, String] :payment_type the type, such as visa, mastercard, etc
   #   * [required, String] :address 
   #   * [optional, String] :address2
