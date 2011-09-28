@@ -161,7 +161,10 @@ class TropoClient
       end
       
       http = base.new(uri.host, uri.port)
-      http.use_ssl = true if uri.scheme == 'https'
+      if uri.scheme == 'https'
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
       http
     )
   end
