@@ -32,7 +32,7 @@ class TropoProvisioning
   #
   # TropoProvisioning object
   def initialize(username, password, params={})   
-    base_uri             = params[:base_uri] || "http://api.tropo.com/v1/"
+    base_uri             = params[:base_uri] || "https://api.tropo.com/v1/"
     proxy                = params[:proxy] || nil
     @tropo_client        = TropoClient.new(username, password, base_uri, { 'Content-Type' => 'application/json' }, proxy)
     user(username)
