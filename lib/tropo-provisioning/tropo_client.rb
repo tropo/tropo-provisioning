@@ -33,7 +33,12 @@ class TropoClient
   # * new TropoClient instance
   def initialize(username, password, base_uri = "http://api.tropo.com/v1/", headers = nil, proxy = nil)
     @base_uri = base_uri
-    @base_uri[-1].eql?("/") or @base_uri << "/"
+    if RUBY_VERSION =~ /1.8/
+      @base_uri << "/" if !@base_uri[-1].eql?(47)
+    elsif RUBY_VERSION =~ /1.9/
+      @base_uri << "/" if !@base_uri[-1].eql?("/")
+    end
+    
     @username = username
     @password = password
     @headers = headers.nil? ? {} : headers
