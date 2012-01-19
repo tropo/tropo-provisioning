@@ -18,7 +18,7 @@ The Tropo Provisioning gem provides a library for convenient access to the Tropo
 
 == Requirements
 
-* Unit tests passed on: Ruby MRI v1.8.6/1.8.7, Ruby 1.9.2, JRuby 1.5.0 and MacRuby 0.6
+* Unit tests passed on: Ruby MRI v1.8.6/1.8.7, Ruby 1.9.2 and JRuby 1.6.3
 
 * RubyGems: Check tropo-provisioning.gemspec
 

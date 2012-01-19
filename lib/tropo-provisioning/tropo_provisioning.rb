@@ -412,7 +412,13 @@ class TropoProvisioning
   #   * [String] :partition defines whether the application is in staging/development or production
   def application(application_id)
     app = @tropo_client.get("applications/#{application_id.to_s}")
-    app.merge!({ :application_id => get_element(app.href) })
+    if app.instance_of? Array
+      href = app[0].href
+      app[0].merge!({ :application_id => get_element(href) })
+    else
+      href = app.href
+      app.merge!({ :application_id => get_element(href) })
+    end
   end
     
   ##

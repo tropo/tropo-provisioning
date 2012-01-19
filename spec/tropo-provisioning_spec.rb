@@ -173,19 +173,19 @@ describe "TropoProvisioning" do
     
     # Applications
     FakeWeb.register_uri(:get, 
-                         %r|http://foo:bar@api.tropo.com/v1/applications|, 
+                         %r|https://foo:bar@api.tropo.com/v1/applications|, 
                          :body => ActiveSupport::JSON.encode(applications), 
                          :content_type => "application/json")
                          
     # Create an application       
     FakeWeb.register_uri(:post, 
-                         %r|http://foo:bar@api.tropo.com/v1/applications|, 
+                         %r|https://foo:bar@api.tropo.com/v1/applications|, 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/108016" }),
                          :status => ["200", "OK"])
     
     # Update a specific application
     FakeWeb.register_uri(:put, 
-                         %r|http://foo:bar@api.tropo.com/v1/applications/108000|, 
+                         %r|https://foo:bar@api.tropo.com/v1/applications/108000|, 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/108016" }),
                          :status => ["200", "OK"])
     
@@ -197,19 +197,19 @@ describe "TropoProvisioning" do
     
     # Get a specific address
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/applications/108000/addresses/number/883510001812716", 
+                         "https://foo:bar@api.tropo.com/v1/applications/108000/addresses/number/883510001812716", 
                          :body => ActiveSupport::JSON.encode(@addresses[0]),
                          :content_type => "application/json")
 
     # Get a address that is an IM/username
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/applications/108000/addresses/jabber/xyz123", 
+                         "https://foo:bar@api.tropo.com/v1/applications/108000/addresses/jabber/xyz123", 
                          :body => ActiveSupport::JSON.encode(@addresses[2]), 
                          :content_type => "application/json")
 
     # Get a address that is a token
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/applications/108000/addresses/jabber/xyz123", 
+                         "https://foo:bar@api.tropo.com/v1/applications/108000/addresses/jabber/xyz123", 
                          :body => ActiveSupport::JSON.encode(@addresses[2]), 
                          :content_type => "application/json")
                                                 
@@ -221,80 +221,80 @@ describe "TropoProvisioning" do
                                                 
     # Get a address that is a token
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/applications/108000/addresses/token/a1b2c3d4",
+                         "https://foo:bar@api.tropo.com/v1/applications/108000/addresses/token/a1b2c3d4",
                          :body => ActiveSupport::JSON.encode(@addresses[4]), 
                          :content_type => "application/json")
                                                 
     # Get a address that is a number
     FakeWeb.register_uri(:post, 
-                         "http://foo:bar@api.tropo.com/v1/applications/108000/addresses", 
+                         "https://foo:bar@api.tropo.com/v1/applications/108000/addresses", 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/108000/addresses/number/7202551912" }), 
                          :content_type => "application/json")
     
     # Create a address that is an IM account               
     FakeWeb.register_uri(:post, 
-                         "http://foo:bar@api.tropo.com/v1/applications/108001/addresses", 
+                         "https://foo:bar@api.tropo.com/v1/applications/108001/addresses", 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/108001/addresses/jabber/xyz123@bot.im" }), 
                          :content_type => "application/json")
     
      # Create a address that is a Token         
      FakeWeb.register_uri(:post, 
-                          "http://foo:bar@api.tropo.com/v1/applications/108002/addresses", 
+                          "https://foo:bar@api.tropo.com/v1/applications/108002/addresses", 
                           :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/108002/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b" }), 
                           :content_type => "application/json")
                           
     # Delete an application      
     FakeWeb.register_uri(:delete, 
-                         "http://foo:bar@api.tropo.com/v1/applications/108000", 
+                         "https://foo:bar@api.tropo.com/v1/applications/108000", 
                          :body => ActiveSupport::JSON.encode({ 'message' => 'delete successful' }), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
     # Exchanges
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/exchanges", 
+                         "https://foo:bar@api.tropo.com/v1/exchanges", 
                          :body => exchanges, 
                          :status => ["200", "OK"],
                          :content_type => "application/json")
 
     # Delete a address
     FakeWeb.register_uri(:delete, 
-                         "http://foo:bar@api.tropo.com/v1/applications/108000/addresses/number/883510001812716", 
+                         "https://foo:bar@api.tropo.com/v1/applications/108000/addresses/number/883510001812716", 
                          :body => ActiveSupport::JSON.encode({ 'message' => 'delete successful' }), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
     
     # Add a specific address
     FakeWeb.register_uri(:post, 
-                         "http://foo:bar@api.tropo.com/v1/applications/108002/addresses/number/883510001812716", 
+                         "https://foo:bar@api.tropo.com/v1/applications/108002/addresses/number/883510001812716", 
                          :body => ActiveSupport::JSON.encode({ 'message' => 'delete successful' }), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
     
    # Create a new user
    FakeWeb.register_uri(:post, 
-                        "http://foo:bar@api.tropo.com/v1/users", 
+                        "https://foo:bar@api.tropo.com/v1/users", 
                         :body => @new_user_json, 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
 
    # Get a specific user by user_id 
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/users/12345",
+                        "https://foo:bar@api.tropo.com/v1/users/12345",
                         :body => ActiveSupport::JSON.encode(@existing_user), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
                         
    # Get a specific user by user_id 
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/users/98765",
+                        "https://foo:bar@api.tropo.com/v1/users/98765",
                         :body => nil, 
                         :content_type => "application/json",
                         :status => ["404", "Got an error here!"])
                                               
    # Get a specific user by username
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/users/foo",
+                        "https://foo:bar@api.tropo.com/v1/users/foo",
                         :body => ActiveSupport::JSON.encode(@existing_user), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
@@ -308,62 +308,62 @@ describe "TropoProvisioning" do
                         
    # Invalid credentials
    FakeWeb.register_uri(:get, 
-                        "http://bad:password@api.tropo.com/v1/users/bad",
+                        "https://bad:password@api.tropo.com/v1/users/bad",
                         :content_type => "application/json",
                         :status => ["401", "Unauthorized"])
                         
    # Confirm an account account
    FakeWeb.register_uri(:post, 
-                        "http://foo:bar@api.tropo.com/v1/users/12345/confirmations", 
+                        "https://foo:bar@api.tropo.com/v1/users/12345/confirmations", 
                         :body => ActiveSupport::JSON.encode({"message" => "successfully confirmed user 12345" }), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
                         
    # Return the payment method configured for a user
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/users/12345/payment/method", 
+                        "https://foo:bar@api.tropo.com/v1/users/12345/payment/method", 
                         :body => ActiveSupport::JSON.encode(@payment_method), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])                      
 
    # Return payment types
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/types/payment", 
+                        "https://foo:bar@api.tropo.com/v1/types/payment", 
                         :body => ActiveSupport::JSON.encode(@payment_methods), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
    
    # Return features
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/features", 
+                        "https://foo:bar@api.tropo.com/v1/features", 
                         :body => ActiveSupport::JSON.encode(@features), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])                                          
 
    # Return features for a user
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/users/12345/features", 
+                        "https://foo:bar@api.tropo.com/v1/users/12345/features", 
                         :body => ActiveSupport::JSON.encode(@user_features), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
 
   # Add a feature to a user
   FakeWeb.register_uri(:post, 
-                       "http://foo:bar@api.tropo.com/v1/users/12345/features", 
+                       "https://foo:bar@api.tropo.com/v1/users/12345/features", 
                        :body => ActiveSupport::JSON.encode(@feature), 
                        :content_type => "application/json",
                        :status => ["200", "OK"])
                                                     
   # Add a feature to a user
   FakeWeb.register_uri(:delete, 
-                       "http://foo:bar@api.tropo.com/v1/users/12345/features/8", 
+                       "https://foo:bar@api.tropo.com/v1/users/12345/features/8", 
                        :body => ActiveSupport::JSON.encode(@feature_delete_message), 
                        :content_type => "application/json",
                        :status => ["200", "OK"])
                        
   # Add payment info to a user
   FakeWeb.register_uri(:put, 
-                       "http://foo:bar@api.tropo.com/v1/users/12345/payment/method", 
+                       "https://foo:bar@api.tropo.com/v1/users/12345/payment/method", 
                        :body => ActiveSupport::JSON.encode(@payment_info_message),
                        :content_type => "application/json",
                        :status => ["200", "OK"])
@@ -371,103 +371,103 @@ describe "TropoProvisioning" do
                        
    # List an account, with bad credentials
    FakeWeb.register_uri(:get, 
-                        "http://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooeyfooey", 
+                        "https://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooeyfooey", 
                         :body => ActiveSupport::JSON.encode(@bad_account_creds), 
                         :content_type => "application/json",
                         :status => ["403", "Invalid Login."])
  
    # Get our search terms
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/users/?username=foobar", 
+                        "https://foo:bar@api.tropo.com/v1/users/?username=foobar", 
                         :body => ActiveSupport::JSON.encode(@search_accounts), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
                         
    # Payment resource
    FakeWeb.register_uri(:post, 
-                        "http://foo:bar@api.tropo.com/v1/users/1234/payments", 
+                        "https://foo:bar@api.tropo.com/v1/users/1234/payments", 
                         :body => ActiveSupport::JSON.encode({ :message => "successfully posted payment for the amount 1.000000" }), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])    
                         
    # Modify a user
    FakeWeb.register_uri(:put, 
-                        "http://foo:bar@api.tropo.com/v1/users/12345", 
+                        "https://foo:bar@api.tropo.com/v1/users/12345", 
                         :body => ActiveSupport::JSON.encode({ :href => "http://api-smsified-eng.voxeo.net/v1/users/12345" }), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
   
    # List available partitions
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/partitions", 
+                        "https://foo:bar@api.tropo.com/v1/partitions", 
                         :body => ActiveSupport::JSON.encode(@partitions), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
                         
     # List available platforms
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/partitions/staging/platforms", 
+                         "https://foo:bar@api.tropo.com/v1/partitions/staging/platforms", 
                          :body => ActiveSupport::JSON.encode(@platforms), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
     # List balance
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/users/12345/usage", 
+                         "https://foo:bar@api.tropo.com/v1/users/12345/usage", 
                          :body => ActiveSupport::JSON.encode(@balance), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
    # Whitelist
    FakeWeb.register_uri(:get, 
-                        "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist", 
+                        "https://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist", 
                         :body => ActiveSupport::JSON.encode(@whitelist), 
                         :content_type => "application/json",
                         :status => ["200", "OK"])
     # Whitelist
      FakeWeb.register_uri(:get, 
-                          "http://foo:bar@api.tropo.com/v1/users/partitions/production/platforms/sms/whitelist", 
+                          "https://foo:bar@api.tropo.com/v1/users/partitions/production/platforms/sms/whitelist", 
                           :body => ActiveSupport::JSON.encode(@whitelist), 
                           :content_type => "application/json",
                           :status => ["200", "OK"])
                           
     # Whitelist create
     FakeWeb.register_uri(:post, 
-                         "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist", 
+                         "https://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist", 
                          :body => ActiveSupport::JSON.encode(@whitelist), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
     # Whitelist delete
     FakeWeb.register_uri(:delete, 
-                         "http://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist/14155551212", 
+                         "https://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist/14155551212", 
                          :body => ActiveSupport::JSON.encode(@whitelist), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
     # Countries
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/countries", 
+                         "https://foo:bar@api.tropo.com/v1/countries", 
                          :body => ActiveSupport::JSON.encode(@countries), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
     # States
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/countries/36/states", 
+                         "https://foo:bar@api.tropo.com/v1/countries/36/states", 
                          :body => ActiveSupport::JSON.encode(@states), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
     # Recurrency get
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/users/1234/payment/recurrence", 
+                         "https://foo:bar@api.tropo.com/v1/users/1234/payment/recurrence", 
                          :body => ActiveSupport::JSON.encode(@recurrence), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
     # Recurrency update
     FakeWeb.register_uri(:put, 
-                         "http://foo:bar@api.tropo.com/v1/users/1234/payment/recurrence", 
+                         "https://foo:bar@api.tropo.com/v1/users/1234/payment/recurrence", 
                          :body => ActiveSupport::JSON.encode(@recurrence_updated), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
@@ -479,63 +479,63 @@ describe "TropoProvisioning" do
 
     # List invitations
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/invitations", 
+                         "https://foo:bar@api.tropo.com/v1/invitations", 
                          :body => ActiveSupport::JSON.encode(@invitations), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
     # Get an invitation
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/invitations/ABC457", 
+                         "https://foo:bar@api.tropo.com/v1/invitations/ABC457", 
                          :body => ActiveSupport::JSON.encode(@invitations[1]), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
     # Update an invitation
     FakeWeb.register_uri(:put, 
-                         "http://foo:bar@api.tropo.com/v1/invitations/ABC457", 
+                         "https://foo:bar@api.tropo.com/v1/invitations/ABC457", 
                          :body => ActiveSupport::JSON.encode(@invitation_created), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
     # Update an invitation
     FakeWeb.register_uri(:put, 
-                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations/ABC457", 
+                         "https://foo:bar@api.tropo.com/v1/users/15909/invitations/ABC457", 
                          :body => ActiveSupport::JSON.encode(@invitation_created), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                                               
     # Delete an invitation
     FakeWeb.register_uri(:delete, 
-                         "http://foo:bar@api.tropo.com/v1/invitations/ABC457", 
+                         "https://foo:bar@api.tropo.com/v1/invitations/ABC457", 
                          :body => ActiveSupport::JSON.encode(@deleted_invitation), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
     # Delete an invitation
     FakeWeb.register_uri(:delete, 
-                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations/ABC457", 
+                         "https://foo:bar@api.tropo.com/v1/users/15909/invitations/ABC457", 
                          :body => ActiveSupport::JSON.encode(@deleted_invitation), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                          
     # Create invitation
     FakeWeb.register_uri(:post, 
-                         "http://foo:bar@api.tropo.com/v1/invitations", 
+                         "https://foo:bar@api.tropo.com/v1/invitations", 
                          :body => ActiveSupport::JSON.encode(@invitation_created), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
     # Create invitation
     FakeWeb.register_uri(:post, 
-                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations", 
+                         "https://foo:bar@api.tropo.com/v1/users/15909/invitations", 
                          :body => ActiveSupport::JSON.encode(@invitation_created), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
                                               
     # List invitation for a user
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations", 
+                         "https://foo:bar@api.tropo.com/v1/users/15909/invitations", 
                          :body => ActiveSupport::JSON.encode([@invitation_created]), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
@@ -549,7 +549,7 @@ describe "TropoProvisioning" do
                          
     # List invitation for a user
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/users/15909/invitations/ABC457", 
+                         "https://foo:bar@api.tropo.com/v1/users/15909/invitations/ABC457", 
                          :body => ActiveSupport::JSON.encode(@invitations[1]), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
@@ -557,7 +557,7 @@ describe "TropoProvisioning" do
     @username_check = { 'available' => false, 'href' => "http://api.smsified.com/v1/usernames/jsgoecke", 'valid' => true }
     # List invitation for a user
     FakeWeb.register_uri(:get, 
-                         "http://foo:bar@api.tropo.com/v1/usernames/12345", 
+                         "https://foo:bar@api.tropo.com/v1/usernames/12345", 
                          :body => ActiveSupport::JSON.encode(@username_check), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
