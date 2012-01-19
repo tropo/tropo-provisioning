@@ -27,14 +27,17 @@ class TropoClient
   # * [required, String] *password* valid password
   # * [optional, String] *base_uri* Tropo provisioning API endpoint
   # * [optional, String] *headers* required HTTP headers
+  # * [optional, Hash] * proxy => {"host" : <host>, "port" : <port>}
   #
   # ==== Return
   # * new TropoClient instance
-  def initialize(username, password, base_uri = "http://api.tropo.com/v1", headers)
+  def initialize(username, password, base_uri = "http://api.tropo.com/v1/", headers = nil, proxy = nil)
     @base_uri = base_uri
+    @base_uri[-1].eql?("/") or @base_uri << "/"
     @username = username
     @password = password
     @headers = headers.nil? ? {} : headers
+    @proxy = proxy
   end
   
   ##
@@ -142,7 +145,22 @@ class TropoClient
   def http
     @http ||= (
       uri = URI.parse(base_uri)
-      http = Net::HTTP.new(uri.host, uri.port)
+      if @proxy.nil?
+        base = Net::HTTP
+      else
+        [:host, :port].each{|item|
+          if @proxy.has_key(item)
+            proxy[item.to_s] = proxy[item]
+          end
+        }
+        if @proxy.has_key?("host") && @proxy.has_key?("port")
+          base = Net::HTTP::Proxy(@proxy["host"], @proxy["port"])
+        else
+          base = Net::HTTP
+        end
+      end
+      
+      http = base.new(uri.host, uri.port)
       http.use_ssl = true if uri.scheme == 'https'
       http
     )
@@ -153,18 +171,13 @@ class TropoClient
   #
   # ==== Parameters
   # * [required, Symbol] http_request Net::HTTPRequest child
-  # * [required, Hash] params used to create the request
-  #   * [String] :resource the resource to call on the base URL
-  #   * [Hash] :body the details to use when posting, putting or deleting an object, converts into the appropriate JSON
+  # * [required, Hash] body details parameters to use when posting or putting an object, converts into the appropriate JSON
   #
   # ==== Return
   # * [Hash] the result of the request
   # * [TropoError]
   #   if it can not connect to the API server or if the response.code is not 200 
-  def request(http_request, params = {})
-    params[:body] and params[:body] = camelize_params(params[:body])
-    
-    uri = params[:resource].nil? ? "" : params[:resource]
+  def request(http_request, body = {})
 
     unless http_request.is_a?(Net::HTTPRequest)
       raise TropoError.new("Invalid request type #{http_request}")
@@ -172,8 +185,10 @@ class TropoClient
     
     http_request.initialize_http_header(headers)
     http_request.basic_auth username, password
-    http_request.body = ActiveSupport::JSON.encode params[:body] if params[:body]
-    
+
+    # Include body if received
+    body.empty? or http_request.body = ActiveSupport::JSON.encode(camelize_params(body)) 
+
     begin
       response = http.request(http_request)
     rescue => e
