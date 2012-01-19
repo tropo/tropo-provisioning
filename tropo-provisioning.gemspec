@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("fakeweb")
   s.add_development_dependency("yard")
   s.add_development_dependency("rdoc")
+  s.add_development_dependency("rake")
     
   s.add_runtime_dependency("hashie", ">= 0.2.1")
   s.add_runtime_dependency("activesupport")
