@@ -97,14 +97,14 @@ describe "TropoProvisioning" do
   it "should create an application" do
     # Get a specific user by username
     FakeWeb.register_uri(:get, 
-                         "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/users/jsgoecke",
+                         "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/users/jsgoecke",
                          :body => ActiveSupport::JSON.encode(existing_user), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
     # Create an application       
     FakeWeb.register_uri(:post, 
-                         %r|http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications|, 
+                         %r|https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications|, 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/provisioning/applications/#{APPLICATION_ID}" }),
                          :status => ["200", "OK"])
     
@@ -118,7 +118,7 @@ describe "TropoProvisioning" do
   it "should get a list of exchanges" do
     # Exchanges
     FakeWeb.register_uri(:get, 
-                         "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/exchanges", 
+                         "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/exchanges", 
                          :body => exchanges, 
                          :status => ["200", "OK"],
                          :content_type => "application/json")
@@ -130,21 +130,21 @@ describe "TropoProvisioning" do
   it "should add a phone, IM and token address to the application" do  
     # Get a specific user by username
     FakeWeb.register_uri(:get, 
-                         "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/users/jsgoecke",
+                         "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/users/jsgoecke",
                          :body => ActiveSupport::JSON.encode(existing_user), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
     # Exchanges
     FakeWeb.register_uri(:get, 
-                        "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/exchanges", 
+                        "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/exchanges", 
                         :body => exchanges, 
                         :status => ["200", "OK"],
                         :content_type => "application/json")
 
     # Get a address that is a number
     FakeWeb.register_uri(:post, 
-                         "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/108016/addresses", 
+                         "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/108016/addresses", 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/108000/addresses/number/7202551912" }), 
                          :content_type => "application/json")
     
@@ -156,21 +156,21 @@ describe "TropoProvisioning" do
   it "should add an IM token address to the application" do 
     # Get a specific user by username
     FakeWeb.register_uri(:get, 
-                         "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/users/jsgoecke",
+                         "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/users/jsgoecke",
                          :body => ActiveSupport::JSON.encode(existing_user), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
     # Exchanges
     FakeWeb.register_uri(:get, 
-                        "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/exchanges", 
+                        "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/exchanges", 
                         :body => exchanges, 
                         :status => ["200", "OK"],
                         :content_type => "application/json")
 
     # Get a address that is a number
     FakeWeb.register_uri(:post, 
-                         "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/#{APPLICATION_ID}/addresses", 
+                         "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/#{APPLICATION_ID}/addresses", 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/#{APPLICATION_ID}/addresses/jabber/appsdsdsdasd@bot.im" }), 
                          :content_type => "application/json")
                          
@@ -182,21 +182,21 @@ describe "TropoProvisioning" do
   it "should add a token to the application" do 
     # Get a specific user by username
     FakeWeb.register_uri(:get, 
-                         "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/users/jsgoecke",
+                         "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/users/jsgoecke",
                          :body => ActiveSupport::JSON.encode(existing_user), 
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
     # Exchanges
     FakeWeb.register_uri(:get, 
-                        "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/exchanges", 
+                        "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/exchanges", 
                         :body => exchanges, 
                         :status => ["200", "OK"],
                         :content_type => "application/json")
 
     # Get a address that is a number
     FakeWeb.register_uri(:post, 
-                         "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/#{APPLICATION_ID}/addresses", 
+                         "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/#{APPLICATION_ID}/addresses", 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/#{APPLICATION_ID}/addresses/token/"+("w"*88) }), 
                          :content_type => "application/json")
     result = tropo_provisioning.create_address(APPLICATION_ID, { :type => 'token', :channel => 'voice' } )
@@ -208,7 +208,7 @@ describe "TropoProvisioning" do
     
     # A specific application
     FakeWeb.register_uri(:get, 
-                         "http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/#{APPLICATION_ID}", 
+                         "https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/#{APPLICATION_ID}", 
                          :body => ActiveSupport::JSON.encode(application),
                          :content_type => "application/json")
     
@@ -217,7 +217,7 @@ describe "TropoProvisioning" do
     
     # Update a specific application
     FakeWeb.register_uri(:put, 
-                         %r|http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/#{APPLICATION_ID}|, 
+                         %r|https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications/#{APPLICATION_ID}|, 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/#{APPLICATION_ID}" }),
                          :status => ["200", "OK"])
 
@@ -229,7 +229,7 @@ describe "TropoProvisioning" do
     pending
     # Create an application       
     FakeWeb.register_uri(:post, 
-                         %r|http://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications|, 
+                         %r|https://#{USERNAME}:#{PASSWORD}@api.tropo.com/v1/applications|, 
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/provisioning/applications/#{APPLICATION_ID}" }),
                          :status => ["200", "OK"])
     
