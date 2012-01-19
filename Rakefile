@@ -9,7 +9,6 @@ require 'tropo-provisioning/version'
 
 
 RSpec::Core::RakeTask.new(:test) do |spec|
-    spec.skip_bundler = true
     spec.pattern = ['spec/*_spec.rb']
     spec.rspec_opts = '--color --format doc'
 end
