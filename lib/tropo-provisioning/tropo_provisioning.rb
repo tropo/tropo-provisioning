@@ -18,7 +18,6 @@ class TropoProvisioning
   VALID_PARTITIONS = %w(staging production)
   
   attr_reader :user_data
-  attr_accessor :tropo_client
 
   ##
   # Creates a new TropoProvisioning object
