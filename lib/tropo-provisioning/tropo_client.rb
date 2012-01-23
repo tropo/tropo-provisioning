@@ -7,7 +7,7 @@ require 'uri'
 
 # This class is in charge of handling HTTP requests to the Tropo HTTP endpoint
 class TropoClient
-  
+  attr_accessor :http 
   autoload :TropoError, 'tropo-provisioning/tropo_error'
 
   # required HTTP headers
@@ -143,7 +143,7 @@ class TropoClient
   private
   
   ##
-  # Creates (one once) a HTTP client to the Tropo provisioning endpoint
+  # Creates a HTTP client to the Tropo provisioning endpoint
   #
   # ==== Return
   # * Net::HTTP instance
