@@ -147,7 +147,7 @@ class TropoClient
   # ==== Return
   # * Net::HTTP instance
   def http
-    @http ||= (
+    (
       uri = URI.parse(base_uri)
       if @proxy.nil?
         base = Net::HTTP
