@@ -39,7 +39,7 @@ Any HTTP method can be accessed using the TropoProvisioning wrapper:
 
 ==== Add a New Application
 
-  app_id = tp.add_application({ :name => 'My Shiny New App',
+  app_id = tp.create_application({ :name => 'My Shiny New App',
                                 :voiceUrl     => 'http://mydomain.com/voice_script.rb',
                                 :partition    => 'staging',
                                 :messagingUrl => 'http://mydomain.com/message_script.rb',
