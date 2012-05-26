@@ -30,20 +30,20 @@ class TropoClient
   #
   # ==== Return
   # * new TropoClient instance
-  def initialize(username, password, base_uri = "http://api.tropo.com/v1/", headers = nil, proxy = nil)
+  def initialize(username, password, base_uri = "https://api.tropo.com/v1/", headers = nil, proxy = nil)
     @base_uri = base_uri
     if RUBY_VERSION =~ /1.8/
       @base_uri << "/" if !@base_uri[-1].eql?(47)
     elsif RUBY_VERSION =~ /1.9/
       @base_uri << "/" if !@base_uri[-1].eql?("/")
     end
-    
+
     @username = username
     @password = password
     @headers = headers.nil? ? {} : headers
     @proxy = proxy
   end
-  
+
   ##
   # Send a HTTP Get
   #
@@ -58,7 +58,7 @@ class TropoClient
     params.empty? or uri = uri.concat('?').concat(params.collect { |k, v| "#{k}=#{v.to_s}" }.join("&"))
     request(Net::HTTP::Get.new(uri))
   end
-  
+
   ##
   # Send a HTTP Post
   #
@@ -72,7 +72,7 @@ class TropoClient
     uri = "#{base_uri}#{resource}"
     request(Net::HTTP::Post.new(uri), params)
   end
-  
+
   ##
   # Send a HTTP Delete
   #
@@ -114,11 +114,11 @@ class TropoClient
     params.each { |k,v| camelized.merge!(k.to_s.camelize(:lower).to_sym => v) }
     camelized
   end
-  
-  
+
+
   ##
   # Sets the HTTP REST type based on the method being called
-  # 
+  #
   # ==== Parameters
   # * [required, ymbol] the HTTP method to use, may be :delete, :get, :post or :put
   # * [Object] the uri object to create the request for
@@ -140,7 +140,7 @@ class TropoClient
   end
 
   private
-  
+
   ##
   # Creates a HTTP client to the Tropo provisioning endpoint
   #
@@ -163,13 +163,13 @@ class TropoClient
           base = Net::HTTP
         end
       end
-      
+
       http = base.new(uri.host, uri.port)
       http.use_ssl = true if uri.scheme == 'https'
       http
     )
   end
-  
+
   ##
   # Send a request to the Tropo provisioning API
   #
@@ -180,18 +180,18 @@ class TropoClient
   # ==== Return
   # * [Hash] the result of the request
   # * [TropoError]
-  #   if it can not connect to the API server or if the response.code is not 200 
+  #   if it can not connect to the API server or if the response.code is not 200
   def request(http_request, body = {})
 
     unless http_request.is_a?(Net::HTTPRequest)
       raise TropoError.new("Invalid request type #{http_request}")
     end
-    
+
     http_request.initialize_http_header(headers)
     http_request.basic_auth username, password
 
     # Include body if received
-    body.empty? or http_request.body = ActiveSupport::JSON.encode(camelize_params(body)) 
+    body.empty? or http_request.body = ActiveSupport::JSON.encode(camelize_params(body))
 
     begin
       response = http.request(http_request)
@@ -200,13 +200,13 @@ class TropoClient
     end
 
     response.code.eql?('200') or raise TropoError.new(response.code), "#{response.code}: #{response.message} - #{response.body}"
-    
+
     result = ActiveSupport::JSON.decode response.body
     if result.instance_of? Array
       self.class.hashie_array(result)
     else
       Hashie::Mash.new(result)
-    end    
+    end
   end
 
   class << self
@@ -226,5 +226,5 @@ class TropoClient
       hashied_array
     end
   end
-  
+
 end
