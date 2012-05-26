@@ -17,7 +17,7 @@ class TropoProvisioning
   # Array of supported partitions in Tropo
   VALID_PARTITIONS = %w(staging production)
 
-  attr_reader :user_data
+  attr_reader :user_data, :base_uri
 
   ##
   # Creates a new TropoProvisioning object
@@ -32,9 +32,9 @@ class TropoProvisioning
   #
   # TropoProvisioning object
   def initialize(username, password, params={})
-    base_uri             = params[:base_uri] || "https://api.tropo.com/v1/"
-    proxy                = params[:proxy] || nil
-    @tropo_client        = TropoClient.new(username, password, base_uri, { 'Content-Type' => 'application/json' }, proxy)
+    @base_uri           =  (params[:base_uri] || "https://api.tropo.com/v1/").sub(/(\/)+$/,'/')
+    proxy               =  params[:proxy]    || nil
+    @tropo_client       =  TropoClient.new(username, password, @base_uri, { 'Content-Type' => 'application/json' }, proxy)
     user(username)
   end
 

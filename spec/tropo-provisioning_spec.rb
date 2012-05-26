@@ -165,6 +165,14 @@ describe "TropoProvisioning" do
                          %r|http://bad:password@api.tropo.com/v1/applications|, 
                          :status => ["401", "Unauthorized"])
 
+    # Alternate Base URI
+    FakeWeb.register_uri(:get,
+                          "http://foo:bar@testserver.com/rest/v1/users/foo",
+                          :body => '{}',
+                          :content_type => "application/json",
+                          :status => ["200", "OK"])
+
+
     # A specific application
     FakeWeb.register_uri(:get, 
                          "http://foo:bar@api.tropo.com/v1/applications/108000", 
@@ -632,12 +640,22 @@ describe "TropoProvisioning" do
         e.to_s.should == '401: Unauthorized - '
       end
     end
-    
+
     it 'should have the user data on the object if a successful login' do
       provisioning = TropoProvisioning.new('foo', 'bar')
       provisioning.user_data['username'].should == 'foo'
     end
-    
+
+    it 'should take a base_url' do
+      provisioning = TropoProvisioning.new('foo', 'bar', :base_uri => "http://testserver.com/rest/v1")
+      provisioning.base_uri.should == "http://testserver.com/rest/v1/"
+    end
+
+    it 'should sanatize a dirty base_url' do
+      provisioning = TropoProvisioning.new('foo', 'bar', :base_uri => "http://testserver.com/rest/v1//////")
+      provisioning.base_uri.should == "http://testserver.com/rest/v1/"
+    end
+
     it "should not provide a token for an existing account if wrong credentials" do
       pending('Need to work on tests for the new account')
       begin
