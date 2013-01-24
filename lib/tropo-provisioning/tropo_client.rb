@@ -30,7 +30,7 @@ class TropoClient
   #
   # ==== Return
   # * new TropoClient instance
-  def initialize(username, password, base_uri = "https://api.tropo.com/v1/", headers = nil, proxy = nil)
+  def initialize(username, password, base_uri = "https://api.tropo.com/v1/", headers = nil, proxy = nil, verify_certificate = true)
     @base_uri = base_uri
     if RUBY_VERSION =~ /1.8/
       @base_uri << "/" if !@base_uri[-1].eql?(47)
@@ -42,6 +42,7 @@ class TropoClient
     @password = password
     @headers = headers.nil? ? {} : headers
     @proxy = proxy
+    @verify_certificate = verify_certificate
   end
 
   ##
@@ -165,7 +166,10 @@ class TropoClient
       end
 
       http = base.new(uri.host, uri.port)
-      http.use_ssl = true if uri.scheme == 'https'
+      if uri.scheme == 'https'
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless @verify_certificate
+      end
       http
     )
   end

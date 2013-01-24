@@ -27,6 +27,7 @@ class TropoProvisioning
   # * [required, String] password for your Tropo user
   # * [optional, Hash] params
   #   * [optional, String] :base_uri to use for accessing the provisioning API if you would like a custom one
+  #   * [optional, Boolean] :verify_certificate whether to require a valid certificate if using SSL, defaults to true
   #
   # ==== Return
   #
@@ -34,7 +35,8 @@ class TropoProvisioning
   def initialize(username, password, params={})
     @base_uri           =  (params[:base_uri] || "https://api.tropo.com/v1/").sub(/(\/)+$/,'/')
     proxy               =  params[:proxy]    || nil
-    @tropo_client       =  TropoClient.new(username, password, @base_uri, { 'Content-Type' => 'application/json' }, proxy)
+    verify_certificate          =  params[:verify_certificate] || nil
+    @tropo_client       =  TropoClient.new(username, password, @base_uri, { 'Content-Type' => 'application/json' }, proxy, verify_certificate)
     user(username)
   end
 
