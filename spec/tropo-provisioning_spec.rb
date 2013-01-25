@@ -6,26 +6,26 @@ FakeWeb.allow_net_connect = false
 describe "TropoProvisioning" do
   let(:applications) do
     [ { "region" => "I-US",
-                     "city"     => "iNum US",
-                     "number"   => "883510001812716",
-                     "href"     => "http://api.tropo.com/v1/applications/108000/addresses/number/883510001812716",
-                     "prefix"   => "008",
-                     "type"     => "number" },
-                   { "number"   => "9991436301",
-                     "href"     => "http://api.tropo.com/v1/applications/108000/addresses/pin/9991436300",
-                     "type"     => "pin" },
-                   { "href"     => "http://api.tropo.com/v1/applications/108000/addresses/jabber/xyz123",
-                     "nickname" => "",
-                     "username" => "xyz123",
-                     "type"     => "jabber" },
-                   { "href"     => "http://api.tropo.com/v1/applications/108000/addresses/jabber/xyz123",
-                     "nickname" => "",
-                     "username" => "9991436300",
-                     "type"     => "pin" },
-                   { "href"     => "http://api.tropo.com/v1/applications/108000/addresses/token/a1b2c3d4",
-                     "nickname" => "",
-                     "username" => "a1b2c3d4",
-                     "type"     => "token" } ]
+        "city"     => "iNum US",
+        "number"   => "883510001812716",
+        "href"     => "http://api.tropo.com/v1/applications/108000/addresses/number/883510001812716",
+        "prefix"   => "008",
+        "type"     => "number" },
+      { "number"   => "9991436301",
+        "href"     => "http://api.tropo.com/v1/applications/108000/addresses/pin/9991436300",
+        "type"     => "pin" },
+      { "href"     => "http://api.tropo.com/v1/applications/108000/addresses/jabber/xyz123",
+        "nickname" => "",
+        "username" => "xyz123",
+        "type"     => "jabber" },
+      { "href"     => "http://api.tropo.com/v1/applications/108000/addresses/jabber/xyz123",
+        "nickname" => "",
+        "username" => "9991436300",
+        "type"     => "pin" },
+      { "href"     => "http://api.tropo.com/v1/applications/108000/addresses/token/a1b2c3d4",
+        "nickname" => "",
+        "username" => "a1b2c3d4",
+        "type"     => "token" } ]
   end
 
   before(:all) do
@@ -167,10 +167,10 @@ describe "TropoProvisioning" do
 
     # Alternate Base URI
     FakeWeb.register_uri(:get,
-                          "http://foo:bar@testserver.com/rest/v1/users/foo",
-                          :body => '{}',
-                          :content_type => "application/json",
-                          :status => ["200", "OK"])
+                         "http://foo:bar@testserver.com/rest/v1/users/foo",
+                         :body => '{}',
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
 
     # A specific application
@@ -245,11 +245,11 @@ describe "TropoProvisioning" do
                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/108001/addresses/jabber/xyz123@bot.im" }),
                          :content_type => "application/json")
 
-     # Create a address that is a Token
-     FakeWeb.register_uri(:post,
-                          "https://foo:bar@api.tropo.com/v1/applications/108002/addresses",
-                          :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/108002/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b" }),
-                          :content_type => "application/json")
+    # Create a address that is a Token
+    FakeWeb.register_uri(:post,
+                         "https://foo:bar@api.tropo.com/v1/applications/108002/addresses",
+                         :body => ActiveSupport::JSON.encode({ "href" => "http://api.tropo.com/v1/applications/108002/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b" }),
+                         :content_type => "application/json")
 
     # Delete an application
     FakeWeb.register_uri(:delete,
@@ -279,138 +279,138 @@ describe "TropoProvisioning" do
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
-   # Create a new user
-   FakeWeb.register_uri(:post,
-                        "https://foo:bar@api.tropo.com/v1/users",
-                        :body => @new_user_json,
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Create a new user
+    FakeWeb.register_uri(:post,
+                         "https://foo:bar@api.tropo.com/v1/users",
+                         :body => @new_user_json,
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Get a specific user by user_id
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/users/12345",
-                        :body => ActiveSupport::JSON.encode(@existing_user),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Get a specific user by user_id
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/users/12345",
+                         :body => ActiveSupport::JSON.encode(@existing_user),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Get a specific user by user_id
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/users/98765",
-                        :body => nil,
-                        :content_type => "application/json",
-                        :status => ["404", "Got an error here!"])
+    # Get a specific user by user_id
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/users/98765",
+                         :body => nil,
+                         :content_type => "application/json",
+                         :status => ["404", "Got an error here!"])
 
-   # Get a specific user by username
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/users/foo",
-                        :body => ActiveSupport::JSON.encode(@existing_user),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Get a specific user by username
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/users/foo",
+                         :body => ActiveSupport::JSON.encode(@existing_user),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Get a specific user by username with HTTPS/SSL
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/users/foo",
-                        :body => ActiveSupport::JSON.encode(@existing_user),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Get a specific user by username with HTTPS/SSL
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/users/foo",
+                         :body => ActiveSupport::JSON.encode(@existing_user),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Invalid credentials
-   FakeWeb.register_uri(:get,
-                        "https://bad:password@api.tropo.com/v1/users/bad",
-                        :content_type => "application/json",
-                        :status => ["401", "Unauthorized"])
+    # Invalid credentials
+    FakeWeb.register_uri(:get,
+                         "https://bad:password@api.tropo.com/v1/users/bad",
+                         :content_type => "application/json",
+                         :status => ["401", "Unauthorized"])
 
-   # Confirm an account account
-   FakeWeb.register_uri(:post,
-                        "https://foo:bar@api.tropo.com/v1/users/12345/confirmations",
-                        :body => ActiveSupport::JSON.encode({"message" => "successfully confirmed user 12345" }),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Confirm an account account
+    FakeWeb.register_uri(:post,
+                         "https://foo:bar@api.tropo.com/v1/users/12345/confirmations",
+                         :body => ActiveSupport::JSON.encode({"message" => "successfully confirmed user 12345" }),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Return the payment method configured for a user
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/users/12345/payment/method",
-                        :body => ActiveSupport::JSON.encode(@payment_method),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Return the payment method configured for a user
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/users/12345/payment/method",
+                         :body => ActiveSupport::JSON.encode(@payment_method),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Return payment types
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/types/payment",
-                        :body => ActiveSupport::JSON.encode(@payment_methods),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Return payment types
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/types/payment",
+                         :body => ActiveSupport::JSON.encode(@payment_methods),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Return features
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/features",
-                        :body => ActiveSupport::JSON.encode(@features),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Return features
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/features",
+                         :body => ActiveSupport::JSON.encode(@features),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Return features for a user
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/users/12345/features",
-                        :body => ActiveSupport::JSON.encode(@user_features),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Return features for a user
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/users/12345/features",
+                         :body => ActiveSupport::JSON.encode(@user_features),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-  # Add a feature to a user
-  FakeWeb.register_uri(:post,
-                       "https://foo:bar@api.tropo.com/v1/users/12345/features",
-                       :body => ActiveSupport::JSON.encode(@feature),
-                       :content_type => "application/json",
-                       :status => ["200", "OK"])
+    # Add a feature to a user
+    FakeWeb.register_uri(:post,
+                         "https://foo:bar@api.tropo.com/v1/users/12345/features",
+                         :body => ActiveSupport::JSON.encode(@feature),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-  # Add a feature to a user
-  FakeWeb.register_uri(:delete,
-                       "https://foo:bar@api.tropo.com/v1/users/12345/features/8",
-                       :body => ActiveSupport::JSON.encode(@feature_delete_message),
-                       :content_type => "application/json",
-                       :status => ["200", "OK"])
+    # Add a feature to a user
+    FakeWeb.register_uri(:delete,
+                         "https://foo:bar@api.tropo.com/v1/users/12345/features/8",
+                         :body => ActiveSupport::JSON.encode(@feature_delete_message),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-  # Add payment info to a user
-  FakeWeb.register_uri(:put,
-                       "https://foo:bar@api.tropo.com/v1/users/12345/payment/method",
-                       :body => ActiveSupport::JSON.encode(@payment_info_message),
-                       :content_type => "application/json",
-                       :status => ["200", "OK"])
+    # Add payment info to a user
+    FakeWeb.register_uri(:put,
+                         "https://foo:bar@api.tropo.com/v1/users/12345/payment/method",
+                         :body => ActiveSupport::JSON.encode(@payment_info_message),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
 
-   # List an account, with bad credentials
-   FakeWeb.register_uri(:get,
-                        "https://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooeyfooey",
-                        :body => ActiveSupport::JSON.encode(@bad_account_creds),
-                        :content_type => "application/json",
-                        :status => ["403", "Invalid Login."])
+    # List an account, with bad credentials
+    FakeWeb.register_uri(:get,
+                         "https://evolution.voxeo.com/api/account/accesstoken/get.jsp?username=foobar7474&password=fooeyfooey",
+                         :body => ActiveSupport::JSON.encode(@bad_account_creds),
+                         :content_type => "application/json",
+                         :status => ["403", "Invalid Login."])
 
-   # Get our search terms
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/users/?username=foobar",
-                        :body => ActiveSupport::JSON.encode(@search_accounts),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Get our search terms
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/users/?username=foobar",
+                         :body => ActiveSupport::JSON.encode(@search_accounts),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Payment resource
-   FakeWeb.register_uri(:post,
-                        "https://foo:bar@api.tropo.com/v1/users/1234/payments",
-                        :body => ActiveSupport::JSON.encode({ :message => "successfully posted payment for the amount 1.000000" }),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Payment resource
+    FakeWeb.register_uri(:post,
+                         "https://foo:bar@api.tropo.com/v1/users/1234/payments",
+                         :body => ActiveSupport::JSON.encode({ :message => "successfully posted payment for the amount 1.000000" }),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # Modify a user
-   FakeWeb.register_uri(:put,
-                        "https://foo:bar@api.tropo.com/v1/users/12345",
-                        :body => ActiveSupport::JSON.encode({ :href => "http://api-smsified-eng.voxeo.net/v1/users/12345" }),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # Modify a user
+    FakeWeb.register_uri(:put,
+                         "https://foo:bar@api.tropo.com/v1/users/12345",
+                         :body => ActiveSupport::JSON.encode({ :href => "http://api-smsified-eng.voxeo.net/v1/users/12345" }),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
-   # List available partitions
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/partitions",
-                        :body => ActiveSupport::JSON.encode(@partitions),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
+    # List available partitions
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/partitions",
+                         :body => ActiveSupport::JSON.encode(@partitions),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
     # List available platforms
     FakeWeb.register_uri(:get,
@@ -426,18 +426,18 @@ describe "TropoProvisioning" do
                          :content_type => "application/json",
                          :status => ["200", "OK"])
 
-   # Whitelist
-   FakeWeb.register_uri(:get,
-                        "https://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist",
-                        :body => ActiveSupport::JSON.encode(@whitelist),
-                        :content_type => "application/json",
-                        :status => ["200", "OK"])
     # Whitelist
-     FakeWeb.register_uri(:get,
-                          "https://foo:bar@api.tropo.com/v1/users/partitions/production/platforms/sms/whitelist",
-                          :body => ActiveSupport::JSON.encode(@whitelist),
-                          :content_type => "application/json",
-                          :status => ["200", "OK"])
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/users/12345/partitions/production/platforms/sms/whitelist",
+                         :body => ActiveSupport::JSON.encode(@whitelist),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
+    # Whitelist
+    FakeWeb.register_uri(:get,
+                         "https://foo:bar@api.tropo.com/v1/users/partitions/production/platforms/sms/whitelist",
+                         :body => ActiveSupport::JSON.encode(@whitelist),
+                         :content_type => "application/json",
+                         :status => ["200", "OK"])
 
     # Whitelist create
     FakeWeb.register_uri(:post,
@@ -632,6 +632,18 @@ describe "TropoProvisioning" do
     tropo_provisioning.instance_of?(TropoProvisioning).should == true
   end
 
+  it "should validate SSL by default" do
+    tropo_provisioning.verify_certificate.should == true
+  end
+
+
+  it "should not validate SSL when told to" do
+    tp = TropoProvisioning.new('foo', 'bar', {:verify_certificate => false })
+    tp.verify_certificate.should == true
+  end
+
+
+
   describe 'authentication' do
     it "should get an unathorized back if there is an invalid username or password" do
       begin
@@ -696,18 +708,18 @@ describe "TropoProvisioning" do
     it "should raise ArgumentErrors if appropriate values are not passed" do
       begin
         tropo_provisioning.create_application({ :name         => 'foobar',
-                                                 :partition    => 'foobar',
-                                                 :platform     => 'foobar',
-                                                 :messagingUrl => 'http://foobar' })
+                                                :partition    => 'foobar',
+                                                :platform     => 'foobar',
+                                                :messagingUrl => 'http://foobar' })
       rescue => e
         e.to_s.should == ":platform must be 'scripting' or 'webapi'"
       end
 
       begin
         tropo_provisioning.create_application({ :name         => 'foobar',
-                                                 :partition    => 'foobar',
-                                                 :platform     => 'scripting',
-                                                 :messagingUrl => 'http://foobar' })
+                                                :partition    => 'foobar',
+                                                :platform     => 'scripting',
+                                                :messagingUrl => 'http://foobar' })
       rescue => e
         e.to_s.should == ":partition must be 'staging' or 'production'"
       end
@@ -716,17 +728,17 @@ describe "TropoProvisioning" do
     it "should receive an href back when we create a new application receiving an href back" do
       # With camelCase
       result = tropo_provisioning.create_application({ :name         => 'foobar',
-                                                        :partition    => 'production',
-                                                        :platform     => 'scripting',
-                                                        :messagingUrl => 'http://foobar' })
+                                                       :partition    => 'production',
+                                                       :platform     => 'scripting',
+                                                       :messagingUrl => 'http://foobar' })
       result.href.should == "http://api.tropo.com/v1/applications/108016"
       result.application_id.should == '108016'
 
       # With underscores
       result = tropo_provisioning.create_application({ :name          => 'foobar',
-                                                        :partition     => 'production',
-                                                        :platform      => 'scripting',
-                                                        :messaging_url => 'http://foobar' })
+                                                       :partition     => 'production',
+                                                       :platform      => 'scripting',
+                                                       :messaging_url => 'http://foobar' })
       result.href.should == "http://api.tropo.com/v1/applications/108016"
       result.application_id.should == '108016'
     end
@@ -734,16 +746,16 @@ describe "TropoProvisioning" do
     it "should receive an href back when we update an application receiving an href back" do
       # With camelCase
       result = tropo_provisioning.update_application('108000', { :name         => 'foobar',
-                                                                  :partition    => 'production',
-                                                                  :platform     => 'scripting',
-                                                                  :messagingUrl => 'http://foobar' })
+                                                                 :partition    => 'production',
+                                                                 :platform     => 'scripting',
+                                                                 :messagingUrl => 'http://foobar' })
       result.href.should == "http://api.tropo.com/v1/applications/108016"
 
       # With underscore
       result = tropo_provisioning.update_application('108000', { :name          => 'foobar',
-                                                                  :partition     => 'production',
-                                                                  :platform      => 'scripting',
-                                                                  :messaging_url => 'http://foobar' })
+                                                                 :partition     => 'production',
+                                                                 :platform      => 'scripting',
+                                                                 :messaging_url => 'http://foobar' })
       result.href.should == "http://api.tropo.com/v1/applications/108016"
     end
 
@@ -988,56 +1000,56 @@ describe "TropoProvisioning" do
   describe 'payments' do
     it "should add a payment method to a user" do
       result = tropo_provisioning.add_payment_info('12345', { :account_number     => '1234567890',
-                                                               :payment_type       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
-                                                               :address            => '123 Smith Avenue',
-                                                               :city               => 'San Carlos',
-                                                               :state              => 'CA',
-                                                               :postal_code        => '94070',
-                                                               :country            => 'USA',
-                                                               :name_on_account    => 'Tropo User',
-                                                               :expiration_date    => '2011-12-10',
-                                                               :security_code      => '123',
-                                                               :recharge_amount    => 10.50,
-                                                               :recharge_threshold => 5.00,
-                                                               :email              => 'j@doe.com',
-                                                               :phone_number       => '4155551212' })
+                                                              :payment_type       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
+                                                              :address            => '123 Smith Avenue',
+                                                              :city               => 'San Carlos',
+                                                              :state              => 'CA',
+                                                              :postal_code        => '94070',
+                                                              :country            => 'USA',
+                                                              :name_on_account    => 'Tropo User',
+                                                              :expiration_date    => '2011-12-10',
+                                                              :security_code      => '123',
+                                                              :recharge_amount    => 10.50,
+                                                              :recharge_threshold => 5.00,
+                                                              :email              => 'j@doe.com',
+                                                              :phone_number       => '4155551212' })
       result.should == @payment_info_message
     end
 
     it "should add a payment method to a user in camelCase" do
       result = tropo_provisioning.add_payment_info('12345', { :accountNumber     => '1234567890',
-                                                               :paymentType       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
-                                                               :address           => '123 Smith Avenue',
-                                                               :city              => 'San Carlos',
-                                                               :state             => 'CA',
-                                                               :postalCode        => '94070',
-                                                               :country           => 'USA',
-                                                               :nameOnAccount     => 'Tropo User',
-                                                               :expirationDate    => '2011-12-10',
-                                                               :securityCode      => '123',
-                                                               :rechargeAmount    => 10.50,
-                                                               :rechargeThreshold => 5.00,
-                                                               :email             => 'j@doe.com',
-                                                               :phoneNumber       => '4155551212' })
+                                                              :paymentType       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
+                                                              :address           => '123 Smith Avenue',
+                                                              :city              => 'San Carlos',
+                                                              :state             => 'CA',
+                                                              :postalCode        => '94070',
+                                                              :country           => 'USA',
+                                                              :nameOnAccount     => 'Tropo User',
+                                                              :expirationDate    => '2011-12-10',
+                                                              :securityCode      => '123',
+                                                              :rechargeAmount    => 10.50,
+                                                              :rechargeThreshold => 5.00,
+                                                              :email             => 'j@doe.com',
+                                                              :phoneNumber       => '4155551212' })
 
       result.should == @payment_info_message
     end
 
     it 'should add a payment method to a user keys as strings' do
       result = tropo_provisioning.add_payment_info('12345', { 'account_number'     => '1234567890',
-                                                               'payment_type'       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
-                                                               'address'            => '123 Smith Avenue',
-                                                               'city'               => 'San Carlos',
-                                                               'state'              => 'CA',
-                                                               'postal_code'        => '94070',
-                                                               'country'            => 'USA',
-                                                               'name_on_account'    => 'Tropo User',
-                                                               'expiration_date'    => '2011-12-10',
-                                                               'security_code'      => '123',
-                                                               'recharge_amount'    => 10.50,
-                                                               'recharge_threshold' => 5.00,
-                                                               'email'              => 'j@doe.com',
-                                                               'phone_number'       => '4155551212' })
+                                                              'payment_type'       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
+                                                              'address'            => '123 Smith Avenue',
+                                                              'city'               => 'San Carlos',
+                                                              'state'              => 'CA',
+                                                              'postal_code'        => '94070',
+                                                              'country'            => 'USA',
+                                                              'name_on_account'    => 'Tropo User',
+                                                              'expiration_date'    => '2011-12-10',
+                                                              'security_code'      => '123',
+                                                              'recharge_amount'    => 10.50,
+                                                              'recharge_threshold' => 5.00,
+                                                              'email'              => 'j@doe.com',
+                                                              'phone_number'       => '4155551212' })
 
 
       result.should == @payment_info_message
@@ -1045,19 +1057,19 @@ describe "TropoProvisioning" do
 
     it 'should add a payment method to a user in camelCase and keys as strings' do
       result = tropo_provisioning.add_payment_info('12345', { 'accountNumber'     => '1234567890',
-                                                               'paymentType'       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
-                                                               'address'           => '123 Smith Avenue',
-                                                               'city'              => 'San Carlos',
-                                                               'state'             => 'CA',
-                                                               'postalCode'        => '94070',
-                                                               'country'           => 'USA',
-                                                               'nameOnAccount'     => 'Tropo User',
-                                                               'expirationDate'    => '2011-12-10',
-                                                               'securityCode'      => '123',
-                                                               'rechargeAmount'    => 10.50,
-                                                               'rechargeThreshold' => 5.00,
-                                                               'email'             => 'j@doe.com',
-                                                               'phone_number'      => '4155551212' })
+                                                              'paymentType'       => 'https://api-smsified-eng.voxeo.net/v1/types/payment/1',
+                                                              'address'           => '123 Smith Avenue',
+                                                              'city'              => 'San Carlos',
+                                                              'state'             => 'CA',
+                                                              'postalCode'        => '94070',
+                                                              'country'           => 'USA',
+                                                              'nameOnAccount'     => 'Tropo User',
+                                                              'expirationDate'    => '2011-12-10',
+                                                              'securityCode'      => '123',
+                                                              'rechargeAmount'    => 10.50,
+                                                              'rechargeThreshold' => 5.00,
+                                                              'email'             => 'j@doe.com',
+                                                              'phone_number'      => '4155551212' })
 
       result.should == @payment_info_message
     end
@@ -1160,15 +1172,15 @@ describe "TropoProvisioning" do
 
     it 'should create an invitation' do
       tropo_provisioning.create_invitation({ :code   => 'ABC457',
-                                              :count  => 100,
-                                              :credit => 10 }).should == @invitation_created
+                                             :count  => 100,
+                                             :credit => 10 }).should == @invitation_created
     end
 
     it 'should create an invitationfor a specific user' do
       tropo_provisioning.create_invitation('15909',
-                                            { :code   => 'ABC457',
-                                              :count  => 100,
-                                              :credit => 10 }).should == @invitation_created
+                                           { :code   => 'ABC457',
+                                             :count  => 100,
+                                             :credit => 10 }).should == @invitation_created
     end
 
     it 'should update an invitation' do
