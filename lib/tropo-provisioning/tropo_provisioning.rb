@@ -35,7 +35,7 @@ class TropoProvisioning
   def initialize(username, password, params={})
     @base_uri            =  (params[:base_uri] || "https://api.tropo.com/v1/").sub(/(\/)+$/,'/')
     proxy                =  params[:proxy]    || nil
-    @verify_certificate  =  params[:verify_certificate] || true
+    @verify_certificate  =  params.has_key?(:verify_certificate) ? params[:verify_certificate] : true
     @tropo_client        =  TropoClient.new(username, password, @base_uri, { 'Content-Type' => 'application/json' }, proxy, @verify_certificate)
     user(username)
   end

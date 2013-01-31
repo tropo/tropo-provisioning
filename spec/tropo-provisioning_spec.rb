@@ -639,7 +639,7 @@ describe "TropoProvisioning" do
 
   it "should not validate SSL when told to" do
     tp = TropoProvisioning.new('foo', 'bar', {:verify_certificate => false })
-    tp.verify_certificate.should == true
+    tp.verify_certificate.should == false
   end
 
 
