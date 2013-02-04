@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    tropo-provisioning (0.0.26)
+    tropo-provisioning (0.0.27)
       activesupport
       hashie (>= 0.2.1)
       i18n
