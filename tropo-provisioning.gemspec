@@ -23,15 +23,16 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/tropo/tropo-provisioning}
   s.require_paths = ["lib"]
 
-  s.add_development_dependency("rspec")
-  s.add_development_dependency("fakeweb")
-  s.add_development_dependency("yard")
-  s.add_development_dependency("rdoc")
-  s.add_development_dependency("rake")
-
-  s.add_runtime_dependency("hashie", ">= 0.2.1")
+  s.add_runtime_dependency("i18n", "= 0.6.1")
   s.add_runtime_dependency("activesupport","= 3.2.13")
-  s.add_runtime_dependency("i18n")
-  s.add_runtime_dependency("json") if RUBY_VERSION =~ /1.8/
+  s.add_runtime_dependency("hashie", "= 2.0.3")
+  s.add_runtime_dependency("json", "= 1.8.0") if RUBY_VERSION =~ /1.8/
+
+  s.add_development_dependency("rspec", "= 2.13.0")
+  s.add_development_dependency("fakeweb", "= 1.3.0")
+  s.add_development_dependency("yard", "= 0.8.1")
+  s.add_development_dependency("rdoc", "= 3.12")
+  s.add_development_dependency("rake", "= 0.9.2.2")
+
 end
 
