@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.29
+* Peg i18n dependency to 0.6.1 [OPS-1093]
+
 ## 0.0.28
 * Peg dependency on ActiveSupport 3.2.13 [OPS-1093]
 
